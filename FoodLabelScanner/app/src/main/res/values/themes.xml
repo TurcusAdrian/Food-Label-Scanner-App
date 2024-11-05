@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.FoodLabelScanner" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Base.Theme.FoodLabelScanner" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:colorPrimary"> @color/purple_200</item>
+        <item name="android:statusBarColor"> @color/green</item>
+
+    </style>
+    
+    <style name="Theme.FoodLabelScanner" parent="Base.Theme.FoodLabelScanner"/>
 </resources>
