@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Food-Label-Scanner</string>
+    <string name="enter_username">Enter Username</string>
 </resources>

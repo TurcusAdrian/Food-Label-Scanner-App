@@ -1,7 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
 
     <application
         android:allowBackup="true"
@@ -13,33 +11,34 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FoodLabelScanner"
         tools:targetApi="31">
-        <activity
-            android:name=".SignupActivity"
-            android:exported="false" />
-        <activity
-            android:name=".LoginActivity"
-            android:exported="true"
-            android:theme="@style/Theme.AppCompat.Light">
 
+        <!-- StartPage Activity (first screen) -->
+        <activity
+            android:name=".StartPage"
+            android:exported="true"
+            android:theme="@style/Theme.FoodLabelScanner">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- LoginActivity -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.Light" />
+
+        <!-- MainActivity (this is navigated to programmatically after successful login) -->
         <activity
             android:name=".MainActivity"
-            android:exported="false"> <!-- aici era true inainte -->
-             <!-- android:label="@string/app_name"
-            android:theme="@style/Theme.FoodLabelScanner"> -->
-            <!-- <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:exported="false" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter> -->
-        </activity>
+        <!-- SignupActivity -->
+        <activity
+            android:name=".SignupActivity"
+            android:exported="false" />
 
     </application>
-
 
 </manifest>
