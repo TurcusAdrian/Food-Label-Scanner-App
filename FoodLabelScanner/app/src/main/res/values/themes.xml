@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Base.Theme.FoodLabelScanner" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/purple_200</item>
+        <item name="colorPrimaryDark">@color/green</item>
+    </style>
+    
+    <style name="Theme.FoodLabelScanner" parent="Base.Theme.FoodLabelScanner"/>
+</resources>
