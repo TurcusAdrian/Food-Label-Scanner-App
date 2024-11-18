@@ -1,11 +1,20 @@
 package com.example.food_label_scanner
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -29,17 +38,21 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.food_label_scanner.ui.theme.FoodLabelScannerTheme
 import kotlinx.coroutines.launch
 
@@ -66,6 +79,23 @@ fun Screen(modifier: Modifier = Modifier){
         mutableIntStateOf(0)
     }
 
+    var selectedimage by remember {
+        mutableStateOf<Uri?>(null)
+    }
+
+    //activity result launcher for picking image
+    val photolauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri -> selectedimage = uri }
+    )
+
+    AsyncImage(
+        model = selectedimage,
+        contentDescription = null,
+        modifier = Modifier.fillMaxWidth(),
+        contentScale = ContentScale.Crop
+    )
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -75,7 +105,6 @@ fun Screen(modifier: Modifier = Modifier){
         }
     ) {
         Scaffold(
-
             bottomBar = {
                 NavigationBar {
                     BottomNavItems.forEachIndexed { index, bottomNavItem ->
@@ -83,6 +112,10 @@ fun Screen(modifier: Modifier = Modifier){
                             selected = index == selectedbutton,
                             onClick = {
                                 selectedbutton = index
+                                if(bottomNavItem.title=="Add Photos from Gallery"){
+                                  photolauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                                }
+
                             },
                             icon = {
                                 Icon(
@@ -111,7 +144,6 @@ fun Screen(modifier: Modifier = Modifier){
         }
     }
 }
-
 
 @Composable
 fun DrawerContent(modifier: Modifier = Modifier){
