@@ -108,7 +108,13 @@ fun Screen(modifier: Modifier = Modifier){
                 )
             }
         ){ padding ->
-            ScreenContent(modifier = Modifier.padding(padding))
+            ScreenContent(modifier = Modifier
+                .padding(padding)
+                .fillMaxWidth(),
+                selectedImage = selectedimage, //pass selected image to content
+                onImageClick = {selectedimage = null}
+
+            )
         }
     }
 }
