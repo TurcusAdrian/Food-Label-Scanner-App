@@ -1,12 +1,14 @@
 package com.example.food_label_scanner.ui_elements
 
 import com.example.food_label_scanner.data.*
-
+import com.example.food_label_scanner.ui_elements.*
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerValue
@@ -45,6 +47,12 @@ fun Screen(modifier: Modifier = Modifier){
         mutableStateOf<Uri?>(null)
     }
 
+    var detectedText by remember { mutableStateOf("No text detected yet...") }
+
+    fun onTextUpdated(updatedText: String) {
+        detectedText = updatedText
+    }
+
     //activity result launcher for picking image
     val photolauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -74,14 +82,25 @@ fun Screen(modifier: Modifier = Modifier){
                             selected = index == selectedbutton,
                             onClick = {
                                 selectedbutton = index
-                                if(bottomNavItem.title=="Add Photos from Gallery"){
-                                    photolauncher.launch(
-                                        PickVisualMediaRequest(
-                                            ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                    )
-                                }
-                                if(bottomNavItem.title=="Home"){
-                                    //
+                                when (bottomNavItem.title) {
+
+                                    "Home" -> {
+                                        selectedimage = null
+                                        detectedText = "No text detected yet..."
+                                    }
+
+                                    "Add Photos from Gallery" -> {
+                                        selectedimage = null
+                                        photolauncher.launch(
+                                            PickVisualMediaRequest(
+                                                ActivityResultContracts.PickVisualMedia.ImageOnly
+                                            )
+                                        )
+                                    }
+                                    "Take Picture" -> {
+                                        selectedimage = null
+                                    }
+
                                 }
 
                             },
@@ -108,13 +127,19 @@ fun Screen(modifier: Modifier = Modifier){
                 )
             }
         ){ padding ->
-            ScreenContent(modifier = Modifier
-                .padding(padding)
-                .fillMaxWidth(),
-                selectedImage = selectedimage, //pass selected image to content
-                onImageClick = {selectedimage = null}
-
-            )
+            Box( modifier = Modifier.padding(padding)
+                .fillMaxSize()
+            ){
+                if(selectedimage!=null){
+                    DisplayImagePreview(selectedImage = selectedimage, onImageClick = {selectedimage =null})
+                }
+                else{
+                    CameraContent(
+                        detectedText = detectedText,
+                        onDetectedTextUpdated = { detectedText = it }
+                    )
+                }
+            }
         }
     }
 }

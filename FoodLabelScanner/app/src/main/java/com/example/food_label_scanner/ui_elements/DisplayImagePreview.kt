@@ -9,7 +9,7 @@ import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
 
 @Composable
-fun ScreenContent(modifier: Modifier = Modifier, selectedImage : Uri?, onImageClick: () -> Unit){
+fun DisplayImagePreview(modifier: Modifier = Modifier, selectedImage : Uri?, onImageClick: () -> Unit){
     if (selectedImage != null) {
         // Show the selected image if available
         AsyncImage(
