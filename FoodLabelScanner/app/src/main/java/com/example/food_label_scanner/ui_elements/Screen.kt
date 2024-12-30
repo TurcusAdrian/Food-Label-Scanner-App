@@ -1,7 +1,8 @@
 package com.example.food_label_scanner.ui_elements
 
 import com.example.food_label_scanner.data.*
-import com.example.food_label_scanner.ui_elements.*
+import com.example.food_label_scanner.bottom_bar_screens.*
+
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalDrawerSheet
@@ -29,11 +32,19 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
 
 @Composable
 fun Screen(modifier: Modifier = Modifier){
+
+    val navigationController = rememberNavController()
+    val context = LocalContext.current.applicationContext         // logic for navigating between the screens
+    val selected = remember { mutableStateOf(Icons.Default.Home) }
 
     val drawerState = rememberDrawerState( initialValue = DrawerValue.Closed)
 
@@ -87,6 +98,9 @@ fun Screen(modifier: Modifier = Modifier){
                                     "Home" -> {
                                         selectedimage = null
                                         detectedText = "No text detected yet..."
+                                        navigationController.navigate(Screens.Home.screen){
+                                            popUpTo(0)
+                                        }
                                     }
 
                                     "Add Photos from Gallery" -> {
@@ -98,7 +112,19 @@ fun Screen(modifier: Modifier = Modifier){
                                         )
                                     }
                                     "Take Picture" -> {
-                                        selectedimage = null
+
+                                    }
+
+                                    "Search" -> {
+                                        navigationController.navigate(Screens.Search.screen){
+                                            popUpTo(0)
+                                        }
+                                    }
+
+                                    "Favourites Items" -> {
+                                        navigationController.navigate(Screens.Favourites.screen){
+                                            popUpTo(0)
+                                        }
                                     }
 
                                 }
@@ -129,15 +155,25 @@ fun Screen(modifier: Modifier = Modifier){
         ){ padding ->
             Box( modifier = Modifier.padding(padding)
                 .fillMaxSize()
-            ){
-                if(selectedimage!=null){
-                    DisplayImagePreview(selectedImage = selectedimage, onImageClick = {selectedimage =null})
-                }
-                else{
-                    CameraContent(
-                        detectedText = detectedText,
-                        onDetectedTextUpdated = { detectedText = it }
-                    )
+            ) {
+                NavHost(
+                    navController = navigationController,
+                    startDestination = Screens.Home.screen
+                ) {
+                    composable(Screens.Home.screen) {
+                        if (selectedimage != null) {
+                            DisplayImagePreview(
+                                selectedImage = selectedimage,
+                                onImageClick = { selectedimage = null })
+                        } else {
+                            CameraContent(
+                                detectedText = detectedText,
+                                onDetectedTextUpdated = { detectedText = it }
+                            )
+                        }
+                    }
+                    composable(Screens.Search.screen) { Search() } //call to file containing the Search screen
+                    composable(Screens.Favourites.screen) { Favourites() }
                 }
             }
         }
