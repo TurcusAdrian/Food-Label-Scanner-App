@@ -2,12 +2,13 @@ package com.example.food_label_scanner.ui_elements
 
 import com.example.food_label_scanner.data.*
 import com.example.food_label_scanner.bottom_bar_screens.*
-
+import com.example.food_label_scanner.camera_functionality.*
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.view.LifecycleCameraController
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,11 +40,19 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
 
+import androidx.hilt.navigation.compose.hiltViewModel
+
+
 @Composable
 fun Screen(modifier: Modifier = Modifier){
 
+    val context = LocalContext.current.applicationContext
+
+    val viewModel : CameraViewModel = hiltViewModel()
+    val cameraController = remember { LifecycleCameraController(context)}
+
     val navigationController = rememberNavController()
-    val context = LocalContext.current.applicationContext         // logic for navigating between the screens
+
     val selected = remember { mutableStateOf(Icons.Default.Home) }
 
     val drawerState = rememberDrawerState( initialValue = DrawerValue.Closed)
@@ -112,7 +121,7 @@ fun Screen(modifier: Modifier = Modifier){
                                         )
                                     }
                                     "Take Picture" -> {
-
+                                        photoCapture(context, cameraController) {bitmap -> viewModel.storePhotoInGallery(bitmap) }
                                     }
 
                                     "Search" -> {
@@ -168,7 +177,8 @@ fun Screen(modifier: Modifier = Modifier){
                         } else {
                             CameraContent(
                                 detectedText = detectedText,
-                                onDetectedTextUpdated = { detectedText = it }
+                                onDetectedTextUpdated = { detectedText = it },
+                                onPhotoCaptured = { bitmap ->  viewModel.storePhotoInGallery(bitmap)}
                             )
                         }
                     }

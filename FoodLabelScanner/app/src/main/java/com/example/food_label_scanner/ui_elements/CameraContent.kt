@@ -1,13 +1,13 @@
 package com.example.food_label_scanner.ui_elements
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
-import androidx.compose.foundation.content.MediaType.Companion.Text
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,12 +24,12 @@ import androidx.lifecycle.LifecycleOwner
 @Composable
 fun CameraContent(
     detectedText : String,
-    onDetectedTextUpdated: (String) -> Unit
+    onDetectedTextUpdated: (String) -> Unit,
+    onPhotoCaptured : (Bitmap) -> Unit
 ){
     val context : Context = LocalContext.current
     val lifecycleOwner : LifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     val cameraController : LifecycleCameraController = remember { LifecycleCameraController(context) }
-
 
 
     Box(modifier = Modifier.fillMaxSize(),
@@ -63,5 +63,7 @@ fun CameraContent(
                 .padding(16.dp),
             text = detectedText,
         )
+
+        // add last photo taken preview here if wanted
     }
 }

@@ -1,6 +1,11 @@
 plugins {
+
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+
+    id("dagger.hilt.android.plugin")
+    id("kotlin-kapt")
+    id("kotlin-android")
 }
 
 android {
@@ -45,6 +50,7 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/gradle/incremental.annotation.processors"
         }
     }
     buildFeatures{
@@ -54,6 +60,11 @@ android {
 }
 
 dependencies {
+
+
+    implementation("com.google.dagger:hilt-android:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
 
     implementation("com.google.accompanist:accompanist-permissions:0.37.0")

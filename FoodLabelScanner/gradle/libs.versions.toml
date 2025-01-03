@@ -18,7 +18,11 @@ navigationCompose = "2.8.4"
 textRecognition = "16.0.1"
 cameraView = "1.4.0"
 
+
+
+
 [libraries]
+
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions" }
 androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCamera2" }
 androidx-camera-core = { module = "androidx.camera:camera-core" }
