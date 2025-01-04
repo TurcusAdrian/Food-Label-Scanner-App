@@ -35,7 +35,7 @@ class SavePhotoToGallery @Inject constructor( @ApplicationContext private val co
 
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
                 put(MediaStore.MediaColumns.DATE_TAKEN, nowTimestamp)
-                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM + "/storage/emulated/O/Pictures")
+                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM + "/FoodLabelScan/Photos")
                 put(MediaStore.MediaColumns.IS_PENDING, 1)
             }
 

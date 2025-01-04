@@ -5,6 +5,7 @@ import com.example.food_label_scanner.bottom_bar_screens.*
 import com.example.food_label_scanner.camera_functionality.*
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,6 +26,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -41,39 +44,27 @@ import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
 
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.findViewTreeLifecycleOwner
 
 
 @Composable
 fun Screen(modifier: Modifier = Modifier){
 
-    val context = LocalContext.current.applicationContext
 
-    val viewModel : CameraViewModel = hiltViewModel()
-    val cameraController = remember { LifecycleCameraController(context)}
-
+    val viewModel: CameraViewModel = hiltViewModel()
     val navigationController = rememberNavController()
-
     val selected = remember { mutableStateOf(Icons.Default.Home) }
-
-    val drawerState = rememberDrawerState( initialValue = DrawerValue.Closed)
-
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
-    var selectedbutton by remember{
-        mutableIntStateOf(0)
-    }
-
-    var selectedimage by remember {
-        mutableStateOf<Uri?>(null)
-    }
-
+    var selectedbutton by remember { mutableIntStateOf(0) }
+    var selectedimage by remember { mutableStateOf<Uri?>(null) }
     var detectedText by remember { mutableStateOf("No text detected yet...") }
 
     fun onTextUpdated(updatedText: String) {
         detectedText = updatedText
     }
 
-    //activity result launcher for picking image
     val photolauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri -> selectedimage = uri }
@@ -85,6 +76,8 @@ fun Screen(modifier: Modifier = Modifier){
         modifier = Modifier.fillMaxWidth(),
         contentScale = ContentScale.Crop
     )
+
+    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -103,15 +96,13 @@ fun Screen(modifier: Modifier = Modifier){
                             onClick = {
                                 selectedbutton = index
                                 when (bottomNavItem.title) {
-
                                     "Home" -> {
                                         selectedimage = null
                                         detectedText = "No text detected yet..."
-                                        navigationController.navigate(Screens.Home.screen){
+                                        navigationController.navigate(Screens.Home.screen) {
                                             popUpTo(0)
                                         }
                                     }
-
                                     "Add Photos from Gallery" -> {
                                         selectedimage = null
                                         photolauncher.launch(
@@ -121,39 +112,33 @@ fun Screen(modifier: Modifier = Modifier){
                                         )
                                     }
                                     "Take Picture" -> {
-                                        photoCapture(context, cameraController) {bitmap -> viewModel.storePhotoInGallery(bitmap) }
+                                        viewModel.photoCapture(lifecycleOwner) { bitmap ->
+                                            viewModel.storePhotoInGallery(bitmap)
+                                        }
                                     }
-
                                     "Search" -> {
-                                        navigationController.navigate(Screens.Search.screen){
+                                        navigationController.navigate(Screens.Search.screen) {
                                             popUpTo(0)
                                         }
                                     }
-
                                     "Favourites Items" -> {
-                                        navigationController.navigate(Screens.Favourites.screen){
+                                        navigationController.navigate(Screens.Favourites.screen) {
                                             popUpTo(0)
                                         }
                                     }
-
                                 }
-
                             },
                             icon = {
                                 Icon(
-                                    imageVector =
-                                    if(index == selectedbutton)
-                                        bottomNavItem.selectedIcon
-                                    else
-                                        bottomNavItem.unselectedIcon,
-                                    contentDescription = bottomNavItem.title)
+                                    imageVector = if (index == selectedbutton) bottomNavItem.selectedIcon else bottomNavItem.unselectedIcon,
+                                    contentDescription = bottomNavItem.title
+                                )
                             },
                             label = { Text(text = bottomNavItem.title) }
                         )
                     }
                 }
             },
-
             topBar = {
                 TopBar(
                     onOpenDrawer = {
@@ -161,9 +146,11 @@ fun Screen(modifier: Modifier = Modifier){
                     }
                 )
             }
-        ){ padding ->
-            Box( modifier = Modifier.padding(padding)
-                .fillMaxSize()
+        ) { padding ->
+            Box(
+                modifier = Modifier
+                    .padding(padding)
+                    .fillMaxSize()
             ) {
                 NavHost(
                     navController = navigationController,
@@ -173,16 +160,17 @@ fun Screen(modifier: Modifier = Modifier){
                         if (selectedimage != null) {
                             DisplayImagePreview(
                                 selectedImage = selectedimage,
-                                onImageClick = { selectedimage = null })
+                                onImageClick = { selectedimage = null }
+                            )
                         } else {
                             CameraContent(
                                 detectedText = detectedText,
                                 onDetectedTextUpdated = { detectedText = it },
-                                onPhotoCaptured = { bitmap ->  viewModel.storePhotoInGallery(bitmap)}
+                                onPhotoCaptured = { bitmap -> viewModel.storePhotoInGallery(bitmap) }
                             )
                         }
                     }
-                    composable(Screens.Search.screen) { Search() } //call to file containing the Search screen
+                    composable(Screens.Search.screen) { Search() }
                     composable(Screens.Favourites.screen) { Favourites() }
                 }
             }
