@@ -1,5 +1,6 @@
 package com.example.food_label_scanner.ui_elements
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -14,6 +15,7 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -22,10 +24,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.food_label_scanner.R
 
+
 @Composable
 fun DrawerContent(modifier: Modifier = Modifier) {
 
     val instrument_serif = FontFamily(Font(R.font.instrument_serif_regular))
+
+
+    val context = LocalContext.current
+
 
     Text(
         text = "Food Label Scanner", style = TextStyle(
@@ -126,7 +133,15 @@ fun DrawerContent(modifier: Modifier = Modifier) {
             )
         },
         selected = false,
-        onClick = {/*TODO*/ }
+        onClick = { /*TODO*/
+            val sendIntent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, "http://google.com")
+                type = "text/plain"
+            }
+            val shareIntent = Intent.createChooser(sendIntent, null)
+            context.startActivity(shareIntent)
+        }
     )
 
     Spacer(Modifier.height(10.dp))
