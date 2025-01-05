@@ -22,16 +22,20 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.food_label_scanner.R
+import com.example.food_label_scanner.bottom_bar_screens.Screens
 
 
 @Composable
-fun DrawerContent(modifier: Modifier = Modifier) {
+fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifier) {
 
     val instrument_serif = FontFamily(Font(R.font.instrument_serif_regular))
 
 
     val context = LocalContext.current
+
 
 
     Text(
@@ -133,7 +137,7 @@ fun DrawerContent(modifier: Modifier = Modifier) {
             )
         },
         selected = false,
-        onClick = { /*TODO*/
+        onClick = {
             val sendIntent = Intent().apply {
                 action = Intent.ACTION_SEND
                 putExtra(Intent.EXTRA_TEXT, "http://google.com")
@@ -189,7 +193,11 @@ fun DrawerContent(modifier: Modifier = Modifier) {
             )
         },
         selected = false,
-        onClick = {/*TODO*/ }
+        onClick = {
+        navController.navigate(Screens.About.screen)
+        /*TODO*/
+
+        }
     )
 
 

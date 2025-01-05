@@ -83,7 +83,7 @@ fun Screen(modifier: Modifier = Modifier){
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
-                DrawerContent()
+                DrawerContent(navigationController)
             }
         }
     ) {
@@ -172,6 +172,7 @@ fun Screen(modifier: Modifier = Modifier){
                     }
                     composable(Screens.Search.screen) { Search() }
                     composable(Screens.Favourites.screen) { Favourites() }
+                    composable(Screens.About.screen) { About() }
                 }
             }
         }

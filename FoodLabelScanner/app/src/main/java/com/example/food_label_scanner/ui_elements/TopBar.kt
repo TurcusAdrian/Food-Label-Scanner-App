@@ -28,7 +28,7 @@ fun TopBar(
             contentDescription = "Menu",
             modifier = Modifier.clickable { onOpenDrawer() }
         ) },
-        title = { Text(text ="Screen Name", style = TextStyle(
+        title = { Text(text ="Home - Food Label App", style = TextStyle(
             fontFamily = instrument_serif,
             fontSize = 32.sp)
         ) }
