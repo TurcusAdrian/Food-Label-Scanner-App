@@ -23,9 +23,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.food_label_scanner.R
-import com.example.food_label_scanner.bottom_bar_screens.Screens
+import com.example.food_label_scanner.bottom_bar_drawer_content_screens.Screens
 
 
 @Composable
@@ -35,8 +34,6 @@ fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifi
 
 
     val context = LocalContext.current
-
-
 
     Text(
         text = "Food Label Scanner", style = TextStyle(

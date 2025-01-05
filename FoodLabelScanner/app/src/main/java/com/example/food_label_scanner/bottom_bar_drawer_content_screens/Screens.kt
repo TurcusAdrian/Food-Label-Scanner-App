@@ -1,4 +1,4 @@
-package com.example.food_label_scanner.bottom_bar_screens
+package com.example.food_label_scanner.bottom_bar_drawer_content_screens
 
 sealed class Screens(val screen: String) {
 
