@@ -63,6 +63,7 @@ dependencies {
 
     //modules for Dagger-Hilt used for ViewModel
     implementation("com.google.dagger:hilt-android:2.44")
+    implementation(libs.volley)
     kapt("com.google.dagger:hilt-android-compiler:2.44")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 

@@ -1,15 +1,15 @@
 package com.example.food_label_scanner.data
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import javax.inject.Inject
+import kotlin.collections.map
 
 
 class FavouritesViewModel : ViewModel() {
@@ -21,6 +21,7 @@ class FavouritesViewModel : ViewModel() {
             val imageDataStore = ImageDataStoreManager.imageDataStore
             val savedUris = imageDataStore.loadImageUris()
             _images.value = savedUris.map { Uri.parse(it) }
+            Log.d("Load Image function", "Loading image ... success!")
         }
     }
 

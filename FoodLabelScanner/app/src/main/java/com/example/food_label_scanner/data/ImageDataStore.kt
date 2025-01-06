@@ -2,6 +2,7 @@ package com.example.food_label_scanner.data
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -17,11 +18,13 @@ class ImageDataStore (context: Context) {
         dataStore.edit { preferences ->
             preferences[stringPreferencesKey("image_uris")] = uris.joinToString(","){it.toString()}
         }
+        Log.d("Save Image URIs", "Saving image URI ... success!")
     }
 
     suspend fun loadImageUris(): List<String> {
         val preferences = dataStore.data.first()
         val urisString = preferences[stringPreferencesKey("image_uris")] ?: ""
+        Log.d("Load Image URIs", "Loading image URI ... success!")
         return urisString.split(",").filter { it.isNotEmpty() }
     }
 }

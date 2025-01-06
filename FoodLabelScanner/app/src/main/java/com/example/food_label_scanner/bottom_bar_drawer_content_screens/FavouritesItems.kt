@@ -46,8 +46,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
+import coil.disk.DiskCache
 
 @Composable
 fun Favourites() {
@@ -118,9 +120,13 @@ fun Favourites() {
 
 
 
+
+
 @Composable
 fun GalleryItem(imageUri: Uri, onDelete: () -> Unit, onDownload: () -> Unit) {
     var menuExpanded by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -129,8 +135,7 @@ fun GalleryItem(imageUri: Uri, onDelete: () -> Unit, onDownload: () -> Unit) {
     ) {
         Image(
             painter = rememberAsyncImagePainter(model = imageUri,
-
-                onError = {error -> Log.e("Image Loading", "Error loading image:")}),
+                onError = {result -> Log.e("Image Loading", "Error loading image URI: $imageUri")}),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
