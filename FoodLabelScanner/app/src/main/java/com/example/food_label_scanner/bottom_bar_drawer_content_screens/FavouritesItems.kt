@@ -1,5 +1,6 @@
 package com.example.food_label_scanner.bottom_bar_drawer_content_screens
 
+import com.example.food_label_scanner.data.*
 
 import android.net.Uri
 import android.util.Log
@@ -28,40 +29,54 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 
 @Composable
 fun Favourites() {
-    var images by remember { mutableStateOf<List<Uri>>(emptyList()) }
+
+    val viewModel : FavouritesViewModel = hiltViewModel()
+    val images by snapshotFlow { viewModel.images.value} .collectAsState(initial = emptyList())
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(Unit) {
+        viewModel.loadImages()
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        snapshotFlow { lifecycleOwner.lifecycle.currentState }
+            .collect { state ->
+                if (state == Lifecycle.State.RESUMED) {
+                    viewModel.loadImages() // Reload images on resume
+                }
+            }
+    }
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri ->
         if (uri != null) {
-            images = images + uri
+            viewModel.addImage(uri)
         }
     }
-
-    //add share function maybe
-
-    fun onDelete(image: Uri) {
-        images = listOf(images.first { it != image })
-    }
-
-    fun onDownload(image: Uri) {
-        Log.d("Download Image function", "Downloading image ... success!")
-    }
-
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -73,8 +88,9 @@ fun Favourites() {
         items(images.size) { index ->
             GalleryItem(
                 imageUri = images[index],
-                onDownload = { onDownload(images[index]) },
-                onDelete = { onDelete(images[index]) })
+                onDownload = { viewModel.downloadImage(images[index]) },
+                onDelete = { viewModel.deleteImage(images[index]) }
+            )
         }
     }
 
@@ -85,7 +101,6 @@ fun Favourites() {
         FloatingActionButton(
             onClick = {
                 launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-
             },
             modifier = Modifier
                 .padding(16.dp)
@@ -113,7 +128,9 @@ fun GalleryItem(imageUri: Uri, onDelete: () -> Unit, onDownload: () -> Unit) {
             .clickable { /* Handle image click if needed */ }
     ) {
         Image(
-            painter = rememberAsyncImagePainter(imageUri),
+            painter = rememberAsyncImagePainter(model = imageUri,
+
+                onError = {error -> Log.e("Image Loading", "Error loading image:")}),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
