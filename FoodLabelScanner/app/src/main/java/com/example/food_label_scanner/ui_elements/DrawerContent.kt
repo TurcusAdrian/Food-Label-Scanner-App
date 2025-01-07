@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.food_label_scanner.LoginActivity
 import com.example.food_label_scanner.R
 import com.example.food_label_scanner.bottom_bar_drawer_content_screens.Screens
 import kotlinx.coroutines.CoroutineScope
@@ -206,5 +208,31 @@ fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifi
         }
     )
 
+    Spacer(Modifier.height(10.dp))
 
+    NavigationDrawerItem(
+        icon = {
+            Icon(
+                imageVector = Icons.Filled.Close,
+                contentDescription = "Log Out Icon",
+                modifier = Modifier.size(25.dp)
+            )
+        },
+        label = {
+            Text(
+                text = "Log Out", style = TextStyle(
+                    fontFamily = instrument_serif,
+                    fontSize = 24.sp
+                )
+            )
+        },
+        selected = false,
+        onClick = {
+            scope.launch {
+                val intent = Intent(context, LoginActivity::class.java)
+                context.startActivity(intent)
+                drawerState.close()
+            }
+        }
+    )
 }
