@@ -1,36 +1,83 @@
 package com.example.food_label_scanner.data
 
+import android.content.ContentUris
+import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
+import android.database.Cursor
+import android.net.Uri
+import android.os.Environment
+import android.provider.MediaStore
+import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
-import android.net.Uri
-import android.util.Log
+import javax.inject.Inject
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import javax.inject.Inject
-import kotlin.collections.map
+import androidx.compose.ui.graphics.vector.path
+import dagger.hilt.android.scopes.ActivityRetainedScoped
+import kotlin.collections.addAll
+import kotlin.text.endsWith
+import kotlin.text.removeSuffix
 
+import com.example.food_label_scanner.data.ImageDataStoreManager
+import java.io.File
+import kotlin.io.path.exists
+import kotlin.io.path.outputStream
 
-class FavouritesViewModel : ViewModel() {
+@HiltViewModel
+class FavouritesViewModel @Inject constructor(
+    @ApplicationContext private val context: Context
+) : ViewModel() {
+
     private val _images = mutableStateOf<List<Uri>>(emptyList())
     val images: State<List<Uri>> = _images
+
+    fun saveImageToAppStorage(context: Context, sourceUri: Uri, fileName: String): Uri? {
+        try {
+            val contentResolver = context.contentResolver
+            val inputStream = contentResolver.openInputStream(sourceUri)
+            val targetFile = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), fileName)
+            inputStream?.use { input ->
+                targetFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+            return Uri.fromFile(targetFile)
+        } catch (e: Exception) {
+            Log.e("SaveImage", "Error saving image to app storage", e)
+            return null
+        }
+    }
+
+    fun addImage(uri: Uri) {
+        viewModelScope.launch {
+            val savedUri = saveImageToAppStorage(context, uri, "image_${System.currentTimeMillis()}.jpg")
+            if (savedUri != null) {
+                _images.value = _images.value + savedUri
+                val imageDataStore = ImageDataStoreManager.imageDataStore
+                val uriStrings = _images.value.map { it.toString() }
+                imageDataStore.saveImageUris(uriStrings)
+            } else {
+                Log.e("AddImage", "Failed to save image locally")
+            }
+        }
+    }
 
     fun loadImages() {
         viewModelScope.launch {
             val imageDataStore = ImageDataStoreManager.imageDataStore
             val savedUris = imageDataStore.loadImageUris()
-            _images.value = savedUris.map { Uri.parse(it) }
-            Log.d("Load Image function", "Loading image ... success!")
-        }
-    }
-
-    fun addImage(uri: Uri) {
-        _images.value = _images.value + uri
-        viewModelScope.launch {
-            val imageDataStore = ImageDataStoreManager.imageDataStore
-            val uriStrings = _images.value.map { it.toString() }
-            imageDataStore.saveImageUris(uriStrings)
+            val validUris = savedUris.mapNotNull { uriString ->
+                val uri = Uri.parse(uriString)
+                if (File(uri.path ?: "").exists()) uri else null
+            }
+            _images.value = validUris
+            Log.d("LoadImages", "Loaded ${_images.value.size} valid images")
         }
     }
 

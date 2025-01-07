@@ -7,8 +7,13 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 class ImageDataStore (context: Context) {
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "image_uris")
@@ -16,7 +21,7 @@ class ImageDataStore (context: Context) {
 
     suspend fun saveImageUris(uris: List<String>) {
         dataStore.edit { preferences ->
-            preferences[stringPreferencesKey("image_uris")] = uris.joinToString(","){it.toString()}
+            preferences[stringPreferencesKey("image_uris")] = uris.joinToString(",")
         }
         Log.d("Save Image URIs", "Saving image URI ... success!")
     }
