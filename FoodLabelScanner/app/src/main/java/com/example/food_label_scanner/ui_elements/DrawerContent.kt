@@ -176,7 +176,10 @@ fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifi
             )
         },
         selected = false,
-        onClick = {/*TODO*/ }
+        onClick = {scope.launch {
+            navController.navigate(Screens.Settings.screen)
+            drawerState.close()
+        } }
     )
 
     Spacer(Modifier.height(10.dp))
@@ -209,6 +212,8 @@ fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifi
     )
 
     Spacer(Modifier.height(10.dp))
+
+    // Log Out button:
 
     NavigationDrawerItem(
         icon = {
