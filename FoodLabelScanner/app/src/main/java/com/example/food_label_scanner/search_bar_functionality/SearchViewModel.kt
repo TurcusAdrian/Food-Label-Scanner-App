@@ -1,5 +1,6 @@
 package com.example.food_label_scanner.search_bar_functionality
 
+import androidx.activity.result.launch
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -8,6 +9,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,11 +23,41 @@ class SearchViewModel @Inject constructor() : ViewModel() {
 
     private val _ingredients = MutableStateFlow(allingredients)
 
+
+
+    private val _searchHistory = MutableStateFlow<List<Ingredient>>(emptyList())
+    val searchHistory = _searchHistory.asStateFlow()
+    private val historySize = 3
+
+
+
+
     val ingredients = searchText.combine(_ingredients){
                                                       text, ingredients -> if(text.isBlank()) { ingredients
 
     }else{ingredients.filter { it.doesItMatchSearchQuery(text) }}}
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), _ingredients.value)
+
+
+
+
+    init {
+        viewModelScope.launch {
+            searchText.collect { text ->
+                if (text.isNotBlank()) {
+                    val matchingIngredient = _ingredients.value.firstOrNull { it.doesItMatchSearchQuery(text) }
+                    if (matchingIngredient != null) {
+                        _searchHistory.value = (_searchHistory.value + matchingIngredient)
+                            .distinct()
+                            .takeLast(historySize)
+                    }
+                }
+            }
+        }
+    }
+
+
+
 
     fun onSearchTextChange(text : String){
         _searchText.value = text

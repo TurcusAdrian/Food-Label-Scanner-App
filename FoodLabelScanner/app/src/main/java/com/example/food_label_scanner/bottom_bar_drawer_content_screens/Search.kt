@@ -33,6 +33,9 @@ fun Search(){
     val ingredients by viewModel.ingredients.collectAsState()
     val isSearching by viewModel.isSearching.collectAsState()
 
+    val searchHistory by viewModel.searchHistory.collectAsState()
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -52,18 +55,37 @@ fun Search(){
                 )
             }
         } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) {
-                items(ingredients) { ingredient ->
-                    Text(
-                        text = ingredient.name,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 16.dp)
-                    )
+            if (searchText.isBlank()) {
+                // Show search history when search text is blank
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                ) {
+                    items(searchHistory) { ingredient ->
+                        Text(
+                            text = ingredient.name,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 16.dp)
+                        )
+                    }
+                }
+            } else {
+                // Show matching ingredients when search text is not blank
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                ) {
+                    items(ingredients) { ingredient ->
+                        Text(
+                            text = ingredient.name,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 16.dp)
+                        )
+                    }
                 }
             }
         }
