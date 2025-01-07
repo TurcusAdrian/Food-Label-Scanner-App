@@ -3,24 +3,69 @@ package com.example.food_label_scanner.bottom_bar_drawer_content_screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.food_label_scanner.ui.theme.Purple40
+
+import com.example.food_label_scanner.search_bar_functionality.*
 
 
 @Composable
 fun Search(){
-    Box(modifier = Modifier.fillMaxSize()){
-        Column(modifier = Modifier
+    val viewModel: SearchViewModel = hiltViewModel()
+    val searchText by viewModel.searchText.collectAsState()
+    val ingredients by viewModel.ingredients.collectAsState()
+    val isSearching by viewModel.isSearching.collectAsState()
+
+    Column(
+        modifier = Modifier
             .fillMaxSize()
-            .align(Alignment.Center),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally){
-            Text(text = "search", fontSize = 30.sp, color = Purple40)
+            .padding(16.dp)
+    ) {
+        TextField(
+            value = searchText,
+            onValueChange = viewModel::onSearchTextChange,
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = { Text(text = "Search") }
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        if (isSearching) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                items(ingredients) { ingredient ->
+                    Text(
+                        text = ingredient.name,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp)
+                    )
+                }
+            }
         }
     }
 }

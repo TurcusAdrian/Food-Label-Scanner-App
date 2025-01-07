@@ -2,7 +2,7 @@ package com.example.food_label_scanner
 
 import dagger.hilt.android.HiltAndroidApp
 import android.app.Application
-import com.example.food_label_scanner.data.ImageDataStoreManager
+import com.example.food_label_scanner.gallery_functionality.ImageDataStoreManager
 
 @HiltAndroidApp
 class MyApp : Application(){

@@ -1,15 +1,9 @@
-package com.example.food_label_scanner.data
+package com.example.food_label_scanner.gallery_functionality
 
-import android.content.ContentUris
-import android.content.ContentValues
 import android.content.Context
-import android.content.Intent
-import android.database.Cursor
 import android.net.Uri
 import android.os.Environment
-import android.provider.MediaStore
 import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,16 +12,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.vector.path
-import dagger.hilt.android.scopes.ActivityRetainedScoped
-import kotlin.collections.addAll
-import kotlin.text.endsWith
-import kotlin.text.removeSuffix
 
-import com.example.food_label_scanner.data.ImageDataStoreManager
 import java.io.File
-import kotlin.io.path.exists
-import kotlin.io.path.outputStream
 
 @HiltViewModel
 class FavouritesViewModel @Inject constructor(

@@ -1,4 +1,4 @@
-package com.example.food_label_scanner.data
+package com.example.food_label_scanner.gallery_functionality
 
 import android.content.Context
 

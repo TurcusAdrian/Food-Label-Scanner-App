@@ -78,7 +78,7 @@ fun Screen(modifier: Modifier = Modifier){
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
-                DrawerContent(navigationController)
+                DrawerContent(navigationController, drawerState = drawerState)
             }
         }
     ) {

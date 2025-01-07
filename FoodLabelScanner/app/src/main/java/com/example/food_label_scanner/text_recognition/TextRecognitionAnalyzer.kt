@@ -1,4 +1,4 @@
-package com.example.food_label_scanner.ui_elements
+package com.example.food_label_scanner.text_recognition
 
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageProxy

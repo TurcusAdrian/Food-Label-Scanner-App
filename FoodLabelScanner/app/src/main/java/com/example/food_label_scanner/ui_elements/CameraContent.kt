@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
+import com.example.food_label_scanner.text_recognition.startTextRecognition
 
 @Composable
 fun CameraContent(

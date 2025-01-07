@@ -9,11 +9,14 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.rounded.AccountCircle
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -25,13 +28,18 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.food_label_scanner.R
 import com.example.food_label_scanner.bottom_bar_drawer_content_screens.Screens
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.Dispatcher
 
 
 @Composable
-fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifier) {
+fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifier, drawerState: DrawerState) {
 
     val instrument_serif = FontFamily(Font(R.font.instrument_serif_regular))
 
+    val scope = rememberCoroutineScope()
 
     val context = LocalContext.current
 
@@ -191,9 +199,10 @@ fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifi
         },
         selected = false,
         onClick = {
-        navController.navigate(Screens.About.screen)
-        /*TODO*/
-
+            scope.launch {
+                navController.navigate(Screens.About.screen)
+                drawerState.close()
+            }
         }
     )
 

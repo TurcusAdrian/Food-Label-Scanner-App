@@ -1,4 +1,4 @@
-package com.example.food_label_scanner.ui_elements
+package com.example.food_label_scanner.text_recognition
 
 import android.content.Context
 import androidx.camera.core.AspectRatio
