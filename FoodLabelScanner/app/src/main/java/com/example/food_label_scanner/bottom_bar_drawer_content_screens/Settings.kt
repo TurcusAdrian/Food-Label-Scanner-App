@@ -25,6 +25,7 @@ data class MenuItem(val title: String, val icon: Int)
 
 @Composable
 fun Settings(navController: NavHostController) {
+
     val instrument_serif = FontFamily(Font(R.font.instrument_serif_regular))
 
 
@@ -36,12 +37,12 @@ fun Settings(navController: NavHostController) {
     ) {
 
         val menuItems = listOf(
-            MenuItem("Blocked Accounts", R.drawable.blocked_accounts_icon), //Block
+            MenuItem("Blocked Accounts", R.drawable.blocked_accounts_icon),
             MenuItem("Notifications", R.drawable.notification_icon),
-            MenuItem("Privacy Policy", R.drawable.privacy_policy_icon), //PrivacyTip
-            MenuItem("Terms of Service", R.drawable.terms_of_service_icon), //Article
-            MenuItem("Community Guidelines", R.drawable.community_guidelines_icon), //Rule
-            MenuItem("Support", R.drawable.support_icon) //Help
+            MenuItem("Privacy Policy", R.drawable.privacy_policy_icon),
+            MenuItem("Terms of Service", R.drawable.terms_of_service_icon),
+            MenuItem("Community Guidelines", R.drawable.community_guidelines_icon),
+            MenuItem("Support", R.drawable.support_icon)
         )
 
         // Menu items
@@ -49,9 +50,9 @@ fun Settings(navController: NavHostController) {
             SettingsItem(title = menuItem.title, icon = menuItem.icon){when (menuItem.title) {
                 "Blocked Accounts" -> navController.navigate("blocked_accounts")
                 "Notifications" -> navController.navigate("notifications")
-                "Privacy Policy" -> navController.navigate("privacy_policy")
-                "Terms of Service" -> navController.navigate("terms_of_service")
-                "Community Guidelines" -> navController.navigate("community_guidelines")
+                "Privacy Policy" -> navController.navigate("PrivacyPolicy")
+                "Terms of Service" -> navController.navigate("TermsOfService")
+                "Community Guidelines" -> navController.navigate("CommunityGuidelines")
                 "Support" -> navController.navigate("Support")
             }}
             Spacer(modifier = Modifier.height(8.dp))

@@ -170,6 +170,9 @@ fun Screen(modifier: Modifier = Modifier){
                     composable(Screens.About.screen) { About() }
                     composable(Screens.Settings.screen) { Settings(navigationController) }
                     composable(Screens.Support.screen) { Support() }
+                    composable(Screens.CommunityGuidelines.screen) { CommunityGuidelines() }
+                    composable(Screens.TermsOfService.screen) { TermsOfService(navigationController) }
+                    composable(Screens.PrivacyPolicy.screen) {PrivacyPolicy(navigationController)}
                 }
             }
         }
