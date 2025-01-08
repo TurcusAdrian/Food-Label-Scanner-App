@@ -1,6 +1,5 @@
-package com.example.food_label_scanner.bottom_bar_drawer_content_screens
+package com.example.food_label_scanner.screens.bottom_bar_screens
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,9 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.food_label_scanner.ui.theme.Purple40
 
 import com.example.food_label_scanner.search_bar_functionality.*
 

@@ -1,4 +1,4 @@
-package com.example.food_label_scanner.bottom_bar_drawer_content_screens
+package com.example.food_label_scanner.screens.drawer_screens.settings_screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column

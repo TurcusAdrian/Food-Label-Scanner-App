@@ -11,7 +11,6 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationDrawerItem
@@ -29,11 +28,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.food_label_scanner.LoginActivity
 import com.example.food_label_scanner.R
-import com.example.food_label_scanner.bottom_bar_drawer_content_screens.Screens
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.example.food_label_scanner.screens.Screens
 import kotlinx.coroutines.launch
-import okhttp3.Dispatcher
 
 
 @Composable

@@ -1,8 +1,6 @@
-package com.example.food_label_scanner.bottom_bar_drawer_content_screens
+package com.example.food_label_scanner.screens.drawer_screens
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,7 +14,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.food_label_scanner.R
-import com.example.food_label_scanner.ui.theme.Purple40
 
 
 @Composable

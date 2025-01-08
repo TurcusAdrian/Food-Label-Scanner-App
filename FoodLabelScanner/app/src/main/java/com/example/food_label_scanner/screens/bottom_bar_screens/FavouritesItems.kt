@@ -1,4 +1,4 @@
-package com.example.food_label_scanner.bottom_bar_drawer_content_screens
+package com.example.food_label_scanner.screens.bottom_bar_screens
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest

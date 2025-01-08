@@ -1,4 +1,4 @@
-package com.example.food_label_scanner.bottom_bar_drawer_content_screens
+package com.example.food_label_scanner.screens.drawer_screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -12,11 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.food_label_scanner.R
 import com.example.food_label_scanner.data.SettingsItem
 

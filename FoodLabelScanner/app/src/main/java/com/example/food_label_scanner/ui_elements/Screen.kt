@@ -1,7 +1,7 @@
 package com.example.food_label_scanner.ui_elements
 
 import com.example.food_label_scanner.data.*
-import com.example.food_label_scanner.bottom_bar_drawer_content_screens.*
+import com.example.food_label_scanner.screens.*
 import com.example.food_label_scanner.camera_functionality.*
 
 import android.net.Uri
@@ -41,6 +41,14 @@ import kotlinx.coroutines.launch
 
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
+import com.example.food_label_scanner.screens.bottom_bar_screens.Favourites
+import com.example.food_label_scanner.screens.bottom_bar_screens.Search
+import com.example.food_label_scanner.screens.drawer_screens.About
+import com.example.food_label_scanner.screens.drawer_screens.Settings
+import com.example.food_label_scanner.screens.drawer_screens.settings_screens.CommunityGuidelines
+import com.example.food_label_scanner.screens.drawer_screens.settings_screens.PrivacyPolicy
+import com.example.food_label_scanner.screens.drawer_screens.settings_screens.Support
+import com.example.food_label_scanner.screens.drawer_screens.settings_screens.TermsOfService
 
 
 @Composable
@@ -172,7 +180,7 @@ fun Screen(modifier: Modifier = Modifier){
                     composable(Screens.Support.screen) { Support() }
                     composable(Screens.CommunityGuidelines.screen) { CommunityGuidelines() }
                     composable(Screens.TermsOfService.screen) { TermsOfService(navigationController) }
-                    composable(Screens.PrivacyPolicy.screen) {PrivacyPolicy(navigationController)}
+                    composable(Screens.PrivacyPolicy.screen) { PrivacyPolicy(navigationController) }
                 }
             }
         }
