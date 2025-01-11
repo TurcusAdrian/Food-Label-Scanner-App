@@ -68,7 +68,10 @@ fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifi
             )
         },
         selected = false,
-        onClick = {/*TODO*/ }
+        onClick = {scope.launch {
+            navController.navigate(Screens.Account.screen)
+            drawerState.close()
+        } }
     )
 
     Spacer(Modifier.height(10.dp))
@@ -116,7 +119,10 @@ fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifi
             )
         },
         selected = false,
-        onClick = {/*TODO*/ }
+        onClick = {scope.launch {
+            navController.navigate(Screens.Friends.screen)
+            drawerState.close()
+        } }
     )
 
     Spacer(Modifier.height(10.dp))

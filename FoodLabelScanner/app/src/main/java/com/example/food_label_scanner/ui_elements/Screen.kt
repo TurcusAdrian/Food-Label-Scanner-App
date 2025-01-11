@@ -44,6 +44,7 @@ import androidx.lifecycle.LifecycleOwner
 import com.example.food_label_scanner.screens.bottom_bar_screens.Favourites
 import com.example.food_label_scanner.screens.bottom_bar_screens.Search
 import com.example.food_label_scanner.screens.drawer_screens.About
+import com.example.food_label_scanner.screens.drawer_screens.Account
 import com.example.food_label_scanner.screens.drawer_screens.Settings
 import com.example.food_label_scanner.screens.drawer_screens.settings_screens.CommunityGuidelines
 import com.example.food_label_scanner.screens.drawer_screens.settings_screens.PrivacyPolicy
@@ -175,8 +176,13 @@ fun Screen(modifier: Modifier = Modifier){
                     }
                     composable(Screens.Search.screen) { Search() }
                     composable(Screens.Favourites.screen) { Favourites() }
+                    //Drawer screens:
                     composable(Screens.About.screen) { About() }
                     composable(Screens.Settings.screen) { Settings(navigationController) }
+                    //composable(Screens.Friends.screen) { Friends() }
+                    //composable(Screens.SearchHistory.screen) {SearchHistory()}
+                    composable(Screens.Account.screen) { Account() }
+                    //Settings screens:
                     composable(Screens.Support.screen) { Support() }
                     composable(Screens.CommunityGuidelines.screen) { CommunityGuidelines() }
                     composable(Screens.TermsOfService.screen) { TermsOfService(navigationController) }
