@@ -16,7 +16,7 @@ sealed class Screens(val screen: String) {
 
     //Settings screen screens:
     data object BlockedAccounts: Screens("BlockedAccounts")
-    data object Notification: Screens("Notifications")
+    data object Notifications: Screens("Notifications")
     data object PrivacyPolicy: Screens("PrivacyPolicy")
     data object TermsOfService: Screens("TermsOfService")
     data object CommunityGuidelines: Screens("CommunityGuidelines")

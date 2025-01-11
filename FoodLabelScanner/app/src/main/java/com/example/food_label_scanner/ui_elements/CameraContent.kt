@@ -22,6 +22,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 import com.example.food_label_scanner.text_recognition.startTextRecognition
 
+import com.example.food_label_scanner.NotificationHelper
+
 @Composable
 fun CameraContent(
     detectedText : String,
@@ -31,6 +33,8 @@ fun CameraContent(
     val context : Context = LocalContext.current
     val lifecycleOwner : LifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     val cameraController : LifecycleCameraController = remember { LifecycleCameraController(context) }
+
+    val notificationHelper = remember { NotificationHelper(context) }
 
 
     Box(modifier = Modifier.fillMaxSize(),

@@ -1,10 +1,12 @@
 package com.example.food_label_scanner.ui_elements
 
+import android.Manifest
 import com.example.food_label_scanner.data.*
 import com.example.food_label_scanner.screens.*
 import com.example.food_label_scanner.camera_functionality.*
 
 import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,6 +26,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -32,7 +36,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.core.app.ActivityCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -47,9 +53,15 @@ import com.example.food_label_scanner.screens.drawer_screens.About
 import com.example.food_label_scanner.screens.drawer_screens.Account
 import com.example.food_label_scanner.screens.drawer_screens.Settings
 import com.example.food_label_scanner.screens.drawer_screens.settings_screens.CommunityGuidelines
+import com.example.food_label_scanner.screens.drawer_screens.settings_screens.Notifications
 import com.example.food_label_scanner.screens.drawer_screens.settings_screens.PrivacyPolicy
 import com.example.food_label_scanner.screens.drawer_screens.settings_screens.Support
 import com.example.food_label_scanner.screens.drawer_screens.settings_screens.TermsOfService
+
+import com.example.food_label_scanner.NotificationHelper
+import com.example.food_label_scanner.checkNotificationPermission
+//import com.example.food_label_scanner.screens.drawer_screens.Friends
+//import com.example.food_label_scanner.screens.drawer_screens.settings_screens.BlockedAccounts
 
 
 @Composable
@@ -64,6 +76,12 @@ fun Screen(modifier: Modifier = Modifier){
     var selectedbutton by remember { mutableIntStateOf(0) }
     var selectedimage by remember { mutableStateOf<Uri?>(null) }
     var detectedText by remember { mutableStateOf("No text detected yet...") }
+
+
+    val context = LocalContext.current
+
+    val notificationHelper = remember { NotificationHelper(context) }
+    var hasNotificationPermission by remember { mutableStateOf(checkNotificationPermission(context)) }
 
     fun onTextUpdated(updatedText: String) {
         detectedText = updatedText
@@ -82,6 +100,21 @@ fun Screen(modifier: Modifier = Modifier){
     )
 
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+
+
+    LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (!hasNotificationPermission) {
+                // Request permission if not granted
+                ActivityCompat.requestPermissions(
+                    context as androidx.activity.ComponentActivity,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    101
+                )
+            }
+        }
+    }
+
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -116,6 +149,9 @@ fun Screen(modifier: Modifier = Modifier){
                                         )
                                     }
                                     "Take Picture" -> {
+                                        if (hasNotificationPermission) {
+                                            notificationHelper.sendTakePictureNotification()
+                                        }
                                         viewModel.photoCapture(lifecycleOwner) { bitmap ->
                                             viewModel.storePhotoInGallery(bitmap)
                                         }
@@ -187,6 +223,8 @@ fun Screen(modifier: Modifier = Modifier){
                     composable(Screens.CommunityGuidelines.screen) { CommunityGuidelines() }
                     composable(Screens.TermsOfService.screen) { TermsOfService(navigationController) }
                     composable(Screens.PrivacyPolicy.screen) { PrivacyPolicy(navigationController) }
+                    composable(Screens.Notifications.screen) { Notifications() }
+                    //composable(Screens.BlockedAccounts.screen) { BlockedAccounts() }
                 }
             }
         }
