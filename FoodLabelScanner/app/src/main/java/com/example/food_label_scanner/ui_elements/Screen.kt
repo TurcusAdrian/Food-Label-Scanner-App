@@ -61,7 +61,7 @@ import com.example.food_label_scanner.screens.drawer_screens.settings_screens.Te
 import com.example.food_label_scanner.NotificationHelper
 import com.example.food_label_scanner.checkNotificationPermission
 //import com.example.food_label_scanner.screens.drawer_screens.Friends
-//import com.example.food_label_scanner.screens.drawer_screens.settings_screens.BlockedAccounts
+import com.example.food_label_scanner.screens.drawer_screens.settings_screens.BlockedAccounts
 
 
 @Composable
@@ -224,7 +224,7 @@ fun Screen(modifier: Modifier = Modifier){
                     composable(Screens.TermsOfService.screen) { TermsOfService(navigationController) }
                     composable(Screens.PrivacyPolicy.screen) { PrivacyPolicy(navigationController) }
                     composable(Screens.Notifications.screen) { Notifications() }
-                    //composable(Screens.BlockedAccounts.screen) { BlockedAccounts() }
+                    composable(Screens.BlockedAccounts.screen) { BlockedAccounts() }
                 }
             }
         }

@@ -44,8 +44,8 @@ fun Settings(navController: NavHostController) {
         // Menu items
         menuItems.forEach { menuItem ->
             SettingsItem(title = menuItem.title, icon = menuItem.icon){when (menuItem.title) {
-                "Blocked Accounts" -> navController.navigate("blocked_accounts")
-                "Notifications" -> navController.navigate("notifications")
+                "Blocked Accounts" -> navController.navigate("BlockedAccounts")
+                "Notifications" -> navController.navigate("Notifications")
                 "Privacy Policy" -> navController.navigate("PrivacyPolicy")
                 "Terms of Service" -> navController.navigate("TermsOfService")
                 "Community Guidelines" -> navController.navigate("CommunityGuidelines")
