@@ -1,6 +1,7 @@
 package com.example.food_label_scanner.screens.drawer_screens
 
 import android.content.ContentValues
+import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,6 +18,7 @@ import kotlinx.coroutines.withContext
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import com.example.food_label_scanner.MainActivity
 
 
 @Composable
@@ -28,27 +30,14 @@ fun Account() {
     var showChangePasswordDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
-    // Fetch current user's username when the composable is first created
+    // Retrieve username from SharedPreferences
+    val sharedPref = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+    val savedUsername = sharedPref.getString("user_email", null)
+
+    // Set the username if it exists
     LaunchedEffect(Unit) {
-        coroutineScope.launch(Dispatchers.IO) {
-            // For this example, let's assume the first user in the database is the current user
-            val cursor = dbHelper.readableDatabase.query(
-                "data",
-                arrayOf("username"),
-                null,
-                null,
-                null,
-                null,
-                null
-            )
-            cursor.use {
-                if (it.moveToFirst()) {
-                    val username = it.getString(it.getColumnIndexOrThrow("username"))
-                    withContext(Dispatchers.Main) {
-                        currentUsername = username
-                    }
-                }
-            }
+        if (savedUsername != null) {
+            currentUsername = savedUsername
         }
     }
 

@@ -54,6 +54,7 @@ class LoginActivity : AppCompatActivity() {
             Toast.makeText(this,"Login Successful", Toast.LENGTH_SHORT).show()
             val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
             with(sharedPref.edit()) {
+                putInt("userId", id!!)
                 putString("user_email", username)
                 apply()
             }

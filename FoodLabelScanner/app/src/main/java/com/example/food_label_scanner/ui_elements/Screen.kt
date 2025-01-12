@@ -1,6 +1,7 @@
 package com.example.food_label_scanner.ui_elements
 
 import android.Manifest
+import android.content.Context
 import com.example.food_label_scanner.data.*
 import com.example.food_label_scanner.screens.*
 import com.example.food_label_scanner.camera_functionality.*
@@ -60,14 +61,19 @@ import com.example.food_label_scanner.screens.drawer_screens.settings_screens.Te
 
 import com.example.food_label_scanner.NotificationHelper
 import com.example.food_label_scanner.checkNotificationPermission
+import com.example.food_label_scanner.screens.drawer_screens.Friends
 //import com.example.food_label_scanner.screens.drawer_screens.Friends
 import com.example.food_label_scanner.screens.drawer_screens.settings_screens.BlockedAccounts
 
+fun retrieveUserId(context: Context): Int {
+    val sharedPreferences = context.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+    return sharedPreferences.getInt("userId", -1) // Default to -1 if not found
+}
 
 @Composable
 fun Screen(modifier: Modifier = Modifier){
 
-
+    val context = LocalContext.current
     val viewModel: CameraViewModel = hiltViewModel()
     val navigationController = rememberNavController()
     val selected = remember { mutableStateOf(Icons.Default.Home) }
@@ -77,8 +83,6 @@ fun Screen(modifier: Modifier = Modifier){
     var selectedimage by remember { mutableStateOf<Uri?>(null) }
     var detectedText by remember { mutableStateOf("No text detected yet...") }
 
-
-    val context = LocalContext.current
 
     val notificationHelper = remember { NotificationHelper(context) }
     var hasNotificationPermission by remember { mutableStateOf(checkNotificationPermission(context)) }
@@ -215,7 +219,7 @@ fun Screen(modifier: Modifier = Modifier){
                     //Drawer screens:
                     composable(Screens.About.screen) { About() }
                     composable(Screens.Settings.screen) { Settings(navigationController) }
-                    //composable(Screens.Friends.screen) { Friends() }
+                    composable(Screens.Friends.screen) { Friends() }
                     //composable(Screens.SearchHistory.screen) {SearchHistory()}
                     composable(Screens.Account.screen) { Account() }
                     //Settings screens:

@@ -8,7 +8,7 @@ sealed class Screens(val screen: String) {
     data object Favourites: Screens("FavouritesItems")
 
     //Drawer screens:
-    data object Account: Screens("Account") //to be implemented
+    data object Account: Screens("Account")
     data object SearchHistory: Screens("SearchHistory") //to be implemented
     data object Friends: Screens("Friends") //to be implemented
     data object Settings: Screens("Settings")

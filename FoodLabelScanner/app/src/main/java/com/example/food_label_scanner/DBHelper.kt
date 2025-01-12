@@ -120,13 +120,41 @@ class DBHelper @Inject constructor(
 
     // Friendship Table Methods
     fun createFriendship(user_id_1: Int, user_id_2: Int, status: String): Long {
-        val values = ContentValues().apply {
-            put(COLUMN_USER_ID_1, user_id_1)
-            put(COLUMN_USER_ID_2, user_id_2)
-            put(COLUMN_STATUS, status)
-        }
         val db = writableDatabase
-        return db.insert(TABLE_FRIENDSHIPS, null, values)
+
+        // Check if the friendship already exists
+        val query = """
+        SELECT * FROM $TABLE_FRIENDSHIPS 
+        WHERE $COLUMN_USER_ID_1 = ? AND $COLUMN_USER_ID_2 = ?
+    """
+        val cursor = db.rawQuery(query, arrayOf(user_id_1.toString(), user_id_2.toString()))
+        return try {
+            if (cursor.moveToFirst()) {
+                // Update status to "pending" if friendship exists
+                val values = ContentValues().apply {
+                    put(COLUMN_STATUS, status)
+                }
+                db.update(
+                    TABLE_FRIENDSHIPS,
+                    values,
+                    "$COLUMN_USER_ID_1 = ? AND $COLUMN_USER_ID_2 = ?",
+                    arrayOf(user_id_1.toString(), user_id_2.toString())
+                ).toLong()
+            } else {
+                // Insert new record with "pending" status if no friendship exists
+                val values = ContentValues().apply {
+                    put(COLUMN_USER_ID_1, user_id_1)
+                    put(COLUMN_USER_ID_2, user_id_2)
+                    put(COLUMN_STATUS, status)
+                }
+                db.insert(TABLE_FRIENDSHIPS, null, values)
+            }
+        } catch (e: Exception) {
+            Log.e("DBHelper", "Error creating friendship between $user_id_1 and $user_id_2", e)
+            -1L
+        } finally {
+            cursor.close()
+        }
     }
 
     fun updateFriendshipStatus(user_id_1: Int, user_id_2: Int, status: String): Int {
@@ -249,5 +277,34 @@ class DBHelper @Inject constructor(
             -1
         }
     }
+
+    fun getFriendRequestsForUser(userId: Int): Cursor {
+        val db = readableDatabase
+        val query = """
+        SELECT $TABLE_USERS.$COLUMN_USERNAME FROM $TABLE_USERS
+        INNER JOIN $TABLE_FRIENDSHIPS 
+        ON $TABLE_USERS.$COLUMN_ID = $TABLE_FRIENDSHIPS.$COLUMN_USER_ID_1
+        WHERE $TABLE_FRIENDSHIPS.$COLUMN_USER_ID_2 = ? 
+        AND $TABLE_FRIENDSHIPS.$COLUMN_STATUS = 'pending'
+    """
+        Log.d("DBHelper", "Querying friend requests for user ID: $userId")
+        return db.rawQuery(query, arrayOf(userId.toString()))
+    }
+
+
+
+    fun getFriendsForUser(userId: Int): Cursor {
+        val db = readableDatabase
+        val query = """
+        SELECT $TABLE_USERS.$COLUMN_USERNAME FROM $TABLE_USERS
+        INNER JOIN $TABLE_FRIENDSHIPS 
+        ON $TABLE_USERS.$COLUMN_ID = $TABLE_FRIENDSHIPS.$COLUMN_USER_ID_2
+        WHERE $TABLE_FRIENDSHIPS.$COLUMN_USER_ID_1 = ? 
+        AND $TABLE_FRIENDSHIPS.$COLUMN_STATUS = 'accepted'
+    """
+        return db.rawQuery(query, arrayOf(userId.toString()))
+    }
+
+
 
 }
