@@ -8,6 +8,7 @@ import com.example.food_label_scanner.camera_functionality.*
 
 import android.net.Uri
 import android.os.Build
+import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -64,6 +65,7 @@ import com.example.food_label_scanner.checkNotificationPermission
 import com.example.food_label_scanner.screens.drawer_screens.Friends
 //import com.example.food_label_scanner.screens.drawer_screens.Friends
 import com.example.food_label_scanner.screens.drawer_screens.settings_screens.BlockedAccounts
+import com.example.food_label_scanner.text_recognition.TextRecognitionAnalyzer
 
 fun retrieveUserId(context: Context): Int {
     val sharedPreferences = context.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
@@ -93,9 +95,27 @@ fun Screen(modifier: Modifier = Modifier){
 
     val photolauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = { uri -> selectedimage = uri }
+        onResult = { uri ->
+            selectedimage = uri
+            uri?.let { imageUri ->
+                // Convert URI to Bitmap
+                val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri)
+                // Pass the bitmap to the TextRecognitionAnalyzer
+                val textRecognitionAnalyzer = TextRecognitionAnalyzer { updatedText ->
+                    onTextUpdated(updatedText) // Correctly pass the lambda function
+                }
+                textRecognitionAnalyzer.analyzeFromBitmap(bitmap)
+            }
+        }
     )
 
+
+    /*
+    val photolauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri -> selectedimage = uri }
+    )
+    */
     AsyncImage(
         model = selectedimage,
         contentDescription = null,
@@ -204,6 +224,7 @@ fun Screen(modifier: Modifier = Modifier){
                         if (selectedimage != null) {
                             DisplayImagePreview(
                                 selectedImage = selectedimage,
+                                detectedText = detectedText, // Pass the detected text here
                                 onImageClick = { selectedimage = null }
                             )
                         } else {
