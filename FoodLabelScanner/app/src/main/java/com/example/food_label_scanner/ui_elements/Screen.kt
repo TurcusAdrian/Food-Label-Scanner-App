@@ -1,5 +1,6 @@
 package com.example.food_label_scanner.ui_elements
 
+
 import android.Manifest
 import android.content.Context
 import com.example.food_label_scanner.data.*
@@ -13,6 +14,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -40,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -67,10 +70,7 @@ import com.example.food_label_scanner.screens.drawer_screens.Friends
 import com.example.food_label_scanner.screens.drawer_screens.settings_screens.BlockedAccounts
 import com.example.food_label_scanner.text_recognition.TextRecognitionAnalyzer
 
-fun retrieveUserId(context: Context): Int {
-    val sharedPreferences = context.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
-    return sharedPreferences.getInt("userId", -1) // Default to -1 if not found
-}
+
 
 @Composable
 fun Screen(modifier: Modifier = Modifier){

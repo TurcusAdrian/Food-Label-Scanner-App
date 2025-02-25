@@ -12,10 +12,12 @@ import kotlinx.coroutines.SupervisorJob
 import android.media.Image
 import androidx.annotation.OptIn
 import androidx.camera.core.ImageAnalysis
+import androidx.compose.ui.semantics.text
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 

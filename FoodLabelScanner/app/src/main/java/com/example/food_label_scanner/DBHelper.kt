@@ -31,18 +31,6 @@ class DBHelper @Inject constructor(
         private const val COLUMN_CREATED_AT = "created_at"
 
 
-
-        /*
-        // Table for products
-        private const val TABLE_PRODUCTS = "products"
-        private const val COLUMN_PRODUCT_ID = "product_id"
-        //private const val COLUMN_PRODUCT_NAME = "name"
-        //private const val COLUMN_BRAND = "brand"
-        private const val COLUMN_HEALTH_SCORE = "health_score"
-        private const val COLUMN_DATE_SCANNED = "date_scanned"
-        */
-
-
         // Table for ingredients
         private const val TABLE_INGREDIENTS = "ingredients"
         private const val COLUMN_INGREDIENT_ID = "ingredient_id"
@@ -58,16 +46,7 @@ class DBHelper @Inject constructor(
         private const val COLUMN_CATEGORY_NAME = "name"
         private const val COLUMN_CATEGORY_DESCRIPTION = "description"
 
-        // Table for product ingredients (junction table)
-        private const val TABLE_PRODUCT_INGREDIENTS = "product_ingredients"
-        private const val COLUMN_PRODUCT_ID = "product_id"
-        private const val COLUMN_INGREDIENTS_ID = "ingredient_id"
 
-
-        //private const val COLUMN_AMOUNT = "amount"
-
-        // Table for user-scanned products
-        private const val TABLE_USER_SCANNED_PRODUCTS = "user_scanned_products"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -94,17 +73,6 @@ class DBHelper @Inject constructor(
             Log.d("DBHelper", "Friendships table created")
 
 
-            /*
-            val createProductsTableQuery = ("CREATE TABLE $TABLE_PRODUCTS (" +
-                    "$COLUMN_PRODUCT_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    //"$COLUMN_PRODUCT_NAME TEXT NOT NULL, " +
-                    //"$COLUMN_BRAND TEXT, " +
-                    "$COLUMN_HEALTH_SCORE INTEGER, " +
-                    "$COLUMN_DATE_SCANNED DATETIME DEFAULT CURRENT_TIMESTAMP)")
-            db?.execSQL(createProductsTableQuery)
-            Log.d("DBHelper", "Products table created")
-            */
-
             // Create ingredients table
             val createIngredientsTableQuery = ("CREATE TABLE $TABLE_INGREDIENTS (" +
                     "$COLUMN_INGREDIENT_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -126,31 +94,6 @@ class DBHelper @Inject constructor(
             db?.execSQL(createHealthCategoriesTableQuery)
             Log.d("DBHelper", "Health Categories table created")
 
-
-
-            // Create product_ingredients table
-            val createProductIngredientsTableQuery = ("CREATE TABLE $TABLE_PRODUCT_INGREDIENTS (" +
-                    "$COLUMN_PRODUCT_ID INTEGER, " +
-                    "$COLUMN_INGREDIENT_ID INTEGER, " +
-                    //"$COLUMN_AMOUNT INTEGER, " +
-                    "PRIMARY KEY ($COLUMN_PRODUCT_ID, $COLUMN_INGREDIENT_ID), " +
-                    //"FOREIGN KEY ($COLUMN_PRODUCT_ID) REFERENCES $TABLE_PRODUCTS($COLUMN_PRODUCT_ID), " +
-                    "FOREIGN KEY ($COLUMN_INGREDIENT_ID) REFERENCES $TABLE_INGREDIENTS($COLUMN_INGREDIENT_ID))")
-            db?.execSQL(createProductIngredientsTableQuery)
-            Log.d("DBHelper", "Product Ingredients table created")
-
-
-            // Create user_scanned_products table
-            val createUserScannedProductsTableQuery = ("CREATE TABLE $TABLE_USER_SCANNED_PRODUCTS (" +
-                    "$COLUMN_ID INTEGER, " +
-                    "$COLUMN_PRODUCT_ID INTEGER, " +
-                    "PRIMARY KEY ($COLUMN_ID, $COLUMN_PRODUCT_ID), " +
-                    "FOREIGN KEY ($COLUMN_ID) REFERENCES $TABLE_USERS($COLUMN_ID), " +
-                    "FOREIGN KEY ($COLUMN_PRODUCT_ID) REFERENCES $TABLE_PRODUCT_INGREDIENTS($COLUMN_PRODUCT_ID))") //AICI ERA $TABLE_PRODUCTS
-            db?.execSQL(createUserScannedProductsTableQuery)
-            Log.d("DBHelper", "User Scanned Products table created")
-
-
         } catch (e: Exception) {
             Log.e("DBHelper", "Error creating tables", e)
         }
@@ -160,6 +103,8 @@ class DBHelper @Inject constructor(
         Log.d("DBHelper", "onUpgrade called from $oldVersion to $newVersion")
         val dropUsersTableQuery = "DROP TABLE IF EXISTS $TABLE_USERS"
         val dropFriendshipsTableQuery = "DROP TABLE IF EXISTS $TABLE_FRIENDSHIPS"
+        val dropIngredientsTableQuery = "DROP TABLE IF EXISTS $TABLE_INGREDIENTS"
+        db?.execSQL(dropIngredientsTableQuery)
         db?.execSQL(dropUsersTableQuery)
         db?.execSQL(dropFriendshipsTableQuery)
         onCreate(db)
@@ -411,7 +356,7 @@ class DBHelper @Inject constructor(
         healthRating: Int,
         description: String
     ) {
-        val db = this.writableDatabase
+        val db = writableDatabase
         val values = ContentValues().apply {
             put(COLUMN_INGREDIENT_NAME, name)
             put(COLUMN_NUTRITIONAL_VALUE, nutritionalValue)
@@ -420,9 +365,7 @@ class DBHelper @Inject constructor(
             put(COLUMN_HEALTH_RATING, healthRating)
             put(COLUMN_DESCRIPTION, description)
         }
-
         db.insert(TABLE_INGREDIENTS, null, values)
-        db.close()
     }
 
     fun insertCategory(
@@ -441,43 +384,9 @@ class DBHelper @Inject constructor(
         db.close()
     }
 
-
-    fun insertProductIngredients(product_id: Int, ingredient_ids: List<Int>) {
-        val db = this.writableDatabase
-
-        db.beginTransaction() // Ensure atomicity
-        try {
-            for (ingredient_id in ingredient_ids) {
-                val values = ContentValues().apply {
-                    put("product_id", product_id)
-                    put("ingredient_id", ingredient_id)
-                }
-                db.insert("product_ingredients", null, values)
-            }
-            db.setTransactionSuccessful() // Commit transaction if all inserts succeed
-        } catch (e: Exception) {
-            e.printStackTrace() // Handle errors (e.g., logging)
-        } finally {
-            db.endTransaction() // End transaction
-        }
+    fun getAllIngredients(): Cursor {
+        val db = readableDatabase
+        return db.query(TABLE_INGREDIENTS, null, null, null, null, null, null)
     }
-
-
-    fun insertUserScannedProducts(
-        userId: Int,
-        product_id: Int
-    ){
-        val db = this.writableDatabase
-        val values = ContentValues().apply{
-            put(COLUMN_ID, userId)
-            put(COLUMN_PRODUCT_ID, product_id)
-        }
-
-        db.insert(TABLE_USER_SCANNED_PRODUCTS, null, values)
-        db.close()
-    }
-
-
-
 
 }

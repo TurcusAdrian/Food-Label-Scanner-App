@@ -1,12 +1,15 @@
 package com.example.food_label_scanner.text_recognition
 
 import android.content.Context
+import android.graphics.Bitmap
 import androidx.camera.core.AspectRatio
+
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+
 
 fun startTextRecognition(
     context: Context,

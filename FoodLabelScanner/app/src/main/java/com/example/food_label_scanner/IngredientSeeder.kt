@@ -7,6 +7,18 @@ class IngredientSeeder(private val context: Context) {
 
     fun seedIngredients() {
         val dbHelper = DBHelper(context)
+        val db = dbHelper.readableDatabase
+
+        // Check if ingredients already exist
+        val cursor = db.rawQuery("SELECT COUNT(*) FROM ingredients", null)
+        cursor.moveToFirst()
+        val count = cursor.getInt(0)
+        cursor.close()
+
+        if (count > 0) {
+            Log.d("IngredientSeeder", "Ingredients already exist. Skipping seeding.")
+            return // Exit the function if ingredients exist
+        }
 
         try {
 
@@ -112,15 +124,6 @@ class IngredientSeeder(private val context: Context) {
                 description = "Shea oil used for creams and food"
             )
 
-            dbHelper.insertProductIngredients(
-                product_id = 1,
-                ingredient_ids = listOf(1, 2, 3,4,5,6,7,8,9)
-            )
-
-            dbHelper.insertUserScannedProducts(
-                userId = 1,
-                product_id = 1
-            )
 
             Log.d("IngredientSeeder", "Ingredients inserted successfully")
         } catch (e: Exception) {

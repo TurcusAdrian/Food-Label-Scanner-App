@@ -1,7 +1,9 @@
 package com.example.food_label_scanner
 
 
+import android.content.Context
 import android.util.Log
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +23,7 @@ class FriendsViewModel @Inject constructor(private val dbHelper: DBHelper) : Vie
     // Assume current user ID is 1 for simplicity
     private var currentUserId: Int = 1
 
+
     init {
         loadCurrentUserId()
         loadFriendRequests() // Load requests when the view model initializes
@@ -31,9 +34,9 @@ class FriendsViewModel @Inject constructor(private val dbHelper: DBHelper) : Vie
         // Retrieve the current user ID from SharedPreferences or wherever it's stored
         // For this example, I'm using a hardcoded value, but you should replace this with your actual logic
         // Example:
-        // val sharedPref = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-        // currentUserId = sharedPref.getInt("userId", 1)
-        currentUserId = 1
+         //val sharedPref = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        //currentUserId = sharedPref.getInt("userId", 1)
+
     }
 
     fun sendFriendRequest(username: String) {
