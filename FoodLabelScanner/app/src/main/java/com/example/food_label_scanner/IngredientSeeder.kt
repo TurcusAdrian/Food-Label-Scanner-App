@@ -9,125 +9,59 @@ class IngredientSeeder(private val context: Context) {
         val dbHelper = DBHelper(context)
         val db = dbHelper.readableDatabase
 
-        // Check if ingredients already exist
-        val cursor = db.rawQuery("SELECT COUNT(*) FROM ingredients", null)
-        cursor.moveToFirst()
-        val count = cursor.getInt(0)
+        try {
+            // Insert categories if they don’t exist
+            insertCategoryIfNotExists(dbHelper, 1, "Ingredients recommended on a weekly/daily basis", "Healthy ingredients that should be consumed as often as possible for a better life")
+            insertCategoryIfNotExists(dbHelper, 2, "Ingredients that can be consumed once in a while", "Ingredients that aren't healthy but not that dangerous")
+            insertCategoryIfNotExists(dbHelper, 3, "Ingredients that should be avoided", "Ingredients that should be avoided because they provoke diseases")
+
+            // Insert ingredients only if they don't already exist
+            insertIngredientIfNotExists(dbHelper, "ZAHAR", "High in calories", "Sweetener", 2, 2, "Common sugar used in foods")
+            insertIngredientIfNotExists(dbHelper, "ULEI DE PALMIER", "High in fats", "Oil", 3, 3, "Palm oil used for cooking")
+            insertIngredientIfNotExists(dbHelper, "ULEI DE SHEA", "Contains healthy fats", "Oil", 2, 4, "Shea oil used for creams and food")
+            insertIngredientIfNotExists(dbHelper, "CARAMEL 11.8%", "High in sugar content", "Sweetener", 3, 3, "Commonly used for coloring and flavoring")
+            insertIngredientIfNotExists(dbHelper, "SIROP DE GLUCOZA", "High glycemic index", "Sweetener", 3, 3, "Glucose syrup used in processed foods")
+            insertIngredientIfNotExists(dbHelper, "SIROP DE GLUCOZA-FRUCTOZA", "Linked to metabolic issues", "Sweetener", 3, 2, "A mixture of glucose and fructose used in sweetened beverages")
+            insertIngredientIfNotExists(dbHelper, "LAPTE PRAF INTEGRAL", "Good source of calcium", "Dairy", 1, 7, "Whole milk powder used in various dairy products")
+            insertIngredientIfNotExists(dbHelper, "GRASIME DIN LAPTE", "Contains essential fatty acids", "Dairy", 1, 8, "Milk fat used in butter and dairy processing")
+            insertIngredientIfNotExists(dbHelper, "ZER PUDRA", "Rich in protein", "Dairy", 1, 9, "Whey powder used as a protein supplement")
+            insertIngredientIfNotExists(dbHelper, "ACID CITRIC ANHIDRU", "Contains antioxidants and supports metabolism", "Preservative", 1, 9, "A beneficial ingredient often found in citrus fruits, commonly used as a preservative and acidity regulator.")
+
+            Log.d("IngredientSeeder", "Seeding complete")
+        } catch (e: Exception) {
+            Log.e("IngredientSeeder", "Error seeding ingredients", e)
+        } finally {
+            db.close()
+        }
+    }
+
+    private fun insertCategoryIfNotExists(dbHelper: DBHelper, categoryId: Int, name: String, description: String) {
+        val db = dbHelper.readableDatabase
+        val cursor = db.rawQuery("SELECT 1 FROM health_categories WHERE category_id = ?", arrayOf(categoryId.toString()))
+        val exists = cursor.moveToFirst()
         cursor.close()
 
-        if (count > 0) {
-            Log.d("IngredientSeeder", "Ingredients already exist. Skipping seeding.")
-            return // Exit the function if ingredients exist
+        if (!exists) {
+            dbHelper.insertCategory(categoryId, name, description)
         }
+    }
 
-        try {
+    private fun insertIngredientIfNotExists(
+        dbHelper: DBHelper,
+        name: String,
+        nutritionalValue: String,
+        category: String,
+        categoryId: Int,
+        healthRating: Int,
+        description: String
+    ) {
+        val db = dbHelper.readableDatabase
+        val cursor = db.rawQuery("SELECT 1 FROM ingredients WHERE name = ?", arrayOf(name))
+        val exists = cursor.moveToFirst()
+        cursor.close()
 
-            dbHelper.insertCategory(
-                categoryId = 1,
-                name = "Ingredients recommended on a weekly/daily basis",
-                description = "Healthy ingredients that should be consumed as often as possible for a better life"
-            )
-
-            dbHelper.insertCategory(
-                categoryId = 2,
-                name = "Ingredients that can be consumed once in a while",
-                description = "Ingredients that aren't healthy but not that dangerous"
-            )
-
-            dbHelper.insertCategory(
-                categoryId = 3,
-                name = "Ingredients that should be avoided",
-                description = "Ingredients that should be avoided because they provoke diseases"
-            )
-
-
-
-            // Example ingredients to insert
-            dbHelper.insertIngredient(
-                name = "ZAHAR",
-                nutritionalValue = "High in calories",
-                category = "Sweetener",
-                categoryId = 2,
-                healthRating = 2,
-                description = "Common sugar used in foods"
-            )
-
-            dbHelper.insertIngredient(
-                name = "ULEI DE PALMIER",
-                nutritionalValue = "High in fats",
-                category = "Oil",
-                categoryId = 3,
-                healthRating = 3,
-                description = "Palm oil used for cooking"
-            )
-
-            dbHelper.insertIngredient(
-                name = "ULEI DE SHEA",
-                nutritionalValue = "Contains healthy fats",
-                category = "Oil",
-                categoryId = 2,
-                healthRating = 4,
-                description = "Shea oil used for creams and food"
-            )
-
-            dbHelper.insertIngredient(
-                name = "CARAMEL 11.8%",
-                nutritionalValue = "Contains healthy fats",
-                category = "Oil",
-                categoryId = 3,
-                healthRating = 3,
-                description = "Shea oil used for creams and food"
-            )
-
-            dbHelper.insertIngredient(
-                name = "SIROP DE GLUCOZA",
-                nutritionalValue = "Contains healthy fats",
-                category = "Oil",
-                categoryId = 3,
-                healthRating = 3,
-                description = "Shea oil used for creams and food"
-            )
-
-            dbHelper.insertIngredient(
-                name = "SIROP DE GLUCOZA-FRUCTOZA",
-                nutritionalValue = "Contains healthy fats",
-                category = "Oil",
-                categoryId = 3,
-                healthRating = 2,
-                description = "Shea oil used for creams and food"
-            )
-
-            dbHelper.insertIngredient(
-                name = "LAPTE PRAF INTEGRAL",
-                nutritionalValue = "Contains healthy fats",
-                category = "Oil",
-                categoryId = 1,
-                healthRating = 7,
-                description = "Shea oil used for creams and food"
-            )
-
-            dbHelper.insertIngredient(
-                name = "GRASIME DIN LAPTE",
-                nutritionalValue = "Contains healthy fats",
-                category = "Oil",
-                categoryId = 1,
-                healthRating = 8,
-                description = "Shea oil used for creams and food"
-            )
-
-            dbHelper.insertIngredient(
-                name = "ZER PUDRA",
-                nutritionalValue = "Contains healthy fats",
-                category = "Oil",
-                categoryId = 1,
-                healthRating = 9,
-                description = "Shea oil used for creams and food"
-            )
-
-
-            Log.d("IngredientSeeder", "Ingredients inserted successfully")
-        } catch (e: Exception) {
-            Log.e("IngredientSeeder", "Error inserting ingredients", e)
+        if (!exists) {
+            dbHelper.insertIngredient(name, nutritionalValue, category, categoryId, healthRating, description)
         }
     }
 }

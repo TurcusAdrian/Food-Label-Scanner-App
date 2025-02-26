@@ -9,20 +9,23 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 
 import com.example.food_label_scanner.search_bar_functionality.*
 
-
+@Preview
 @Composable
 fun Search(){
     val viewModel: SearchViewModel = hiltViewModel()
@@ -60,12 +63,14 @@ fun Search(){
                         .weight(1f)
                 ) {
                     items(searchHistory) { ingredient ->
-                        Text(
-                            text = ingredient.name,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 16.dp)
-                        )
+                        TextButton(onClick = {}) {
+                            Text(
+                                text = ingredient.name,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 16.dp)
+                            )
+                        }
                     }
                 }
             } else {
@@ -76,12 +81,15 @@ fun Search(){
                         .weight(1f)
                 ) {
                     items(ingredients) { ingredient ->
-                        Text(
-                            text = ingredient.name,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 16.dp)
-                        )
+
+                        TextButton(onClick = {}) {
+                            Text(
+                                text = ingredient.name,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 16.dp)
+                            )
+                        }
                     }
                 }
             }
