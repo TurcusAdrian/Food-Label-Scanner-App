@@ -235,7 +235,7 @@ fun Screen(modifier: Modifier = Modifier){
                             )
                         }
                     }
-                    composable(Screens.Search.screen) { Search() }
+                    composable(Screens.Search.screen) { Search(navigationController) }
                     composable(Screens.Favourites.screen) { Favourites() }
                     //Drawer screens:
                     composable(Screens.About.screen) { About() }
