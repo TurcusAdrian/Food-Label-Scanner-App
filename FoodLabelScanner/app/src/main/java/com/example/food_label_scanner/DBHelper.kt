@@ -15,21 +15,13 @@ class DBHelper @Inject constructor(
 ) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
         private const val DATABASE_NAME = "UserDatabase.db"
-        private const val DATABASE_VERSION = 2 // Increment the version
+        private const val DATABASE_VERSION = 1 // Increment the version
 
         //table for storing individual users
         private const val TABLE_USERS = "data"
         private const val COLUMN_ID = "id"
         private const val COLUMN_USERNAME = "username"
         private const val COLUMN_PASSWORD = "password"
-
-        //table for relation between users
-        private const val TABLE_FRIENDSHIPS = "user_friendships"
-        private const val COLUMN_USER_ID_1 = "user_id_1"
-        private const val COLUMN_USER_ID_2 = "user_id_2"
-        private const val COLUMN_STATUS = "status"
-        private const val COLUMN_CREATED_AT = "created_at"
-
 
         // Table for ingredients
         private const val TABLE_INGREDIENTS = "ingredients"
@@ -59,18 +51,6 @@ class DBHelper @Inject constructor(
                     "$COLUMN_PASSWORD TEXT)")
             db?.execSQL(createUsersTableQuery)
             Log.d("DBHelper", "Users table created")
-
-            // Create user_friendships table
-            val createFriendshipsTableQuery = ("CREATE TABLE $TABLE_FRIENDSHIPS (" +
-                    "$COLUMN_USER_ID_1 INTEGER, " +
-                    "$COLUMN_USER_ID_2 INTEGER, " +
-                    "$COLUMN_STATUS TEXT, " +
-                    "$COLUMN_CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP, " +
-                    "PRIMARY KEY ($COLUMN_USER_ID_1, $COLUMN_USER_ID_2), " +
-                    "FOREIGN KEY ($COLUMN_USER_ID_1) REFERENCES $TABLE_USERS($COLUMN_ID), " +
-                    "FOREIGN KEY ($COLUMN_USER_ID_2) REFERENCES $TABLE_USERS($COLUMN_ID))")
-            db?.execSQL(createFriendshipsTableQuery)
-            Log.d("DBHelper", "Friendships table created")
 
 
             // Create ingredients table
@@ -102,11 +82,9 @@ class DBHelper @Inject constructor(
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         Log.d("DBHelper", "onUpgrade called from $oldVersion to $newVersion")
         val dropUsersTableQuery = "DROP TABLE IF EXISTS $TABLE_USERS"
-        val dropFriendshipsTableQuery = "DROP TABLE IF EXISTS $TABLE_FRIENDSHIPS"
         val dropIngredientsTableQuery = "DROP TABLE IF EXISTS $TABLE_INGREDIENTS"
         db?.execSQL(dropIngredientsTableQuery)
         db?.execSQL(dropUsersTableQuery)
-        db?.execSQL(dropFriendshipsTableQuery)
         onCreate(db)
     }
 
@@ -161,192 +139,6 @@ class DBHelper @Inject constructor(
         return userId
     }
 
-    // Friendship Table Methods
-    fun createFriendship(user_id_1: Int, user_id_2: Int, status: String): Long {
-        val db = writableDatabase
-
-        // Check if the friendship already exists
-        val query = """
-        SELECT * FROM $TABLE_FRIENDSHIPS 
-        WHERE $COLUMN_USER_ID_1 = ? AND $COLUMN_USER_ID_2 = ?
-    """
-        val cursor = db.rawQuery(query, arrayOf(user_id_1.toString(), user_id_2.toString()))
-        return try {
-            if (cursor.moveToFirst()) {
-                // Update status to "pending" if friendship exists
-                val values = ContentValues().apply {
-                    put(COLUMN_STATUS, status)
-                }
-                db.update(
-                    TABLE_FRIENDSHIPS,
-                    values,
-                    "$COLUMN_USER_ID_1 = ? AND $COLUMN_USER_ID_2 = ?",
-                    arrayOf(user_id_1.toString(), user_id_2.toString())
-                ).toLong()
-            } else {
-                // Insert new record with "pending" status if no friendship exists
-                val values = ContentValues().apply {
-                    put(COLUMN_USER_ID_1, user_id_1)
-                    put(COLUMN_USER_ID_2, user_id_2)
-                    put(COLUMN_STATUS, status)
-                }
-                db.insert(TABLE_FRIENDSHIPS, null, values)
-            }
-        } catch (e: Exception) {
-            Log.e("DBHelper", "Error creating friendship between $user_id_1 and $user_id_2", e)
-            -1L
-        } finally {
-            cursor.close()
-        }
-    }
-
-    fun updateFriendshipStatus(user_id_1: Int, user_id_2: Int, status: String): Int {
-        val values = ContentValues().apply {
-            put(COLUMN_STATUS, status)
-        }
-        val db = writableDatabase
-        val selection = "$COLUMN_USER_ID_1 = ? AND $COLUMN_USER_ID_2 = ?"
-        val selectionArgs = arrayOf(user_id_1.toString(), user_id_2.toString())
-        return db.update(TABLE_FRIENDSHIPS, values, selection, selectionArgs)
-    }
-
-    fun getFriendshipStatus(user_id_1: Int, user_id_2: Int): String? {
-        val db = readableDatabase
-        val selection = "$COLUMN_USER_ID_1 = ? AND $COLUMN_USER_ID_2 = ?"
-        val selectionArgs = arrayOf(user_id_1.toString(), user_id_2.toString())
-        val cursor = db.query(
-            TABLE_FRIENDSHIPS,
-            arrayOf(COLUMN_STATUS),
-            selection,
-            selectionArgs,
-            null,
-            null,
-            null
-        )
-        var status: String? = null
-        if (cursor.moveToFirst()) {
-            status = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS))
-        }
-        cursor.close()
-        return status
-    }
-
-    fun getFriendshipsForUser(user_id: Int): Cursor {
-        val db = readableDatabase
-        val selection = "$COLUMN_USER_ID_1 = ? OR $COLUMN_USER_ID_2 = ?"
-        val selectionArgs = arrayOf(user_id.toString(), user_id.toString())
-        return db.query(TABLE_FRIENDSHIPS, null, selection, selectionArgs, null, null, null)
-    }
-
-    fun getBlockedAccountsForUser(userId: Int): List<String> {
-        val db = readableDatabase
-        val query = """
-        SELECT $TABLE_USERS.$COLUMN_USERNAME FROM $TABLE_USERS 
-        INNER JOIN $TABLE_FRIENDSHIPS 
-        ON $TABLE_USERS.$COLUMN_ID = $TABLE_FRIENDSHIPS.$COLUMN_USER_ID_2
-        WHERE $TABLE_FRIENDSHIPS.$COLUMN_USER_ID_1 = ? 
-        AND $TABLE_FRIENDSHIPS.$COLUMN_STATUS = 'blocked'
-    """
-        val cursor = db.rawQuery(query, arrayOf(userId.toString()))
-        val blockedAccounts = mutableListOf<String>()
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    blockedAccounts.add(cursor.getString(0)) // Get username
-                } while (cursor.moveToNext())
-            }
-        } catch (e: Exception) {
-            // Log any error that occurs
-            Log.e("DBHelper", "Error retrieving blocked accounts for userId: $userId", e)
-        } finally {
-            // Always close the cursor to avoid memory leaks
-            cursor.close()
-        }
-        return blockedAccounts
-    }
-
-    fun blockUser(currentUserId: Int, blockedUserId: Int): Long {
-        val db = writableDatabase
-
-        // Check if the friendship already exists
-        val query = """
-        SELECT * FROM $TABLE_FRIENDSHIPS 
-        WHERE $COLUMN_USER_ID_1 = ? AND $COLUMN_USER_ID_2 = ?
-    """
-        val cursor = db.rawQuery(query, arrayOf(currentUserId.toString(), blockedUserId.toString()))
-        return try {
-            if (cursor.moveToFirst()) {
-                // Update status to "blocked" if friendship exists
-                val values = ContentValues().apply {
-                    put(COLUMN_STATUS, "blocked")
-                }
-                db.update(
-                    TABLE_FRIENDSHIPS,
-                    values,
-                    "$COLUMN_USER_ID_1 = ? AND $COLUMN_USER_ID_2 = ?",
-                    arrayOf(currentUserId.toString(), blockedUserId.toString())
-                ).toLong()
-            } else {
-                // Insert new record with "blocked" status if no friendship exists
-                val values = ContentValues().apply {
-                    put(COLUMN_USER_ID_1, currentUserId)
-                    put(COLUMN_USER_ID_2, blockedUserId)
-                    put(COLUMN_STATUS, "blocked")
-                }
-                db.insert(TABLE_FRIENDSHIPS, null, values)
-            }
-        } catch (e: Exception) {
-            Log.e("DBHelper", "Error blocking user $blockedUserId for $currentUserId", e)
-            -1L
-        } finally {
-            cursor.close()
-        }
-    }
-
-    fun unblockUser(currentUserId: Int, blockedUserId: Int): Int {
-        val db = writableDatabase
-        return try {
-            val values = ContentValues().apply {
-                put(COLUMN_STATUS, "unblocked") // or you can delete the entry if needed
-            }
-            db.update(
-                TABLE_FRIENDSHIPS,
-                values,
-                "$COLUMN_USER_ID_1 = ? AND $COLUMN_USER_ID_2 = ?",
-                arrayOf(currentUserId.toString(), blockedUserId.toString())
-            )
-        } catch (e: Exception) {
-            Log.e("DBHelper", "Error unblocking user $blockedUserId for $currentUserId", e)
-            -1
-        }
-    }
-
-    fun getFriendRequestsForUser(userId: Int): Cursor {
-        val db = readableDatabase
-        val query = """
-        SELECT $TABLE_USERS.$COLUMN_USERNAME FROM $TABLE_USERS
-        INNER JOIN $TABLE_FRIENDSHIPS 
-        ON $TABLE_USERS.$COLUMN_ID = $TABLE_FRIENDSHIPS.$COLUMN_USER_ID_1
-        WHERE $TABLE_FRIENDSHIPS.$COLUMN_USER_ID_2 = ? 
-        AND $TABLE_FRIENDSHIPS.$COLUMN_STATUS = 'pending'
-    """
-        Log.d("DBHelper", "Querying friend requests for user ID: $userId")
-        return db.rawQuery(query, arrayOf(userId.toString()))
-    }
-
-
-
-    fun getFriendsForUser(userId: Int): Cursor {
-        val db = readableDatabase
-        val query = """
-        SELECT $TABLE_USERS.$COLUMN_USERNAME FROM $TABLE_USERS
-        INNER JOIN $TABLE_FRIENDSHIPS 
-        ON $TABLE_USERS.$COLUMN_ID = $TABLE_FRIENDSHIPS.$COLUMN_USER_ID_2
-        WHERE $TABLE_FRIENDSHIPS.$COLUMN_USER_ID_1 = ? 
-        AND $TABLE_FRIENDSHIPS.$COLUMN_STATUS = 'accepted'
-    """
-        return db.rawQuery(query, arrayOf(userId.toString()))
-    }
 
     fun insertIngredient(
         name: String,
@@ -368,6 +160,7 @@ class DBHelper @Inject constructor(
         db.insert(TABLE_INGREDIENTS, null, values)
     }
 
+
     fun insertCategory(
         categoryId: Int,
         name: String,
@@ -383,6 +176,7 @@ class DBHelper @Inject constructor(
         db.insert(TABLE_HEALTH_CATEGORIES, null, values)
         db.close()
     }
+
 
     fun getAllIngredients(): Cursor {
         val db = readableDatabase

@@ -100,19 +100,19 @@ fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifi
 
     Spacer(Modifier.height(10.dp))
 
-    // Friends button:
+    // Barcode Scan button:
 
     NavigationDrawerItem(
         icon = {
             Icon(
-                painter = painterResource(R.drawable.friends_icon),
-                contentDescription = "Friends",
+                painter = painterResource(R.drawable.barcode_icon),
+                contentDescription = "Barcode Scan",
                 modifier = Modifier.size(25.dp)
             )
         },
         label = {
             Text(
-                text = "Friends", style = TextStyle(
+                text = "Barcode Scan", style = TextStyle(
                     fontFamily = instrument_serif,
                     fontSize = 24.sp
                 )
@@ -120,7 +120,7 @@ fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifi
         },
         selected = false,
         onClick = {scope.launch {
-            navController.navigate(Screens.Friends.screen)
+            navController.navigate(Screens.BarcodeScanning.screen)
             drawerState.close()
         } }
     )

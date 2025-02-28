@@ -65,9 +65,7 @@ import com.example.food_label_scanner.screens.drawer_screens.settings_screens.Te
 
 import com.example.food_label_scanner.NotificationHelper
 import com.example.food_label_scanner.checkNotificationPermission
-import com.example.food_label_scanner.screens.drawer_screens.Friends
-//import com.example.food_label_scanner.screens.drawer_screens.Friends
-import com.example.food_label_scanner.screens.drawer_screens.settings_screens.BlockedAccounts
+import com.example.food_label_scanner.screens.drawer_screens.BarcodeScanning
 import com.example.food_label_scanner.text_recognition.TextRecognitionAnalyzer
 
 
@@ -240,7 +238,7 @@ fun Screen(modifier: Modifier = Modifier){
                     //Drawer screens:
                     composable(Screens.About.screen) { About() }
                     composable(Screens.Settings.screen) { Settings(navigationController) }
-                    composable(Screens.Friends.screen) { Friends() }
+                    composable(Screens.BarcodeScanning.screen) { BarcodeScanning() }
                     //composable(Screens.SearchHistory.screen) {SearchHistory()}
                     composable(Screens.Account.screen) { Account() }
                     //Settings screens:
@@ -249,7 +247,6 @@ fun Screen(modifier: Modifier = Modifier){
                     composable(Screens.TermsOfService.screen) { TermsOfService(navigationController) }
                     composable(Screens.PrivacyPolicy.screen) { PrivacyPolicy(navigationController) }
                     composable(Screens.Notifications.screen) { Notifications() }
-                    composable(Screens.BlockedAccounts.screen) { BlockedAccounts() }
                 }
             }
         }

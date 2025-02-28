@@ -33,7 +33,6 @@ fun Settings(navController: NavHostController) {
     ) {
 
         val menuItems = listOf(
-            MenuItem("Blocked Accounts", R.drawable.blocked_accounts_icon),
             MenuItem("Notifications", R.drawable.notification_icon),
             MenuItem("Privacy Policy", R.drawable.privacy_policy_icon),
             MenuItem("Terms of Service", R.drawable.terms_of_service_icon),
@@ -44,7 +43,6 @@ fun Settings(navController: NavHostController) {
         // Menu items
         menuItems.forEach { menuItem ->
             SettingsItem(title = menuItem.title, icon = menuItem.icon){when (menuItem.title) {
-                "Blocked Accounts" -> navController.navigate("BlockedAccounts")
                 "Notifications" -> navController.navigate("Notifications")
                 "Privacy Policy" -> navController.navigate("PrivacyPolicy")
                 "Terms of Service" -> navController.navigate("TermsOfService")

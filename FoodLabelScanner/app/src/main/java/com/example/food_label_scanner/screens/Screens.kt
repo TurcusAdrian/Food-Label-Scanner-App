@@ -10,12 +10,11 @@ sealed class Screens(val screen: String) {
     //Drawer screens:
     data object Account: Screens("Account")
     data object SearchHistory: Screens("SearchHistory") //to be implemented
-    data object Friends: Screens("Friends") //to be implemented
+    data object BarcodeScanning: Screens("BarcodeScanning") //to be implemented
     data object Settings: Screens("Settings")
     data object About: Screens("About")
 
     //Settings screen screens:
-    data object BlockedAccounts: Screens("BlockedAccounts")
     data object Notifications: Screens("Notifications")
     data object PrivacyPolicy: Screens("PrivacyPolicy")
     data object TermsOfService: Screens("TermsOfService")

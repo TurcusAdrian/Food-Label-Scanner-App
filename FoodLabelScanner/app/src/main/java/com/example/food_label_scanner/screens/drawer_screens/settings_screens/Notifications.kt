@@ -82,8 +82,6 @@ private fun getNotificationSettings(context: Context): Map<String, Boolean> {
     return mapOf(
         "Take Picture Notifications" to sharedPreferences.getBoolean("take_picture_notifications", true),
         "Food Label Notifications" to sharedPreferences.getBoolean("food_label_notifications", true),
-        "Friend Request Notifications" to sharedPreferences.getBoolean("friend_request_notifications", true),
-        "Friend Accept Notifications" to sharedPreferences.getBoolean("friend_accept_notifications", true)
     )
 }
 
@@ -94,8 +92,6 @@ private fun saveNotificationSettings(context: Context, settings: Map<String, Boo
         when (notificationType) {
             "Take Picture Notifications" -> editor.putBoolean("take_picture_notifications", isEnabled)
             "Food Label Notifications" -> editor.putBoolean("food_label_notifications", isEnabled)
-            "Friend Request Notifications" -> editor.putBoolean("friend_request_notifications", isEnabled)
-            "Friend Accept Notifications" -> editor.putBoolean("friend_accept_notifications", isEnabled)
         }
     }
     editor.apply()
