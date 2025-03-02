@@ -70,7 +70,7 @@ fun Search(navController: NavHostController){
                         .weight(1f)
                 ) {
                     items(searchHistory) { ingredient ->
-                        TextButton(onClick = {navController.navigate(Screens.Home.screen) {
+                        TextButton(onClick = { navController.navigate(Screens.IngredientDetails.createRoute(ingredient.ingredient_id)) {
                             popUpTo(0)
                         }}) {
                             Text(
@@ -91,7 +91,7 @@ fun Search(navController: NavHostController){
                 ) {
                     items(ingredients) { ingredient ->
 
-                        TextButton(onClick = {navController.navigate(Screens.Home.screen) {
+                        TextButton(onClick = { navController.navigate(Screens.IngredientDetails.createRoute(ingredient.ingredient_id)) {
                             popUpTo(0)
                         }}) {
                             Text(

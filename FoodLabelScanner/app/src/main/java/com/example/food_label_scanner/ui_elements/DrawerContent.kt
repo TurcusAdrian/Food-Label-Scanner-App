@@ -186,7 +186,35 @@ fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifi
 
     Spacer(Modifier.height(10.dp))
 
-    // About the app button:
+    // How to use app button:
+
+    NavigationDrawerItem(
+        icon = {
+            Icon(
+                painter = painterResource(R.drawable.howtouse_icon),
+                contentDescription = "How To Use",
+                modifier = Modifier.size(25.dp)
+            )
+        },
+        label = {
+            Text(
+                text = "How to Use", style = TextStyle(
+                    fontFamily = instrument_serif,
+                    fontSize = 24.sp
+                )
+            )
+        },
+        selected = false,
+        onClick = {
+            scope.launch {
+                navController.navigate(Screens.HowToUse.screen)
+                drawerState.close()
+            }
+        }
+    )
+
+    Spacer(Modifier.height(10.dp))
+
 
     NavigationDrawerItem(
         icon = {

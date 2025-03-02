@@ -12,6 +12,7 @@ sealed class Screens(val screen: String) {
     data object SearchHistory: Screens("SearchHistory") //to be implemented
     data object BarcodeScanning: Screens("BarcodeScanning") //to be implemented
     data object Settings: Screens("Settings")
+    data object HowToUse: Screens("HowToUse")
     data object About: Screens("About")
 
     //Settings screen screens:
@@ -21,4 +22,7 @@ sealed class Screens(val screen: String) {
     data object CommunityGuidelines: Screens("CommunityGuidelines")
     data object Support: Screens("Support")
 
+    data object IngredientDetails : Screens("ingredient_details_screen/{ingredientId}") {
+        fun createRoute(ingredientId: Int) = "ingredient_details_screen/$ingredientId"
+    }
 }

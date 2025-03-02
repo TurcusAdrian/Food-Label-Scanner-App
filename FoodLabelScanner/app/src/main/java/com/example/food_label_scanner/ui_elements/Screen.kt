@@ -13,11 +13,13 @@ import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.DrawerValue
@@ -38,10 +40,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.navigation.compose.NavHost
@@ -52,6 +56,8 @@ import kotlinx.coroutines.launch
 
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.example.food_label_scanner.screens.bottom_bar_screens.Favourites
 import com.example.food_label_scanner.screens.bottom_bar_screens.Search
 import com.example.food_label_scanner.screens.drawer_screens.About
@@ -65,9 +71,12 @@ import com.example.food_label_scanner.screens.drawer_screens.settings_screens.Te
 
 import com.example.food_label_scanner.NotificationHelper
 import com.example.food_label_scanner.checkNotificationPermission
+import com.example.food_label_scanner.database.Ingredient
+import com.example.food_label_scanner.database.IngredientRepository
 import com.example.food_label_scanner.screens.drawer_screens.BarcodeScanning
+import com.example.food_label_scanner.screens.drawer_screens.HowToUse
 import com.example.food_label_scanner.text_recognition.TextRecognitionAnalyzer
-
+import kotlinx.coroutines.runBlocking
 
 
 @Composable
@@ -106,7 +115,6 @@ fun Screen(modifier: Modifier = Modifier){
             }
         }
     )
-
 
     /*
     val photolauncher = rememberLauncherForActivityResult(
@@ -162,7 +170,7 @@ fun Screen(modifier: Modifier = Modifier){
                                             popUpTo(0)
                                         }
                                     }
-                                    "Add Photos from Gallery" -> {
+                                    "Add from Gallery" -> {
                                         selectedimage = null
                                         photolauncher.launch(
                                             PickVisualMediaRequest(
@@ -191,12 +199,35 @@ fun Screen(modifier: Modifier = Modifier){
                                 }
                             },
                             icon = {
-                                Icon(
-                                    imageVector = if (index == selectedbutton) bottomNavItem.selectedIcon else bottomNavItem.unselectedIcon,
-                                    contentDescription = bottomNavItem.title
-                                )
+                                Column(
+                                    modifier = Modifier.padding(0.dp),
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    if (bottomNavItem.customIcon != null) {
+                                        Icon(
+                                            painter = painterResource(id = bottomNavItem.customIcon),
+                                            contentDescription = bottomNavItem.title,
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                    } else {
+                                        Icon(
+                                            imageVector = if (index == selectedbutton) bottomNavItem.selectedIcon!! else bottomNavItem.unselectedIcon!!,
+                                            contentDescription = bottomNavItem.title,
+                                            modifier = Modifier.padding(1.dp)
+                                        )
+                                    }
+                                }
                             },
-                            label = { Text(text = bottomNavItem.title) }
+                            label = {
+                                Column(
+                                    modifier = Modifier.padding(0.dp),
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(text = bottomNavItem.title)
+                                }
+                            }
                         )
                     }
                 }
@@ -237,16 +268,27 @@ fun Screen(modifier: Modifier = Modifier){
                     composable(Screens.Favourites.screen) { Favourites() }
                     //Drawer screens:
                     composable(Screens.About.screen) { About() }
+                    composable(Screens.HowToUse.screen) { HowToUse()}
                     composable(Screens.Settings.screen) { Settings(navigationController) }
                     composable(Screens.BarcodeScanning.screen) { BarcodeScanning() }
                     //composable(Screens.SearchHistory.screen) {SearchHistory()}
                     composable(Screens.Account.screen) { Account() }
+
+
                     //Settings screens:
                     composable(Screens.Support.screen) { Support() }
                     composable(Screens.CommunityGuidelines.screen) { CommunityGuidelines() }
                     composable(Screens.TermsOfService.screen) { TermsOfService(navigationController) }
                     composable(Screens.PrivacyPolicy.screen) { PrivacyPolicy(navigationController) }
                     composable(Screens.Notifications.screen) { Notifications() }
+
+                    composable(
+                        route = Screens.IngredientDetails.screen,
+                        arguments = listOf(navArgument("ingredientId") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val ingredientId = backStackEntry.arguments?.getInt("ingredientId") ?: -1
+                        IngredientDetails(ingredientId = ingredientId)
+                    }
                 }
             }
         }

@@ -1,4 +1,4 @@
-package com.example.food_label_scanner.screens.bottom_bar_screens
+package com.example.food_label_scanner.screens.drawer_screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,16 +13,13 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import com.example.food_label_scanner.R
-import com.example.food_label_scanner.screens.Screens
 
 
 @Composable
-fun IngredientDescriptionScreen(){
+fun HowToUse(){
 
     val instrument_serif = FontFamily(Font(R.font.instrument_serif_regular))
-
 
 
     Box(modifier = Modifier.fillMaxSize()){

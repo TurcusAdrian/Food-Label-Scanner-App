@@ -12,6 +12,8 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import com.example.food_label_scanner.R
 
 val BottomNavItems = listOf(
     BottomNavItem(
@@ -22,8 +24,8 @@ val BottomNavItems = listOf(
     ),
 
     BottomNavItem(
-        title = "Add Photos from Gallery" ,
-        route = "Add Photos from Gallery",
+        title = "Add from Gallery" ,
+        route = "Add from Gallery",
         selectedIcon = Icons.Filled.Add,
         unselectedIcon = Icons.Outlined.Add
     ),
@@ -31,8 +33,9 @@ val BottomNavItems = listOf(
     BottomNavItem(
         title = "Take Picture",
         route = "Take Picture",
-        selectedIcon = Icons.Filled.Call, //TO DO: change it to be camera
-        unselectedIcon = Icons.Outlined.Call
+        selectedIcon = null, //TO DO: change it to be camera
+        unselectedIcon = null,
+        customIcon = R.drawable.camera_icon
     ),
 
     BottomNavItem(
@@ -54,6 +57,7 @@ val BottomNavItems = listOf(
 data class BottomNavItem(
     val title: String,
     val route: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector
+    val selectedIcon: ImageVector?,
+    val unselectedIcon: ImageVector?,
+    val customIcon: Int? = null
 )
