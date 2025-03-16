@@ -26,4 +26,19 @@ class ImageDataStore (context: Context) {
         Log.d("Load Image URIs", "Loading image URI ... success!")
         return urisString.split(",").filter { it.isNotEmpty() }
     }
+
+
+    suspend fun deleteImageUri(uriToDelete: String) {
+        dataStore.edit { preferences ->
+            val currentUrisString = preferences[stringPreferencesKey("image_uris")] ?: ""
+            val currentUris = currentUrisString.split(",").filter { it.isNotEmpty() }.toMutableList()
+
+            if (currentUris.remove(uriToDelete)) {
+                preferences[stringPreferencesKey("image_uris")] = currentUris.joinToString(",")
+                Log.d("Delete Image URI", "Deleted image URI: $uriToDelete")
+            } else {
+                Log.w("Delete Image URI", "Image URI not found: $uriToDelete")
+            }
+        }
+    }
 }

@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 
 @Composable
-fun GalleryItem(imageUri: Uri, onDelete: () -> Unit, onDownload: () -> Unit) {
+fun GalleryItem(imageUri: Uri, onDelete: () -> Unit, onRemove : () -> Unit) {
     var menuExpanded by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
@@ -67,17 +67,18 @@ fun GalleryItem(imageUri: Uri, onDelete: () -> Unit, onDownload: () -> Unit) {
                 onDismissRequest = { menuExpanded = false }
             ) {
                 DropdownMenuItem(
+                    text = { Text("Remove") },
+                    onClick = {
+                        menuExpanded = false
+                        onRemove()
+                    }
+                )
+
+                DropdownMenuItem(
                     text = { Text("Delete") },
                     onClick = {
                         menuExpanded = false
                         onDelete()
-                    }
-                )
-                DropdownMenuItem(
-                    text = { Text("Download") },
-                    onClick = {
-                        menuExpanded = false
-                        onDownload()
                     }
                 )
             }
