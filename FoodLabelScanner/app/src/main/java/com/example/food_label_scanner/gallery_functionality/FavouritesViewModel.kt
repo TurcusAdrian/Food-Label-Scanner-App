@@ -2,6 +2,8 @@ package com.example.food_label_scanner.gallery_functionality
 
 import android.content.ContentResolver
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
@@ -29,7 +31,7 @@ class FavouritesViewModel @Inject constructor(
         try {
             val contentResolver = context.contentResolver
             val inputStream = contentResolver.openInputStream(sourceUri)
-            val targetFile = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), fileName)
+            val targetFile = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES + "/FoodLabelScanner"), fileName)
             inputStream?.use { input ->
                 targetFile.outputStream().use { output ->
                     input.copyTo(output)

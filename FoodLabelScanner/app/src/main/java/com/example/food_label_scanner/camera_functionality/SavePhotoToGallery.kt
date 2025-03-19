@@ -8,21 +8,22 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import com.google.android.datatransport.runtime.dagger.Component.Factory
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
 import java.io.OutputStream
 import java.time.LocalDateTime
 import javax.inject.Inject
+import kotlin.io.path.exists
 
 //@Factory
 class SavePhotoToGallery @Inject constructor( @ApplicationContext private val context: Context, ){
 
-    //2025-03-16T16_20_56.937276 si trebe 20250316_162056
-    val timeOfCreation = LocalDateTime.now()
-
-    fun timeFormat(timeofCreation: LocalDateTime) : String{
+    private fun timeFormat(timeofCreation: LocalDateTime) : String{
         var timeForPhoto = timeofCreation.toString()
 
         if(timeForPhoto.length>15){
@@ -33,12 +34,12 @@ class SavePhotoToGallery @Inject constructor( @ApplicationContext private val co
         timeForPhoto = timeForPhoto.replace(":", "")
         timeForPhoto = timeForPhoto.replace("T", "_")
         timeForPhoto = timeForPhoto.replace("_", "")
-        timeForPhoto = timeForPhoto.substring(0, 8) + "_" + timeForPhoto.substring(8) //copiaza partea cu data, pune _ si apoi concateneaza cu oraminutsecunda
+        timeForPhoto = timeForPhoto.substring(0, 8) + "_" + timeForPhoto.substring(8)
 
         return timeForPhoto
     }
 
-    suspend fun call(capturePhotoBitmap: Bitmap): Result<Unit> = withContext(Dispatchers.IO){
+    suspend fun call(capturePhotoBitmap: Bitmap): Result<Uri> = withContext(Dispatchers.IO){
 
         val resolver : ContentResolver = context.applicationContext.contentResolver
 
@@ -48,6 +49,7 @@ class SavePhotoToGallery @Inject constructor( @ApplicationContext private val co
         }
 
         val nowTimestamp: Long = System.currentTimeMillis()
+        val timeOfCreation = LocalDateTime.now()
         val imageContentValues: ContentValues = ContentValues().apply{
 
             put(MediaStore.Images.Media.DISPLAY_NAME, "IMG_" + timeFormat(timeOfCreation) + ".jpg")
@@ -55,7 +57,7 @@ class SavePhotoToGallery @Inject constructor( @ApplicationContext private val co
 
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
                 put(MediaStore.MediaColumns.DATE_TAKEN, nowTimestamp)
-                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES +"/FoodLabelScanner")
                 put(MediaStore.MediaColumns.IS_PENDING, 1)
             }
 
@@ -71,7 +73,7 @@ class SavePhotoToGallery @Inject constructor( @ApplicationContext private val co
 
         val imageMediaStoreUri: Uri? = resolver.insert(imageCollection, imageContentValues)
 
-        val result: Result<Unit> = imageMediaStoreUri?.let { uri ->
+        val result: Result<Uri> = imageMediaStoreUri?.let { uri ->
             kotlin.runCatching {
                 resolver.openOutputStream(uri).use { outputStream: OutputStream? ->
                     checkNotNull(outputStream) { "Couldn't create file for gallery, MediaStore output stream is null" }
@@ -83,7 +85,7 @@ class SavePhotoToGallery @Inject constructor( @ApplicationContext private val co
                     imageContentValues.put(MediaStore.MediaColumns.IS_PENDING, 0)
                     resolver.update(uri, imageContentValues, null, null)
                 }
-                Result.success(Unit)
+                Result.success(uri)
             }.getOrElse { exception: Throwable ->
                 exception.message?.let(::println)
                 resolver.delete(uri, null, null)
