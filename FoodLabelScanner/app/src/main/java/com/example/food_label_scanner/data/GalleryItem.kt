@@ -43,7 +43,7 @@ fun GalleryItem(imageUri: Uri, onDelete: () -> Unit, onRemove : () -> Unit) {
     Box(
         modifier = Modifier
             .size(150.dp)
-            .clickable { /* Handle image click if needed */ }
+            .clickable { /*Implement on click image*/ }
     ) {
         Image(
             painter = painter1,
