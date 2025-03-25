@@ -285,7 +285,7 @@ fun Screen(modifier: Modifier = Modifier) {
                     composable(Screens.About.screen) { About() }
                     composable(Screens.HowToUse.screen) { HowToUse() }
                     composable(Screens.Settings.screen) { Settings(navigationController) }
-                    composable(Screens.BarcodeScanning.screen) { BarcodeScanning() }
+                    composable(Screens.BarcodeScanning.screen) { BarcodeScanning() } //
                     //composable(Screens.SearchHistory.screen) {SearchHistory()}
                     composable(Screens.Account.screen) { Account() }
 

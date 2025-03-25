@@ -61,6 +61,10 @@ android {
 
 dependencies {
 
+    //module for barcode scanning:
+    implementation("com.google.mlkit:barcode-scanning:17.3.0")
+
+
     //modules for Dagger-Hilt used for ViewModel
     implementation("com.google.dagger:hilt-android:2.44")
     implementation(libs.volley)
