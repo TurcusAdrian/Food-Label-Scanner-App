@@ -61,6 +61,9 @@ android {
 
 dependencies {
 
+    // OkHttp for network requests
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+
     //module for barcode scanning:
     implementation("com.google.mlkit:barcode-scanning:17.3.0")
 
@@ -69,6 +72,8 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.44")
     implementation(libs.volley)
     implementation(libs.androidx.media3.common.ktx)
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.play.services.analytics.impl)
     kapt("com.google.dagger:hilt-android-compiler:2.44")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 

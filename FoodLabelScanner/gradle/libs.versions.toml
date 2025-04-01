@@ -19,6 +19,8 @@ textRecognition = "16.0.1"
 cameraView = "1.4.0"
 volley = "1.2.1"
 media3CommonKtx = "1.5.1"
+runtimeLivedata = "1.7.8"
+playServicesAnalyticsImpl = "18.2.0"
 
 
 
@@ -58,6 +60,8 @@ text-recognition = { module = "com.google.mlkit:text-recognition", version.ref =
 androidx-camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "cameraView" }
 volley = { group = "com.android.volley", name = "volley", version.ref = "volley" }
 androidx-media3-common-ktx = { group = "androidx.media3", name = "media3-common-ktx", version.ref = "media3CommonKtx" }
+androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
+play-services-analytics-impl = { group = "com.google.android.gms", name = "play-services-analytics-impl", version.ref = "playServicesAnalyticsImpl" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

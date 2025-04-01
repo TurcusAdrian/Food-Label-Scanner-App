@@ -25,4 +25,8 @@ sealed class Screens(val screen: String) {
     data object IngredientDetails : Screens("ingredient_details_screen/{ingredientId}") {
         fun createRoute(ingredientId: Int) = "ingredient_details_screen/$ingredientId"
     }
+
+    data object BarcodeDisplay : Screens("barcodeDisplay/{barcode}") {
+        fun createRoute(barcode: String) = "barcodeDisplay/$barcode"
+    }
 }

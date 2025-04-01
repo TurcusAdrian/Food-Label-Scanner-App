@@ -80,10 +80,11 @@ import com.example.food_label_scanner.screens.drawer_screens.settings_screens.Su
 import com.example.food_label_scanner.screens.drawer_screens.settings_screens.TermsOfService
 
 import com.example.food_label_scanner.NotificationHelper
+import com.example.food_label_scanner.barcode_functionality.BarcodeDisplayScreen
 import com.example.food_label_scanner.checkNotificationPermission
 import com.example.food_label_scanner.database.Ingredient
 import com.example.food_label_scanner.database.IngredientRepository
-import com.example.food_label_scanner.screens.drawer_screens.BarcodeScanning
+import com.example.food_label_scanner.screens.drawer_screens.*
 import com.example.food_label_scanner.screens.drawer_screens.HowToUse
 import com.example.food_label_scanner.text_recognition.TextRecognitionAnalyzer
 import kotlinx.coroutines.runBlocking
@@ -285,7 +286,7 @@ fun Screen(modifier: Modifier = Modifier) {
                     composable(Screens.About.screen) { About() }
                     composable(Screens.HowToUse.screen) { HowToUse() }
                     composable(Screens.Settings.screen) { Settings(navigationController) }
-                    composable(Screens.BarcodeScanning.screen) { BarcodeScanning() } //
+                    composable(Screens.BarcodeScanning.screen) { BarcodeScanning(navigationController) } //
                     //composable(Screens.SearchHistory.screen) {SearchHistory()}
                     composable(Screens.Account.screen) { Account() }
 
@@ -314,6 +315,13 @@ fun Screen(modifier: Modifier = Modifier) {
                         val ingredientId =
                             backStackEntry.arguments?.getInt("ingredientId") ?: -1
                         IngredientDetails(ingredientId = ingredientId)
+                    }
+
+                    composable(Screens.BarcodeDisplay.screen) { backStackEntry ->
+                        val barcode = backStackEntry.arguments?.getString("barcode")
+                        barcode?.let {
+                            BarcodeDisplayScreen(barcode = it)
+                        }
                     }
                 }
             }
