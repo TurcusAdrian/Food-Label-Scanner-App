@@ -28,7 +28,7 @@ class ProductViewModel : ViewModel() {
             try {
                 val client = OkHttpClient()
                 val request = Request.Builder()
-                    .url("https://world.openfoodfacts.org/api/v2/product/$barcode.json")
+                    .url("https://world.openfoodfacts.org/api/v0/product/$barcode.json") // Changed API version to v0
                     .build()
 
                 val response = client.newCall(request).execute()
