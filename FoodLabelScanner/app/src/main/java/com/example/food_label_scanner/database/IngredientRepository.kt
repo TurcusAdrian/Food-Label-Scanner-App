@@ -20,7 +20,6 @@ class IngredientRepository @Inject constructor(private val dbHelper: DBHelper) {
                         ingredient_id = cursor.getInt(cursor.getColumnIndexOrThrow("ingredient_id")),
                         name = cursor.getString(cursor.getColumnIndexOrThrow("name")),
                         nutritional_value = cursor.getString(cursor.getColumnIndexOrThrow("nutritional_value")),
-                        category = cursor.getString(cursor.getColumnIndexOrThrow("category")),
                         category_id = cursor.getInt(cursor.getColumnIndexOrThrow("category_id")),
                         health_rating = cursor.getInt(cursor.getColumnIndexOrThrow("health_rating")),
                         description = cursor.getString(cursor.getColumnIndexOrThrow("description"))

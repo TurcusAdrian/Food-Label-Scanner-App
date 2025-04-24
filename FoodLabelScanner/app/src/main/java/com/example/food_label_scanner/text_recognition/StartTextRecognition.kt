@@ -1,14 +1,18 @@
 package com.example.food_label_scanner.text_recognition
 
 import android.content.Context
-import android.graphics.Bitmap
+import androidx.activity.result.launch
 import androidx.camera.core.AspectRatio
-
+import androidx.camera.core.CameraSelector
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 fun startTextRecognition(

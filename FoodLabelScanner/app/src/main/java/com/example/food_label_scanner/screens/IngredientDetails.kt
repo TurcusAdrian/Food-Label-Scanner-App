@@ -45,14 +45,7 @@ fun IngredientDetails(ingredientId: Int) {
             )
             Text(text = it.nutritional_value)
             Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Category:",
-                fontWeight = FontWeight.Bold
-            )
-            Text(text = it.category)
-            Spacer(modifier = Modifier.height(8.dp))
-
+            //add category to show through category_id
             Text(
                 text = "Health Rating:",
                 fontWeight = FontWeight.Bold

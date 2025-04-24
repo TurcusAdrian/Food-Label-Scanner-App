@@ -2,10 +2,7 @@ package com.example.food_label_scanner.ui_elements
 
 
 import android.Manifest
-import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Camera
+
 import com.example.food_label_scanner.data.*
 import com.example.food_label_scanner.screens.*
 import com.example.food_label_scanner.camera_functionality.*
@@ -14,11 +11,9 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,8 +23,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalDrawerSheet
@@ -50,20 +43,17 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
-
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavType
@@ -78,16 +68,13 @@ import com.example.food_label_scanner.screens.drawer_screens.settings_screens.No
 import com.example.food_label_scanner.screens.drawer_screens.settings_screens.PrivacyPolicy
 import com.example.food_label_scanner.screens.drawer_screens.settings_screens.Support
 import com.example.food_label_scanner.screens.drawer_screens.settings_screens.TermsOfService
-
 import com.example.food_label_scanner.NotificationHelper
 import com.example.food_label_scanner.barcode_functionality.BarcodeDisplayScreen
 import com.example.food_label_scanner.checkNotificationPermission
-import com.example.food_label_scanner.database.Ingredient
-import com.example.food_label_scanner.database.IngredientRepository
 import com.example.food_label_scanner.screens.drawer_screens.*
 import com.example.food_label_scanner.screens.drawer_screens.HowToUse
+import com.example.food_label_scanner.text_recognition.TesseractOcrAnalyzer
 import com.example.food_label_scanner.text_recognition.TextRecognitionAnalyzer
-import kotlinx.coroutines.runBlocking
 
 
 @Composable
@@ -104,12 +91,16 @@ fun Screen(modifier: Modifier = Modifier) {
     var detectedText by remember { mutableStateOf("No text detected yet...") }
 
 
+
+
     val notificationHelper = remember { NotificationHelper(context) }
     var hasNotificationPermission by remember { mutableStateOf(checkNotificationPermission(context)) }
 
     fun onTextUpdated(updatedText: String) {
         detectedText = updatedText
     }
+
+
 
     val photolauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),

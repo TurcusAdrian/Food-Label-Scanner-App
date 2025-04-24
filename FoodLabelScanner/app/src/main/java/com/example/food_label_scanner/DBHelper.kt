@@ -28,7 +28,6 @@ class DBHelper @Inject constructor(
         private const val COLUMN_INGREDIENT_ID = "ingredient_id"
         private const val COLUMN_INGREDIENT_NAME = "name"
         private const val COLUMN_NUTRITIONAL_VALUE = "nutritional_value"
-        private const val COLUMN_CATEGORY = "category"
         private const val COLUMN_CATEGORY_ID = "category_id"
         private const val COLUMN_HEALTH_RATING = "health_rating"
         private const val COLUMN_DESCRIPTION = "description"
@@ -58,7 +57,6 @@ class DBHelper @Inject constructor(
                     "$COLUMN_INGREDIENT_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "$COLUMN_INGREDIENT_NAME TEXT NOT NULL, " +
                     "$COLUMN_NUTRITIONAL_VALUE TEXT, " +
-                    "$COLUMN_CATEGORY TEXT, " +
                     "$COLUMN_CATEGORY_ID INTEGER, " +
                     "$COLUMN_HEALTH_RATING INTEGER, " +
                     "$COLUMN_DESCRIPTION TEXT)")
@@ -143,7 +141,6 @@ class DBHelper @Inject constructor(
     fun insertIngredient(
         name: String,
         nutritionalValue: String,
-        category: String,
         categoryId: Int,
         healthRating: Int,
         description: String
@@ -152,7 +149,6 @@ class DBHelper @Inject constructor(
         val values = ContentValues().apply {
             put(COLUMN_INGREDIENT_NAME, name)
             put(COLUMN_NUTRITIONAL_VALUE, nutritionalValue)
-            put(COLUMN_CATEGORY, category)
             put(COLUMN_CATEGORY_ID, categoryId)
             put(COLUMN_HEALTH_RATING, healthRating)
             put(COLUMN_DESCRIPTION, description)
@@ -183,4 +179,47 @@ class DBHelper @Inject constructor(
         return db.query(TABLE_INGREDIENTS, null, null, null, null, null, null)
     }
 
+    fun getIngredientByName(ingredientName: String): Map<String, Any>? {
+        val db = this.readableDatabase
+        val query = "SELECT * FROM $TABLE_INGREDIENTS WHERE $COLUMN_INGREDIENT_NAME = ?"
+        val cursor = try {
+            db.rawQuery(query, arrayOf(ingredientName))
+        } catch (e: Exception) {
+            Log.e("DBHelper", "Error getting ingredient by name", e)
+            return null
+        }
+
+        cursor.use {
+            if (it.moveToFirst()) {
+                return mapOf(
+                    "name" to it.getString(it.getColumnIndexOrThrow(COLUMN_INGREDIENT_NAME)),
+                    "nutritional_value" to it.getString(it.getColumnIndexOrThrow(COLUMN_NUTRITIONAL_VALUE)),
+                    "category_id" to it.getInt(it.getColumnIndexOrThrow(COLUMN_CATEGORY_ID)),
+                    "health_rating" to it.getInt(it.getColumnIndexOrThrow(COLUMN_HEALTH_RATING)),
+                    "description" to it.getString(it.getColumnIndexOrThrow(COLUMN_DESCRIPTION))
+                    )
+            } else {
+                return null // Ingredient not found
+            }
+        }
+    }
+
+    fun getCategoryNameById(categoryId: Int): String? {
+        val db = this.readableDatabase
+        val query = "SELECT $COLUMN_CATEGORY_NAME FROM $TABLE_HEALTH_CATEGORIES WHERE $COLUMN_CATEGORY_ID = ?"
+        val cursor = try {
+            db.rawQuery(query, arrayOf(categoryId.toString()))
+        } catch (e: Exception) {
+            Log.e("DBHelper", "Error getting category name by ID", e)
+            return null
+        }
+
+        cursor.use {
+            if (it.moveToFirst()) {
+                return it.getString(it.getColumnIndexOrThrow(COLUMN_CATEGORY_NAME))
+            } else {
+                return null // Category not found
+            }
+        }
+    }
 }

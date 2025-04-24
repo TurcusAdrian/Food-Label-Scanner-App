@@ -4,7 +4,6 @@ data class Ingredient(
     val ingredient_id : Int,
     val name : String,
     val nutritional_value : String,
-    val category: String,
     val category_id : Int,
     val health_rating : Int,
     val description : String
