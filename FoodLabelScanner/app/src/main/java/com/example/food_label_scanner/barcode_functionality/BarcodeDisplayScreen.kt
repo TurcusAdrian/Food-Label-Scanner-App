@@ -31,6 +31,7 @@ import java.io.IOException
 
 import android.database.Cursor
 import android.widget.RatingBar
+import androidx.activity.result.launch
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -52,6 +53,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
+import com.google.mlkit.common.model.DownloadConditions
+import com.google.mlkit.nl.translate.TranslateLanguage
+import com.google.mlkit.nl.translate.Translation
+import com.google.mlkit.nl.translate.TranslatorOptions
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlin.math.ceil
 
 data class ParsedIngredient(
@@ -121,7 +129,7 @@ fun BarcodeDisplayScreen(barcode: String) {
 
 private fun fetchProduct(
     barcode: String,
-    onResult: (String?, String?, String?) -> Unit // Added imageUrl
+    onResult: (String?, String?, String?) -> Unit
 ) {
     val client = OkHttpClient()
     val url = "https://world.openfoodfacts.org/api/v0/product/$barcode.json"
@@ -140,17 +148,43 @@ private fun fetchProduct(
                     if (json.has("product")) {
                         val product = json.getJSONObject("product")
                         val name = product.optString("product_name", null)
-                        val ing = product.optString("ingredients_text", null)
+                        var ing = product.optString("ingredients_text", null)
                         val brnd = product.optString("brands", null)
-                        onResult(name, ing, brnd)
+
+                        if (ing != null) {
+                            identifyLanguage(ing!!) { languageCode ->
+                                if (languageCode != null) {
+                                    translateToRomanian(ing!!,languageCode) { translatedText ->
+                                        ing = translatedText
+                                        CoroutineScope(Dispatchers.Main).launch {
+                                            onResult(name, ing, brnd)
+                                        }
+                                    }
+                                } else {
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        onResult(name, ing, brnd)
+                                    }
+                                }
+                            }
+                        } else {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                onResult(name, ing, brnd)
+                            }
+                        }
                     } else {
-                        onResult(null, null, null)
+                        CoroutineScope(Dispatchers.Main).launch {
+                            onResult("Product not found", null, null)
+                        }
                     }
                 } catch (e: Exception) {
-                    onResult(null, null, null)
+                    CoroutineScope(Dispatchers.Main).launch {
+                        onResult(null, null, null)
+                    }
                 }
             } else {
-                onResult(null, null, null)
+                CoroutineScope(Dispatchers.Main).launch {
+                    onResult(null, null, null)
+                }
             }
         }
     })
@@ -285,4 +319,66 @@ fun RatingBar(score: Int, maxScore: Int = 5) {
             )
         }
     }
+}
+
+fun identifyLanguage(text: String, onResult: (String?) -> Unit) {
+    val languageIdentifier = com.google.mlkit.nl.languageid.LanguageIdentification.getClient()
+    languageIdentifier.identifyLanguage(text)
+        .addOnSuccessListener { languageCode ->
+            if (languageCode == "und") {
+                Log.i("Language", "Can't identify language.")
+                onResult(null)
+            } else {
+                Log.i("Language", "Language: $languageCode")
+                onResult(languageCode)
+            }
+        }
+        .addOnFailureListener {
+            Log.e("Language", "Error identifying language: ${it.message}")
+            onResult(null)
+        }
+}
+
+fun translateToRomanian(text: String, languageCode: String, onResult: (String?) -> Unit) {
+    // Convert the language code to a TranslateLanguage constant
+    val sourceLanguage = when (languageCode) {
+        "en" -> TranslateLanguage.ENGLISH
+        "fr" -> TranslateLanguage.FRENCH
+        "de" -> TranslateLanguage.GERMAN
+        "pl" -> TranslateLanguage.POLISH
+        // Add more cases as needed
+        else -> {
+            Log.e("Translation", "Unsupported source language: $languageCode")
+            onResult(null)
+            return // Exit the function if the language is not supported
+        }
+    }
+
+    val options = TranslatorOptions.Builder()
+        .setSourceLanguage(sourceLanguage)
+        .setTargetLanguage(TranslateLanguage.ROMANIAN)
+        .build()
+    val translator = Translation.getClient(options)
+
+    // Download the translation model if needed
+    val conditions = DownloadConditions.Builder()
+        .requireWifi()
+        .build()
+    translator.downloadModelIfNeeded(conditions)
+        .addOnSuccessListener {
+            Log.i("Translation", "Translation model downloaded successfully.")
+            translator.translate(text)
+                .addOnSuccessListener { translatedText ->
+                    Log.i("Translation", "Translated text: $translatedText")
+                    onResult(translatedText)
+                }
+                .addOnFailureListener {
+                    Log.e("Translation", "Error translating text: ${it.message}")
+                    onResult(null)
+                }
+        }
+        .addOnFailureListener {
+            Log.e("Translation", "Error downloading translation model: ${it.message}")
+            onResult(null)
+        }
 }

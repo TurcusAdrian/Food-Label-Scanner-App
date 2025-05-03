@@ -23,6 +23,7 @@ media3CommonKtx = "1.5.1"
 runtimeLivedata = "1.7.8"
 playServicesAnalyticsImpl = "18.2.0"
 firebaseCrashlyticsBuildtools = "3.0.3"
+languageIdCommon = "16.1.0"
 
 
 
@@ -66,6 +67,7 @@ androidx-media3-common-ktx = { group = "androidx.media3", name = "media3-common-
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
 play-services-analytics-impl = { group = "com.google.android.gms", name = "play-services-analytics-impl", version.ref = "playServicesAnalyticsImpl" }
 firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
+language-id-common = { group = "com.google.mlkit", name = "language-id-common", version.ref = "languageIdCommon" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
