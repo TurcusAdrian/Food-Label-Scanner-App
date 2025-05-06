@@ -59,7 +59,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.food_label_scanner.screens.bottom_bar_screens.Favourites
-import com.example.food_label_scanner.screens.bottom_bar_screens.Search
 import com.example.food_label_scanner.screens.drawer_screens.About
 import com.example.food_label_scanner.screens.drawer_screens.Account
 import com.example.food_label_scanner.screens.drawer_screens.Settings
@@ -71,6 +70,7 @@ import com.example.food_label_scanner.screens.drawer_screens.settings_screens.Te
 import com.example.food_label_scanner.NotificationHelper
 import com.example.food_label_scanner.barcode_functionality.BarcodeDisplayScreen
 import com.example.food_label_scanner.checkNotificationPermission
+import com.example.food_label_scanner.screens.bottom_bar_screens.Search
 import com.example.food_label_scanner.screens.drawer_screens.*
 import com.example.food_label_scanner.screens.drawer_screens.HowToUse
 import com.example.food_label_scanner.text_recognition.TesseractOcrAnalyzer

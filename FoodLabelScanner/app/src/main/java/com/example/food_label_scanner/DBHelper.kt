@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
+import com.example.food_label_scanner.database.Ingredient
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -36,6 +37,7 @@ class DBHelper @Inject constructor(
         private const val TABLE_HEALTH_CATEGORIES = "health_categories"
         private const val COLUMN_CATEGORY_NAME = "name"
         private const val COLUMN_CATEGORY_DESCRIPTION = "description"
+
 
 
     }

@@ -38,14 +38,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+
+    <CheckBox
+        android:id="@+id/keepLoggedInCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Keep me logged in"
+        app:layout_constraintTop_toBottomOf="@id/loginPassword"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <!-- Login Button -->
     <Button
         android:id="@+id/loginButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Login"
-        android:layout_marginTop="24dp"
-        app:layout_constraintTop_toBottomOf="@id/loginPassword"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/keepLoggedInCheckBox"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

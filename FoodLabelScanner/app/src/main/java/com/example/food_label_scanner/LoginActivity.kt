@@ -32,10 +32,16 @@ class LoginActivity : AppCompatActivity() {
 
         databaseHelper = DBHelper(this)
         //id = intent.getIntExtra("id", -1)
+
+        if (isUserLoggedIn()) {
+            navigateToMainActivity()
+        }
+
         binding.loginButton.setOnClickListener{
             val loginUsername = binding.loginUsername.text.toString()
             val loginPassword = binding.loginPassword.text.toString()
-            loginDatabase(loginUsername, loginPassword)
+            val keepLoggedIn = binding.keepLoggedInCheckBox.isChecked
+            loginDatabase(loginUsername, loginPassword, keepLoggedIn)
         }
 
         binding.signupRedirect.setOnClickListener {
@@ -46,19 +52,22 @@ class LoginActivity : AppCompatActivity() {
 
     }
 
-    private fun loginDatabase(username:String, password:String){
+    private fun loginDatabase(username:String, password:String, keepLoggedIn: Boolean){
         val userExists = databaseHelper.readUser(username, password)
         if(userExists){
             id= databaseHelper.getUserId(username)
             //viewModel.userId=id
             Toast.makeText(this,"Login Successful", Toast.LENGTH_SHORT).show()
             val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+
+            saveLoginState(username, password, keepLoggedIn)
+
             with(sharedPref.edit()) {
                 putInt("userId", id!!)
                 putString("user_email", username)
                 apply()
             }
-            val userId= databaseHelper.getUserId(username) // Get the selected room
+            val userId = databaseHelper.getUserId(username) // Get the selected room
             val intent = Intent(this, MainActivity::class.java).apply {
                 putExtra("userId", userId)
                 Log.d("UserId", "Retrieved userId: $userId")
@@ -69,6 +78,30 @@ class LoginActivity : AppCompatActivity() {
         else{
             Toast.makeText(this, "Login failed",Toast.LENGTH_SHORT).show()
         }
+    }
+
+
+    private fun saveLoginState(username: String, password: String, keepLoggedIn: Boolean) {
+        val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            putBoolean("keepLoggedIn", keepLoggedIn)
+            putString("user_email", username)
+            putString("user_password", password)
+            apply()
+        }
+    }
+
+    private fun isUserLoggedIn(): Boolean {
+        val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        return sharedPref.getBoolean("keepLoggedIn", false)
+    }
+
+    private fun navigateToMainActivity() {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            putExtra("userId", id)
+        }
+        startActivity(intent)
+        finish()
     }
 
 }

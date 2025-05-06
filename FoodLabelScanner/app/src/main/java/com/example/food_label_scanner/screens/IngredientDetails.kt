@@ -40,21 +40,21 @@ fun IngredientDetails(ingredientId: Int) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Nutritional Value:",
+                text = "Valoare nutrițională:",
                 fontWeight = FontWeight.Bold
             )
             Text(text = it.nutritional_value)
             Spacer(modifier = Modifier.height(8.dp))
             //add category to show through category_id
             Text(
-                text = "Health Rating:",
+                text = "Rating al sănătății:",
                 fontWeight = FontWeight.Bold
             )
             Text(text = it.health_rating.toString())
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Description:",
+                text = "Descriere:",
                 fontWeight = FontWeight.Bold
             )
             Text(text = it.description)

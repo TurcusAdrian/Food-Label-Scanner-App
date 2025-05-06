@@ -1,5 +1,7 @@
 package com.example.food_label_scanner
 
+import android.content.Context
+import android.content.Intent
 import com.example.food_label_scanner.ui_elements.*
 
 import android.os.Bundle
@@ -16,6 +18,16 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        val keepLoggedIn = sharedPref.getBoolean("keepLoggedIn", false)
+        if (!keepLoggedIn) {
+            // If the user is not logged in, navigate to the login screen
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
         enableEdgeToEdge()
         setContent {
             FoodLabelScannerTheme {

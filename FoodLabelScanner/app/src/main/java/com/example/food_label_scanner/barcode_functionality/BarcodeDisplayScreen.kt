@@ -81,14 +81,18 @@ fun BarcodeDisplayScreen(barcode: String) {
     var arrayIngredients: List<String> by remember { mutableStateOf(emptyList()) }
     var ingredientDetails: List<String> by remember { mutableStateOf(emptyList()) }
 
+    var arrayIngredients2: List<String> by remember { mutableStateOf(emptyList()) }
 
     LaunchedEffect(barcode) {
         fetchProduct(barcode) { name, ing, brnd ->
             productName = name ?: "Product not found"
             ingredients = ing ?: "Ingredients not found"
             brand = brnd ?: "Brand not found"
-            arrayIngredients = splitIngredients(process_ingredients(ingredients))
-            ingredientDetails = getIngredientDetails(arrayIngredients, dbHelper)
+            val processed = process_ingredients(ingredients)
+            val split = splitIngredientsAdvanced(processed)
+            arrayIngredients = splitIngredients(processed)
+            arrayIngredients2 = extractValidIngredients(split, dbHelper)
+            ingredientDetails = getIngredientDetails(arrayIngredients2, dbHelper)
         }
     }
 
@@ -153,7 +157,7 @@ private fun fetchProduct(
 
                         if (ing != null) {
                             identifyLanguage(ing!!) { languageCode ->
-                                if (languageCode != null) {
+                                if (languageCode != null && languageCode != "ro") {
                                     translateToRomanian(ing!!,languageCode) { translatedText ->
                                         ing = translatedText
                                         CoroutineScope(Dispatchers.Main).launch {
@@ -190,6 +194,11 @@ private fun fetchProduct(
     })
 }
 
+val ignoredKeywords = setOf(
+    "EMULSIFIANTI", "CONSERVANTI", "AGENTI DE CRESTERE", "COLORANTI",
+    "REGULATOR DE ACIDITATE", "STABILIZATORI", "EMULGATOR:", "AROME", "INGREDIENT:", "EMULSIFIANT:","VOPSEA:"
+)
+
 fun uppercase_text(ingredients: String): String {
     return ingredients.uppercase()
 }
@@ -210,6 +219,7 @@ fun remove_diacritics(ingredients: String): String {
             'Ț' -> correctedIngredients.append('T')
             'ț' -> correctedIngredients.append('t')
             '_' -> correctedIngredients.append("")
+            '-' -> correctedIngredients.append(" ")
             else -> correctedIngredients.append(char)
         }
     }
@@ -217,9 +227,14 @@ fun remove_diacritics(ingredients: String): String {
     return correctedIngredients.toString()
 }
 
-fun process_ingredients(ingredients: String): String {
-    val withoutDiacritics = remove_diacritics(ingredients)
-    return uppercase_text(withoutDiacritics)
+fun extractParenthesisContent(text: String): String {
+    val start = text.indexOf("(")
+    val end = text.indexOf(")")
+    return if (start != -1 && end != -1 && end > start) {
+        text.substring(start + 1, end)
+    } else {
+        ""
+    }
 }
 
 fun splitIngredients(processedIngredients: String): List<String> {
@@ -231,6 +246,88 @@ fun splitIngredients(processedIngredients: String): List<String> {
 
     return trimmedIngredientsList
 }
+
+fun process_ingredients(ingredients: String): String {
+    val withoutDiacritics = remove_diacritics(ingredients)
+    return uppercase_text(withoutDiacritics)
+}
+
+fun splitIngredientsAdvanced(text: String): List<String> {
+    val result = mutableListOf<String>()
+    var current = StringBuilder()
+    var parenthesesLevel = 0
+
+    for (char in text) {
+        when (char) {
+            '(' -> {
+                parenthesesLevel++
+                current.append(char)
+            }
+            ')' -> {
+                parenthesesLevel--
+                current.append(char)
+            }
+            ',' -> {
+                if (parenthesesLevel == 0) {
+                    result.add(current.toString().trim())
+                    current = StringBuilder()
+                } else {
+                    current.append(char)
+                }
+            }
+            else -> current.append(char)
+        }
+    }
+    if (current.isNotBlank()) {
+        result.add(current.toString().trim())
+    }
+    return result
+}
+
+fun extractValidIngredients(rawIngredients: List<String>, dbHelper: DBHelper): List<String> {
+    val validIngredients = mutableListOf<String>()
+
+    for (ingredient in rawIngredients) {
+        // Uppercase and clean
+        val cleaned = ingredient.uppercase()
+            .replace(Regex("^(CONSERVANT(I)?|EMULGATOR(I)?|EMULSIFIANT(I)?|COLORANT(I)?|REGULATOR DE ACIDITATE|AGENTI DE CRESTERE|VOPSEA):?\\s*"), "")
+
+        val keyword = cleaned.split("(", ",", ";",":")[0].trim()
+
+        if (keyword in ignoredKeywords) {
+            // Check content in parentheses
+            val inside = extractParenthesisContent(cleaned)
+            if (inside.isNotEmpty()) {
+                val nested = splitIngredientsAdvanced(inside)
+                for (nestedIng in nested) {
+                    val name = nestedIng.trim()
+                    if (dbHelper.getIngredientByName(name) != null) {
+                        validIngredients.add(name)
+                    }
+                }
+            }
+            continue
+        }
+
+        // Ingredient without parentheses
+        val plain = cleaned.substringBefore("(").trim()
+        if (dbHelper.getIngredientByName(plain) != null) {
+            validIngredients.add(plain)
+        }
+
+        // Also consider the parenthesis content (e.g., UNT (LAIT))
+        val inner = extractParenthesisContent(cleaned)
+        if (inner.isNotEmpty()) {
+            val innerTrimmed = inner.trim()
+            if (dbHelper.getIngredientByName(innerTrimmed) != null) {
+                validIngredients.add(innerTrimmed)
+            }
+        }
+    }
+
+    return validIngredients.distinct()
+}
+
 
 fun getIngredientDetails(ingredients: List<String>, dbHelper: DBHelper): List<String> {
     val details = mutableListOf<String>()

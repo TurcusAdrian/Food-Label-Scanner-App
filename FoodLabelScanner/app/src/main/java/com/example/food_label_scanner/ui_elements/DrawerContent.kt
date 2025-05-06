@@ -1,5 +1,6 @@
 package com.example.food_label_scanner.ui_elements
 
+import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -125,6 +126,7 @@ fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifi
         } }
     )
 
+    //
     Spacer(Modifier.height(10.dp))
 
     // Share app button:
@@ -245,6 +247,22 @@ fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifi
 
     // Log Out button:
 
+    fun logout(context: Context) {
+        val sharedPref = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            putBoolean("keepLoggedIn", false) // Clear the "Keep me logged in" flag
+            remove("user_email") // Remove stored username
+            remove("user_password") // Remove stored password (ensure it's encrypted if stored)
+            apply()
+        }
+
+        // Navigate to the login screen
+        val intent = Intent(context, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK // Clear the back stack
+        context.startActivity(intent)
+    }
+
+
     NavigationDrawerItem(
         icon = {
             Icon(
@@ -264,8 +282,9 @@ fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifi
         selected = false,
         onClick = {
             scope.launch {
-                val intent = Intent(context, LoginActivity::class.java)
-                context.startActivity(intent)
+                //val intent = Intent(context, LoginActivity::class.java)
+                //context.startActivity(intent)
+                logout(context)
                 drawerState.close()
             }
         }
