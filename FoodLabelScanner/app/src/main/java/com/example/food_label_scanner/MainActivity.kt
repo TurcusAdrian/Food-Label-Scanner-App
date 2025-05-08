@@ -20,12 +20,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-        val keepLoggedIn = sharedPref.getBoolean("keepLoggedIn", false)
-        if (!keepLoggedIn) {
-            // If the user is not logged in, navigate to the login screen
+        val userId = sharedPref.getInt("userId", -1)
+
+        if (userId == -1) {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()
+            return
         }
 
         enableEdgeToEdge()
@@ -35,6 +36,8 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+
 }
 
 

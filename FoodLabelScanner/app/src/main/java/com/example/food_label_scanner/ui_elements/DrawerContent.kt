@@ -126,7 +126,6 @@ fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifi
         } }
     )
 
-    //
     Spacer(Modifier.height(10.dp))
 
     // Share app button:
@@ -261,7 +260,6 @@ fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifi
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK // Clear the back stack
         context.startActivity(intent)
     }
-
 
     NavigationDrawerItem(
         icon = {
