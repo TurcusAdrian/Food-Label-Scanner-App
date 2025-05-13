@@ -77,30 +77,6 @@ fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifi
 
     Spacer(Modifier.height(10.dp))
 
-    // Search History icon
-
-    NavigationDrawerItem(
-        icon = {
-            Icon(
-                painter = painterResource(R.drawable.history_icon),
-                contentDescription = "Search History",
-                modifier = Modifier.size(25.dp)
-            )
-        },
-        label = {
-            Text(
-                text = "Search History", style = TextStyle(
-                    fontFamily = instrument_serif,
-                    fontSize = 24.sp
-                )
-            )
-        },
-        selected = false,
-        onClick = {/*TODO*/ }
-    )
-
-    Spacer(Modifier.height(10.dp))
-
     // Barcode Scan button:
 
     NavigationDrawerItem(
@@ -124,6 +100,62 @@ fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifi
             navController.navigate(Screens.BarcodeScanning.screen)
             drawerState.close()
         } }
+    )
+
+    Spacer(Modifier.height(10.dp))
+
+    // Nutritional Dictionary button:
+
+    NavigationDrawerItem(
+        icon = {
+            Icon(
+                painter = painterResource(R.drawable.nutritional_dictionary_icon),
+                contentDescription = "Nutritional Dictionary",
+                modifier = Modifier.size(25.dp)
+            )
+        },
+        label = {
+            Text(
+                text = "Nutritional Dictionary", style = TextStyle(
+                    fontFamily = instrument_serif,
+                    fontSize = 24.sp
+                )
+            )
+        },
+        selected = false,
+        onClick = {scope.launch {
+            navController.navigate(Screens.NutritionalDictionary.screen)
+            drawerState.close()
+        }  }
+    )
+
+    Spacer(Modifier.height(10.dp))
+
+    // How to use app button:
+
+    NavigationDrawerItem(
+        icon = {
+            Icon(
+                painter = painterResource(R.drawable.howtouse_icon),
+                contentDescription = "How To Use",
+                modifier = Modifier.size(25.dp)
+            )
+        },
+        label = {
+            Text(
+                text = "How to Use", style = TextStyle(
+                    fontFamily = instrument_serif,
+                    fontSize = 24.sp
+                )
+            )
+        },
+        selected = false,
+        onClick = {
+            scope.launch {
+                navController.navigate(Screens.HowToUse.screen)
+                drawerState.close()
+            }
+        }
     )
 
     Spacer(Modifier.height(10.dp))
@@ -187,35 +219,7 @@ fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifi
 
     Spacer(Modifier.height(10.dp))
 
-    // How to use app button:
-
-    NavigationDrawerItem(
-        icon = {
-            Icon(
-                painter = painterResource(R.drawable.howtouse_icon),
-                contentDescription = "How To Use",
-                modifier = Modifier.size(25.dp)
-            )
-        },
-        label = {
-            Text(
-                text = "How to Use", style = TextStyle(
-                    fontFamily = instrument_serif,
-                    fontSize = 24.sp
-                )
-            )
-        },
-        selected = false,
-        onClick = {
-            scope.launch {
-                navController.navigate(Screens.HowToUse.screen)
-                drawerState.close()
-            }
-        }
-    )
-
-    Spacer(Modifier.height(10.dp))
-
+    // About app button:
 
     NavigationDrawerItem(
         icon = {

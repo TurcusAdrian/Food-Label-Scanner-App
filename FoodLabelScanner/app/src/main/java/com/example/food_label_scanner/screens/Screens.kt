@@ -9,8 +9,8 @@ sealed class Screens(val screen: String) {
 
     //Drawer screens:
     data object Account: Screens("Account")
-    data object SearchHistory: Screens("SearchHistory") //to be implemented
-    data object BarcodeScanning: Screens("BarcodeScanning") //to be implemented
+    data object NutritionalDictionary: Screens("NutritionalDictionary") //to be implemented
+    data object BarcodeScanning: Screens("BarcodeScanning")
     data object Settings: Screens("Settings")
     data object HowToUse: Screens("HowToUse")
     data object About: Screens("About")
@@ -19,7 +19,6 @@ sealed class Screens(val screen: String) {
     data object Notifications: Screens("Notifications")
     data object PrivacyPolicy: Screens("PrivacyPolicy")
     data object TermsOfService: Screens("TermsOfService")
-    data object CommunityGuidelines: Screens("CommunityGuidelines")
     data object Support: Screens("Support")
 
     data object IngredientDetails : Screens("ingredient_details_screen/{ingredientId}") {

@@ -15,9 +15,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.food_label_scanner.R
 
-
 @Composable
-fun About(){
+fun NutritionalDictionary(){
 
     val instrument_serif = FontFamily(Font(R.font.instrument_serif_regular))
 
@@ -29,18 +28,13 @@ fun About(){
             horizontalAlignment = Alignment.Start) {
             item {
                 Text(
-                    text = "      Food Label Scanner este o aplicație care îi permite utilizatorului " +
-                            "să știe cât de sănătos este produsul său" +
-                            " în funcție de ingredientele constituente.\n\n" +
-                            "     Aceasta are mai multe funcționalități precum:" +
-                            " Scanarea codului de bare și Scanarea Etichetei pentru a afla date despre produs," +
-                            " Galeria produselor favorite (asemeni celei din telefon)" +
-                            ", funcție de captare imagine, " +
-                            "căutare a ingredientelor după nume și chiar un" +
-                            " dicționar de termeni nutritivi.\n\n" +
-                            "     Pentru diverse probleme utilizatorul poate trimite o cerere" +
-                            " la adresa de mail: foodlablscan@gmail.com\n\n" +
-                            "Versiunea 1.0.0\n",
+                    text = "    Food Label Scanner app is an application that allows the user to know how healthy his/her food is depending on the ingredients that it contains.\n\n" +
+                            "   It works in a simple manner: You either take a photo with the built-in 'Take Picture' button and choose it from the gallery with the 'Add Photos from Gallery'" +
+                            " or you could just simply put the desired product in front of the camera, it will then process what it sees and then tell you how good the food is or not.\n\n" +
+                            "   The app has other functions like 'Friends' where you could share different scanned products, 'Search' which let's you search for a different ingredient in our database" +
+                            "or Favourites Items where you can save your desired products so you can have a collection of healthy food right in your account.\n\n" +
+                            "   Future Improvements include Barcode Scanning and fruit/vegetables rating through zone analysis\n\n" +
+                            "Version : 1.0.0\n",
                     style = TextStyle(
                         fontFamily = instrument_serif,
                         fontSize = 25.sp

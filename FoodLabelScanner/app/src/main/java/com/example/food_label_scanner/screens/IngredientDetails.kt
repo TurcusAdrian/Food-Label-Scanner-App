@@ -21,6 +21,7 @@ import com.example.food_label_scanner.database.IngredientDetailsViewModel
 fun IngredientDetails(ingredientId: Int) {
     val viewModel: IngredientDetailsViewModel = hiltViewModel()
     val ingredient by viewModel.ingredient.collectAsState()
+    val categoryName by viewModel.categoryName.collectAsState() // Collect the category name
 
     LaunchedEffect(key1 = ingredientId) {
         viewModel.loadIngredient(ingredientId)
@@ -45,11 +46,20 @@ fun IngredientDetails(ingredientId: Int) {
             )
             Text(text = it.nutritional_value)
             Spacer(modifier = Modifier.height(8.dp))
-            //add category to show through category_id
+
+            // Display the category name
+            Text(
+                text = "Categorie:",
+                fontWeight = FontWeight.Bold
+            )
+            Text(text = categoryName ?: "N/A") // Display category name or "N/A" if not found
+            Spacer(modifier = Modifier.height(8.dp))
+
             Text(
                 text = "Rating al sănătății:",
                 fontWeight = FontWeight.Bold
             )
+            // Assuming health_rating is an Int, convert it to String for display
             Text(text = it.health_rating.toString())
             Spacer(modifier = Modifier.height(8.dp))
 
