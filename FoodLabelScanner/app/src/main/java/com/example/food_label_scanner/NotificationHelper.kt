@@ -3,12 +3,17 @@ package com.example.food_label_scanner
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import android.provider.Settings
+
+
 
 class NotificationHelper(private val context: Context) {
 
@@ -34,7 +39,8 @@ class NotificationHelper(private val context: Context) {
     }
 
     fun sendTakePictureNotification() {
-        val sharedPreferences = context.getSharedPreferences("notification_prefs", Context.MODE_PRIVATE)
+        val sharedPreferences =
+            context.getSharedPreferences("notification_prefs", Context.MODE_PRIVATE)
         val sendNotification = sharedPreferences.getBoolean("take_picture_notifications", true)
 
         if (sendNotification) {
@@ -55,8 +61,10 @@ class NotificationHelper(private val context: Context) {
             }
         }
     }
+
     fun sendFoodLabelNotification() {
-        val sharedPreferences = context.getSharedPreferences("notification_prefs", Context.MODE_PRIVATE)
+        val sharedPreferences =
+            context.getSharedPreferences("notification_prefs", Context.MODE_PRIVATE)
         val sendNotification = sharedPreferences.getBoolean("food_label_notifications", true)
 
         if (sendNotification) {
@@ -77,15 +85,51 @@ class NotificationHelper(private val context: Context) {
             }
         }
     }
-}
 
-fun checkNotificationPermission(context: Context): Boolean {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        ActivityCompat.checkSelfPermission(
-            context,
-            Manifest.permission.POST_NOTIFICATIONS
-        ) == PackageManager.PERMISSION_GRANTED
-    } else {
-        true
+
+    fun sendWifiRequiredNotification() {
+        val sharedPreferences1 =
+            context.getSharedPreferences("notification_prefs", Context.MODE_PRIVATE)
+        val sendNotification = sharedPreferences1.getBoolean("wifi_notifications", true)
+
+        if (sendNotification) {
+            // Create an intent to open WiFi settings
+            val intent = Intent(Settings.ACTION_WIFI_SETTINGS)
+            val pendingIntent = PendingIntent.getActivity(
+                context,
+                0,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE
+            )
+
+            val builder = NotificationCompat.Builder(context, channelId)
+                .setSmallIcon(android.R.drawable.ic_dialog_email)
+                .setContentTitle("WiFi Required for Translation")
+                .setContentText("Please connect to WiFi to download translation models")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(pendingIntent) // Open WiFi settings when clicked
+                .setAutoCancel(true) // Auto-dismiss when clicked
+
+            with(NotificationManagerCompat.from(context)) {
+                if (ActivityCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    notify(notificationId + 1, builder.build()) // Use a different ID
+                }
+            }
+        }
     }
+
 }
+    fun checkNotificationPermission(context: Context): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
+    }

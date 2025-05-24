@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.food_label_scanner.ui.theme.Cream
 
 @Composable
 fun Notifications() {
@@ -24,34 +25,39 @@ fun Notifications() {
         mutableStateOf(getNotificationSettings(context))
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = Cream // Apply cream color to entire surface
     ) {
-        Text(
-            text = "Notification Settings",
-            style = TextStyle(
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        LazyColumn {
-            items(notificationSettings.keys.toList()) { notificationType ->
-                NotificationItem(
-                    notificationType = notificationType,
-                    isChecked = notificationSettings[notificationType] ?: false,
-                    onCheckedChange = { isChecked ->
-                        notificationSettings = notificationSettings.toMutableMap().apply {
-                            this[notificationType] = isChecked
-                        }
-                        saveNotificationSettings(context, notificationSettings)
-                    }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Notification Settings",
+                style = TextStyle(
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
                 )
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            LazyColumn {
+                items(notificationSettings.keys.toList()) { notificationType ->
+                    NotificationItem(
+                        notificationType = notificationType,
+                        isChecked = notificationSettings[notificationType] ?: false,
+                        onCheckedChange = { isChecked ->
+                            notificationSettings = notificationSettings.toMutableMap().apply {
+                                this[notificationType] = isChecked
+                            }
+                            saveNotificationSettings(context, notificationSettings)
+                        }
+                    )
+                }
             }
         }
     }
@@ -69,7 +75,7 @@ fun NotificationItem(
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = notificationType, modifier = Modifier.weight(1f))
+        Text(text = notificationType, modifier = Modifier.weight(1f), color = Color.Black)
         Checkbox(
             checked = isChecked,
             onCheckedChange = onCheckedChange

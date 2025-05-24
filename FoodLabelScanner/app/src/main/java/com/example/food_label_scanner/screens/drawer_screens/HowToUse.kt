@@ -1,6 +1,7 @@
 package com.example.food_label_scanner.screens.drawer_screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -40,7 +42,9 @@ fun HowToUse() {
                 content = "   În cadrul acestui ecran principal utilizatorul îndreaptă" +
                         " camera spre eticheta cu ingrediente a unui produs unde se vede scrisul (Ingrediente:)" +
                         ", la o distanță nu foarte mare sau mică astfel încât imaginea să nu fie blurată." +
-                        " Aplicația pe urmă oferă o analiză asupra ingredientelor constituente ale acesteia."
+                        " Aplicația pe urmă oferă o analiză asupra ingredientelor constituente ale acesteia.",
+                imageResId = R.drawable.label_scan_example // Add your image resource ID here
+
             ),
             Section(
                 title = "Nutritional Dictionary",
@@ -141,14 +145,27 @@ fun HowToUse() {
                         )
                     }
                     AnimatedVisibility(visible = section.isExpanded) {
-                        Text(
-                            text = section.content,
-                            style = TextStyle(
-                                fontFamily = instrumentSerif,
-                                fontSize = 20.sp
-                            ),
-                            modifier = Modifier.padding(16.dp)
-                        )
+                        Column {
+                            Text(
+                                text = section.content,
+                                style = TextStyle(
+                                    fontFamily = instrumentSerif,
+                                    fontSize = 20.sp
+                                ),
+                                modifier = Modifier.padding(16.dp)
+                            )
+
+                            // Display the image if it exists, below the text
+                            section.imageResId?.let { imageResId ->
+                                Image(
+                                    painter = painterResource(id = imageResId),
+                                    contentDescription = "Example of label scan",
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp)
+                                )
+                            }
+                        }
                     }
                 }
             }

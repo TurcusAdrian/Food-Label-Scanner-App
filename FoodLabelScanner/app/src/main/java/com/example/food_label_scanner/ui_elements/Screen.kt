@@ -2,6 +2,9 @@ package com.example.food_label_scanner.ui_elements
 
 
 import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.graphics.ImageDecoder
 
 import com.example.food_label_scanner.data.*
 import com.example.food_label_scanner.screens.*
@@ -14,6 +17,7 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +37,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -58,6 +63,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.example.food_label_scanner.NotificationHelper
 import com.example.food_label_scanner.screens.bottom_bar_screens.Favourites
 import com.example.food_label_scanner.screens.drawer_screens.About
 import com.example.food_label_scanner.screens.drawer_screens.Account
@@ -66,16 +72,31 @@ import com.example.food_label_scanner.screens.drawer_screens.settings_screens.No
 import com.example.food_label_scanner.screens.drawer_screens.settings_screens.PrivacyPolicy
 import com.example.food_label_scanner.screens.drawer_screens.settings_screens.Support
 import com.example.food_label_scanner.screens.drawer_screens.settings_screens.TermsOfService
-import com.example.food_label_scanner.NotificationHelper
+import com.example.food_label_scanner.NotificationHelper.*
 import com.example.food_label_scanner.barcode_functionality.BarcodeDisplayScreen
-import com.example.food_label_scanner.checkNotificationPermission
+import com.example.food_label_scanner.database.IngredientDetailsViewModel
 import com.example.food_label_scanner.screens.bottom_bar_screens.Search
 import com.example.food_label_scanner.screens.drawer_screens.*
 import com.example.food_label_scanner.screens.drawer_screens.HowToUse
 import com.example.food_label_scanner.text_recognition.TesseractOcrAnalyzer
 import com.example.food_label_scanner.text_recognition.TextRecognitionAnalyzer
+import com.googlecode.tesseract.android.TessBaseAPI
+import java.io.File
+import java.io.FileOutputStream
 
 
+fun checkNotificationPermission(context: Context): Boolean {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        ActivityCompat.checkSelfPermission(
+            context,
+            Manifest.permission.POST_NOTIFICATIONS
+        ) == PackageManager.PERMISSION_GRANTED
+    } else {
+        true
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun Screen(modifier: Modifier = Modifier) {
 
@@ -91,15 +112,13 @@ fun Screen(modifier: Modifier = Modifier) {
 
 
 
-
     val notificationHelper = remember { NotificationHelper(context) }
     var hasNotificationPermission by remember { mutableStateOf(checkNotificationPermission(context)) }
+
 
     fun onTextUpdated(updatedText: String) {
         detectedText = updatedText
     }
-
-
 
     val photolauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -116,6 +135,32 @@ fun Screen(modifier: Modifier = Modifier) {
             }
         }
     )
+
+
+/*
+    val analyzer = TesseractOcrAnalyzer(context) { updatedText -> detectedText = updatedText }
+
+    val photoLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            uri?.let { imageUri ->
+                try {
+                    val source = ImageDecoder.createSource(context.contentResolver, imageUri)
+                    val bitmap = ImageDecoder.decodeBitmap(source)
+                    analyzer.analyze(bitmap) // Use TesseractOcrAnalyzer to process the bitmap
+                } catch (e: Exception) {
+                    Log.e("Screen", "Error processing picked image: ${e.message}", e)
+                }
+            }
+        }
+    )
+
+    DisposableEffect(Unit) {
+        onDispose {
+            analyzer.onDestroy()
+        }
+    }
+*/
 
     /*
     val photolauncher = rememberLauncherForActivityResult(
@@ -264,10 +309,16 @@ fun Screen(modifier: Modifier = Modifier) {
                                 detectedText = detectedText,
                                 onImageClick = { selectedimage = null })
                         } else {
-                                CameraContent(
-                                    detectedText,
-                                    { detectedText = it },
-                                    { bitmap -> viewModel.storePhotoInGallery(bitmap) })
+                        /*
+                            TesseractCameraContent(
+                                detectedText = detectedText,
+                                onDetectedTextUpdated = { detectedText = it },
+                                onPhotoCaptured = { bitmap -> viewModel.storePhotoInGallery(bitmap) }
+                            ) */
+                            CameraContent(
+                                detectedText,
+                                { detectedText = it },
+                                { bitmap -> viewModel.storePhotoInGallery(bitmap) })
                         }
                     }
                     composable(Screens.Search.screen) { Search(navigationController) }
@@ -312,6 +363,21 @@ fun Screen(modifier: Modifier = Modifier) {
                             BarcodeDisplayScreen(barcode = it)
                         }
                     }
+
+
+
+
+
+                    composable(Screens.AllergicIngredients.screen) { // Add this composable
+                        // You'll need to provide the ViewModel here.
+                        // Since AllergicIngredientsList uses IngredientDetailsViewModel,
+                        // you might need to adjust your ViewModel strategy or create a new one.
+                        // For simplicity, let's assume you can get the ViewModel here.
+                        val ingredientDetailsViewModel: IngredientDetailsViewModel =
+                            hiltViewModel()
+                        AllergicIngredientsList()
+                    }
+
                 }
             }
         }

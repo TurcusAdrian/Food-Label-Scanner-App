@@ -1,5 +1,7 @@
 package com.example.food_label_scanner.screens
 
+import androidx.hilt.navigation.compose.hiltViewModel
+
 sealed class Screens(val screen: String) {
 
     //bottom bar screens:
@@ -28,4 +30,11 @@ sealed class Screens(val screen: String) {
     data object BarcodeDisplay : Screens("barcodeDisplay/{barcode}") {
         fun createRoute(barcode: String) = "barcodeDisplay/$barcode"
     }
+
+
+
+    object AllergicIngredients : Screens("allergic_ingredients")
+
+
+
 }

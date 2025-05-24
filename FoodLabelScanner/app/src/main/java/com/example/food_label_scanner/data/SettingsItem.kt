@@ -18,18 +18,22 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import com.example.food_label_scanner.ui.theme.Teal2
 
 @Composable
 fun SettingsItem(title: String, icon: Int, onClick: () -> Unit) {
     val instrument_serif = FontFamily(Font(R.font.instrument_serif_regular))
     Card(
+        colors = CardColors(Teal2,Color.Black,Color.Black,Color.Black),
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
             .padding(vertical = 4.dp)
+
     ) {
         Row(
             modifier = Modifier.padding(16.dp),

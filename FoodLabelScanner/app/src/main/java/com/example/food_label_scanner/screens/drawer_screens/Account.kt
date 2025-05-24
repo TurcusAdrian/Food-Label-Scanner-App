@@ -2,6 +2,7 @@ package com.example.food_label_scanner.screens.drawer_screens
 
 import android.content.ContentValues
 import android.content.Context
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -9,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.food_label_scanner.DBHelper
@@ -19,6 +21,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.example.food_label_scanner.MainActivity
+import com.example.food_label_scanner.ui.theme.Cream
+import com.example.food_label_scanner.ui.theme.Teal2
 
 
 @Composable
@@ -41,52 +45,68 @@ fun Account() {
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = Cream // Apply cream color to entire surface
     ) {
-        Text(text = "Account", style = MaterialTheme.typography.headlineMedium)
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Username: $currentUsername", style = MaterialTheme.typography.bodyLarge)
-        Spacer(modifier = Modifier.height(16.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .background(Cream),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Account",
+                style = MaterialTheme.typography.headlineMedium,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Username: $currentUsername",
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = { showChangeUsernameDialog = true }) {
-            Text(text = "Change Username")
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = { showChangePasswordDialog = true }) {
-            Text(text = "Change Password")
-        }
+            Button(
+                colors = ButtonColors(Teal2, Color.Black, Color.Black, Color.Black),
+                onClick = { showChangeUsernameDialog = true }) {
+                Text(text = "Change Username")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = { showChangePasswordDialog = true }) {
+                Text(text = "Change Password")
+            }
 
-        if (showChangeUsernameDialog) {
-            ChangeUsernameDialog(
-                onDismiss = { showChangeUsernameDialog = false },
-                onUsernameChanged = { newUsername ->
-                    coroutineScope.launch(Dispatchers.IO) {
-                        updateUsername(dbHelper, currentUsername, newUsername)
-                        withContext(Dispatchers.Main) {
-                            currentUsername = newUsername
-                            showChangeUsernameDialog = false
+            if (showChangeUsernameDialog) {
+                ChangeUsernameDialog(
+                    onDismiss = { showChangeUsernameDialog = false },
+                    onUsernameChanged = { newUsername ->
+                        coroutineScope.launch(Dispatchers.IO) {
+                            updateUsername(dbHelper, currentUsername, newUsername)
+                            withContext(Dispatchers.Main) {
+                                currentUsername = newUsername
+                                showChangeUsernameDialog = false
+                            }
                         }
                     }
-                }
-            )
-        }
+                )
+            }
 
-        if (showChangePasswordDialog) {
-            ChangePasswordDialog(
-                onDismiss = { showChangePasswordDialog = false },
-                onPasswordChanged = { newPassword ->
-                    coroutineScope.launch(Dispatchers.IO) {
-                        updatePassword(dbHelper, currentUsername, newPassword)
-                        withContext(Dispatchers.Main) {
-                            showChangePasswordDialog = false
+            if (showChangePasswordDialog) {
+                ChangePasswordDialog(
+                    onDismiss = { showChangePasswordDialog = false },
+                    onPasswordChanged = { newPassword ->
+                        coroutineScope.launch(Dispatchers.IO) {
+                            updatePassword(dbHelper, currentUsername, newPassword)
+                            withContext(Dispatchers.Main) {
+                                showChangePasswordDialog = false
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
         }
     }
 }

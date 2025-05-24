@@ -1,5 +1,7 @@
 package com.example.food_label_scanner.barcode_functionality
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,8 +32,11 @@ import org.json.JSONObject
 import java.io.IOException
 
 import android.database.Cursor
+import android.net.ConnectivityManager
 import android.widget.RatingBar
+import android.widget.Toast
 import androidx.activity.result.launch
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -48,11 +53,18 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
+import com.example.food_label_scanner.NotificationHelper
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
@@ -62,6 +74,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.math.ceil
 
+
 data class ParsedIngredient(
     val name: String,
     val nutritionalValue: String,
@@ -70,6 +83,7 @@ data class ParsedIngredient(
     val description: String
 )
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun BarcodeDisplayScreen(barcode: String) {
     var productName by remember { mutableStateOf("Loading...") }
@@ -77,6 +91,7 @@ fun BarcodeDisplayScreen(barcode: String) {
     var brand by remember { mutableStateOf("Loading...") }
 
     val context = LocalContext.current
+
     val dbHelper = remember { DBHelper(context) }
     var arrayIngredients: List<String> by remember { mutableStateOf(emptyList()) }
     var ingredientDetails: List<String> by remember { mutableStateOf(emptyList()) }
@@ -436,8 +451,10 @@ fun identifyLanguage(text: String, onResult: (String?) -> Unit) {
         }
 }
 
+
 fun translateToRomanian(text: String, languageCode: String, onResult: (String?) -> Unit) {
     // Convert the language code to a TranslateLanguage constant
+
     val sourceLanguage = when (languageCode) {
         "en" -> TranslateLanguage.ENGLISH
         "fr" -> TranslateLanguage.FRENCH
@@ -479,3 +496,5 @@ fun translateToRomanian(text: String, languageCode: String, onResult: (String?) 
             onResult(null)
         }
 }
+
+

@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.rounded.AccountCircle
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -43,13 +44,42 @@ fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifi
     val context = LocalContext.current
 
     Text(
-        text = "Food Label Scanner", style = TextStyle(
+        text = "     Food Label Scanner", style = TextStyle(
             fontFamily = instrument_serif,
             fontSize = 32.sp
         )
     )
     HorizontalDivider()
 
+
+
+    NavigationDrawerItem(
+        icon = {
+            Icon(
+                imageVector = Icons.Rounded.Warning, // Or a suitable icon
+                contentDescription = "Allergic Ingredients",
+                modifier = Modifier.size(25.dp)
+            )
+        },
+        label = {
+            Text(
+                text = "Allergic Ingredients",
+                style = TextStyle(
+                    fontFamily = instrument_serif,
+                    fontSize = 24.sp
+                )
+            )
+        },
+        selected = false, // You might want to handle selection state based on the current route
+        onClick = {
+            scope.launch {
+                navController.navigate(Screens.AllergicIngredients.screen)
+                drawerState.close()
+            }
+        }
+    )
+
+    
     // Account button:
 
     NavigationDrawerItem(

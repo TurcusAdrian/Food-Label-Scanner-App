@@ -49,52 +49,7 @@ fun BarcodeScanning(navController: NavController) {
         )
     }
 }
-/*
-@Composable
-fun BarcodeScanning(productViewModel: ProductViewModel = hiltViewModel()) {
-    var scannedBarcode by remember { mutableStateOf<String?>(null) }
-    var showCamera by remember { mutableStateOf(true) }
-    val product by productViewModel.product.observeAsState()
-    val isLoading by productViewModel.isLoading.observeAsState(false)
-    val error by productViewModel.error.observeAsState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-            CameraPreview(
-                onBarcodeDetected = { barcode ->
-                    scannedBarcode = barcode
-
-                },
-                onPhotoCaptured = {}
-            )
-        if (isLoading) {
-            CircularProgressIndicator()
-        } else if (error != null) {
-            Text(text = "Error: $error")
-            LaunchedEffect(key1 = error) {
-                showCamera = true
-                scannedBarcode = null
-            }
-        } else if (product != null) {
-            DisplayProductDetails(product = product!!)
-            LaunchedEffect(key1 = product) {
-                showCamera = false
-                scannedBarcode = null
-            }
-        }
-        LaunchedEffect(key1 = scannedBarcode) {
-            if (scannedBarcode != null) {
-                productViewModel.fetchProduct(scannedBarcode!!)
-            }
-        }
-    }
-}
-*/
 @Composable
 fun DisplayProductDetails(product: Product) {
     Column(

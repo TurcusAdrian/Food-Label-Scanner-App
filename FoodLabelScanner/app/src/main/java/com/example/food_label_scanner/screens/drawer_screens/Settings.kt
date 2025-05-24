@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.food_label_scanner.R
 import com.example.food_label_scanner.data.SettingsItem
+import com.example.food_label_scanner.ui.theme.Cream
 
 data class MenuItem(val title: String, val icon: Int)
 
@@ -28,7 +29,7 @@ fun Settings(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White) // Dark background
+            .background(Cream) // Dark background
             .padding(16.dp)
     ) {
 
@@ -36,7 +37,6 @@ fun Settings(navController: NavHostController) {
             MenuItem("Notifications", R.drawable.notification_icon),
             MenuItem("Privacy Policy", R.drawable.privacy_policy_icon),
             MenuItem("Terms of Service", R.drawable.terms_of_service_icon),
-            MenuItem("Community Guidelines", R.drawable.community_guidelines_icon),
             MenuItem("Support", R.drawable.support_icon)
         )
 
@@ -46,7 +46,6 @@ fun Settings(navController: NavHostController) {
                 "Notifications" -> navController.navigate("Notifications")
                 "Privacy Policy" -> navController.navigate("PrivacyPolicy")
                 "Terms of Service" -> navController.navigate("TermsOfService")
-                "Community Guidelines" -> navController.navigate("CommunityGuidelines")
                 "Support" -> navController.navigate("Support")
             }}
             Spacer(modifier = Modifier.height(8.dp))
