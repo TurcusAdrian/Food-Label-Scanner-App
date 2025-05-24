@@ -58,6 +58,7 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -65,12 +66,19 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
 import com.example.food_label_scanner.NotificationHelper
+import com.example.food_label_scanner.screens.AllergicIngredientsViewModel
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.TranslatorOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.math.ceil
 
@@ -83,7 +91,7 @@ data class ParsedIngredient(
     val description: String
 )
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "FlowOperatorInvokedInComposition")
 @Composable
 fun BarcodeDisplayScreen(barcode: String) {
     var productName by remember { mutableStateOf("Loading...") }
@@ -98,6 +106,30 @@ fun BarcodeDisplayScreen(barcode: String) {
 
     var arrayIngredients2: List<String> by remember { mutableStateOf(emptyList()) }
 
+
+
+
+
+    val allergicViewModel: AllergicIngredientsViewModel = hiltViewModel()
+    var currentUserAllergicIngredients by remember { mutableStateOf<List<String>>(emptyList()) }
+
+    // Collect allergic ingredients in LaunchedEffect
+    LaunchedEffect(Unit) {
+        val sharedPref = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        val userIdFromPrefs = sharedPref.getInt("userId", -1) // Ensure key matches
+        if (userIdFromPrefs != -1) {
+            allergicViewModel.setUserId(userIdFromPrefs)
+            Log.d("BarcodeScreen", "User ID $userIdFromPrefs set on AllergicViewModel")
+            allergicViewModel.allergicIngredients.collect { ingredients ->
+                currentUserAllergicIngredients = ingredients
+                Log.d("BarcodeScreen", "Allergic ingredients updated: $ingredients")
+            }
+        } else {
+            Log.w("BarcodeScreen", "No valid user ID found in SharedPreferences for AllergicViewModel.")
+        }
+    }
+
+
     LaunchedEffect(barcode) {
         fetchProduct(barcode) { name, ing, brnd ->
             productName = name ?: "Product not found"
@@ -108,6 +140,7 @@ fun BarcodeDisplayScreen(barcode: String) {
             arrayIngredients = splitIngredients(processed)
             arrayIngredients2 = extractValidIngredients(split, dbHelper)
             ingredientDetails = getIngredientDetails(arrayIngredients2, dbHelper)
+            Log.d("BarcodeScreen", "IngredientDetails: $ingredientDetails")
         }
     }
 
@@ -115,7 +148,6 @@ fun BarcodeDisplayScreen(barcode: String) {
         modifier = Modifier.padding(16.dp)
     ) {
         item {
-            // Display the product name
             Text(
                 text = "Product: $productName",
                 style = MaterialTheme.typography.headlineMedium,
@@ -124,7 +156,6 @@ fun BarcodeDisplayScreen(barcode: String) {
             )
         }
         item {
-            // Display the product name
             Text(
                 text = "Array ingredients: $arrayIngredients",
                 style = MaterialTheme.typography.headlineMedium,
@@ -133,15 +164,20 @@ fun BarcodeDisplayScreen(barcode: String) {
             )
         }
         item {
-            // Display the brand
             Text(
                 text = "Brand: $brand",
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         }
-        items(ingredientDetails) { detail ->
-            IngredientCard(detail = detail)
+        items(
+            items = ingredientDetails,
+            key = { detail -> detail } // Use detail as a key to force recomposition
+        ) { detail ->
+            IngredientCard(
+                detail = detail,
+                allergicIngredients = currentUserAllergicIngredients
+            )
         }
     }
 }
@@ -367,7 +403,10 @@ fun getIngredientDetails(ingredients: List<String>, dbHelper: DBHelper): List<St
 }
 
 @Composable
-fun IngredientCard(detail: String) {
+fun IngredientCard(detail: String, allergicIngredients: List<String>) {
+    val (name, nutritionalValue, category, healthRating, description) = parseIngredientDetail(detail)
+    val isAllergicToThisIngredient = name.isNotEmpty() && allergicIngredients.contains(name)
+
     Card(
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
@@ -376,19 +415,56 @@ fun IngredientCard(detail: String) {
             .padding(vertical = 8.dp, horizontal = 8.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            // Parse the detail string and extract the values
-            val (name, nutritionalValue, category, healthRating, description) = parseIngredientDetail(detail)
-
-            Text(name, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            // Name and Category
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    name,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            }
             Spacer(modifier = Modifier.height(4.dp))
-            Text(category, style = MaterialTheme.typography.labelLarge, color = Color.Gray)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(description, style = MaterialTheme.typography.bodyMedium)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(category, style = MaterialTheme.typography.labelLarge, color = Color.Gray)
+            }
+            Spacer(modifier = Modifier.height(4.dp))
 
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            // Description
+            Text(
+                description,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Health Rating
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Text("Health Rating:")
                 RatingBar(score = healthRating)
+            }
+
+            // Allergic Warning (if applicable)
+            if (isAllergicToThisIngredient) {
+                Log.d("IngredientCard", "Rendering allergic text for: $name, Allergic list: $allergicIngredients")
+                Text(
+                    text = "You've marked this as an allergen.",
+                    color = Color.Red,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            } else {
+                Log.d("IngredientCard", "Not rendering allergic text for: $name, Allergic list: $allergicIngredients")
             }
         }
     }
