@@ -33,7 +33,7 @@ val BottomNavItems = listOf(
     BottomNavItem(
         title = "Take Picture",
         route = "Take Picture",
-        selectedIcon = null, //TO DO: change it to be camera
+        selectedIcon = null,
         unselectedIcon = null,
         customIcon = R.drawable.camera_icon
     ),
@@ -46,7 +46,7 @@ val BottomNavItems = listOf(
     ),
 
     BottomNavItem(
-        title = "Favourites Items",
+        title = "Favourite Items",
         route = "Favourites Items",
         selectedIcon = Icons.Filled.Star,
         unselectedIcon = Icons.Outlined.Star

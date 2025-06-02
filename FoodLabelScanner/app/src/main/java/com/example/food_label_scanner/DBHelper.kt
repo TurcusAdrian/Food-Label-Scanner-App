@@ -9,6 +9,9 @@ import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 import androidx.lifecycle.distinctUntilChanged
+import com.example.food_label_scanner.barcode_functionality.levenshteinDistance
+import com.example.food_label_scanner.barcode_functionality.process_ingredients
+import com.example.food_label_scanner.barcode_functionality.remove_diacritics
 import com.example.food_label_scanner.database.Ingredient
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -69,8 +72,8 @@ class DBHelper @Inject constructor(
         try {
             val createUsersTableQuery = ("CREATE TABLE $TABLE_USERS (" +
                     "$COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    "$COLUMN_USERNAME TEXT, " +
-                    "$COLUMN_PASSWORD TEXT)")
+                    "$COLUMN_USERNAME TEXT UNIQUE, " +
+                    "$COLUMN_PASSWORD TEXT UNIQUE)")
             db?.execSQL(createUsersTableQuery)
             Log.d("DBHelper", "Users table created")
 
@@ -136,14 +139,20 @@ class DBHelper @Inject constructor(
     // User Table Methods
     fun insertUser(username: String, password: String): Long {
         val db = writableDatabase
+        val normalizedUsername = username.trim()
         val values = ContentValues().apply {
-            put(COLUMN_USERNAME, username)
+            put(COLUMN_USERNAME, normalizedUsername)
             put(COLUMN_PASSWORD, password)
         }
         return try {
-            db.insert(TABLE_USERS, null, values)
+            val rowId = db.insert(TABLE_USERS, null, values)
+            Log.d("DBHelper", "Inserted user: $normalizedUsername, rowId: $rowId")
+            rowId
+        } catch (e: android.database.sqlite.SQLiteConstraintException) {
+            Log.e("DBHelper", "Insert failed due to unique constraint for username: $normalizedUsername, error: ${e.message}")
+            -1L
         } finally {
-            db.close() // Close only after the operation, but let SQLiteOpenHelper manage the pool
+            db.close()
         }
     }
 
@@ -158,6 +167,37 @@ class DBHelper @Inject constructor(
             cursor.close()
             db.close()
         }
+    }
+
+    fun readUserByUsername(username: String): Boolean {
+        val db = readableDatabase
+        val normalizedUsername = username.trim() // Remove leading/trailing whitespace
+        Log.d("DBHelper", "Checking username with raw query: $normalizedUsername")
+        val query = "SELECT * FROM $TABLE_USERS WHERE $COLUMN_USERNAME = ?"
+        val whereArgs = arrayOf(normalizedUsername)
+
+        val cursor = db.rawQuery(query, whereArgs)
+        val count = cursor.count
+        val exists = count >= 1
+        Log.d("DBHelper", "Username check result: count = $count, exists = $exists")
+        cursor.close()
+        db.close()
+        return exists
+    }
+
+    fun readUserByPassword(password: String): Boolean {
+        val db = readableDatabase
+        val normalizedpassword = password.trim()
+        Log.d("DBHelper", "Checking password with raw query: $normalizedpassword")
+        val query = "SELECT * FROM $TABLE_USERS WHERE $COLUMN_PASSWORD = ?"
+        val whereArgs = arrayOf(normalizedpassword)
+        val cursor = db.rawQuery(query,whereArgs)
+        val count = cursor.count
+        val exists = count >= 1
+        Log.d("DBHelper", "Password check result: count = $count, exists = $exists")
+        cursor.close()
+        db.close()
+        return exists
     }
 
     fun getUserData(username: String): Cursor {
@@ -453,4 +493,82 @@ class DBHelper @Inject constructor(
         }.distinctUntilChanged()
             .flowOn(Dispatchers.IO)
     }
+
+
+
+
+    fun getIngredientByNameFuzzy(name: String): Map<String, Any>? {
+        val normalizedName = process_ingredients(name).uppercase()
+        val db = this.readableDatabase
+
+        // Exact match first
+        var cursor = db.query(
+            "ingredients",
+            null,
+            "name = ?",
+            arrayOf(normalizedName),
+            null,
+            null,
+            null
+        )
+        if (cursor.moveToFirst()) {
+            val result = mutableMapOf<String, Any>()
+            result["ingredient_id"] = cursor.getInt(cursor.getColumnIndexOrThrow("ingredient_id"))
+            result["name"] = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+            result["nutritional_value"] = cursor.getString(cursor.getColumnIndexOrThrow("nutritional_value"))
+            result["category_id"] = cursor.getInt(cursor.getColumnIndexOrThrow("category_id"))
+            result["health_rating"] = cursor.getInt(cursor.getColumnIndexOrThrow("health_rating"))
+            result["description"] = cursor.getString(cursor.getColumnIndexOrThrow("description"))
+            cursor.close()
+            Log.d("DBHelper", "Exact match found for '$normalizedName'")
+            return result
+        }
+        cursor.close()
+
+        // Fuzzy matching
+        cursor = db.query("ingredients", arrayOf("name"), null, null, null, null, null)
+        var bestMatch: String? = null
+        var bestDistance = Int.MAX_VALUE
+        val threshold = minOf(4, normalizedName.length / 3) // Dynamic threshold: up to 4 or 1/3 of string length
+
+        while (cursor.moveToNext()) {
+            val dbName = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+            val normalizedDbName = remove_diacritics(dbName).uppercase()
+            val distance = levenshteinDistance(normalizedName, normalizedDbName)
+            if (distance < bestDistance) {
+                bestDistance = distance
+                bestMatch = dbName
+            }
+        }
+        cursor.close()
+
+        if (bestMatch != null && bestDistance <= threshold) {
+            Log.d("DBHelper", "Fuzzy match found for '$normalizedName': '$bestMatch' with distance $bestDistance")
+            cursor = db.query(
+                "ingredients",
+                null,
+                "name = ?",
+                arrayOf(bestMatch),
+                null,
+                null,
+                null
+            )
+            if (cursor.moveToFirst()) {
+                val result = mutableMapOf<String, Any>()
+                result["ingredient_id"] = cursor.getInt(cursor.getColumnIndexOrThrow("ingredient_id"))
+                result["name"] = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+                result["nutritional_value"] = cursor.getString(cursor.getColumnIndexOrThrow("nutritional_value"))
+                result["category_id"] = cursor.getInt(cursor.getColumnIndexOrThrow("category_id"))
+                result["health_rating"] = cursor.getInt(cursor.getColumnIndexOrThrow("health_rating"))
+                result["description"] = cursor.getString(cursor.getColumnIndexOrThrow("description"))
+                cursor.close()
+                return result
+            }
+            cursor.close()
+        }
+
+        Log.w("DBHelper", "No match found for '$normalizedName' (best distance: $bestDistance, threshold: $threshold)")
+        return null
+    }
+
 }

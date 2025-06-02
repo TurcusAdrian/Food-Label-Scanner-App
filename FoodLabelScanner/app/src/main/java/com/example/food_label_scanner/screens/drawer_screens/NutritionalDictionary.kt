@@ -2,6 +2,7 @@ package com.example.food_label_scanner.screens.drawer_screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,8 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -28,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.food_label_scanner.R
 import com.example.food_label_scanner.data.Section
+import com.example.food_label_scanner.ui.theme.Cream
 
 @Composable
 fun NutritionalDictionary(){
@@ -243,11 +247,12 @@ fun NutritionalDictionary(){
         )
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().background(Cream, RectangleShape)) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(16.dp)
+                .background(Cream, RectangleShape),
             horizontalAlignment = Alignment.Start
         ) {
             item {
@@ -256,7 +261,8 @@ fun NutritionalDictionary(){
                             " categoriile ingredientelor dar și unii termeni nutriționali:\n",
                     style = TextStyle(
                         fontFamily = instrumentSerif,
-                        fontSize = 25.sp
+                        fontSize = 25.sp,
+                        color = Color.Black
                     )
                 )
             }
@@ -278,12 +284,13 @@ fun NutritionalDictionary(){
                             style = TextStyle(
                                 fontFamily = instrumentSerif,
                                 fontSize = 25.sp,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black
                             )
                         )
                         Icon(
                             imageVector = if (section.isExpanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                            contentDescription = if (section.isExpanded) "Collapse" else "Expand"
+                            contentDescription = if (section.isExpanded) "Collapse" else "Expand",tint = Color.Black
                         )
                     }
                     AnimatedVisibility(visible = section.isExpanded) {
@@ -292,7 +299,8 @@ fun NutritionalDictionary(){
                                 text = section.content,
                                 style = TextStyle(
                                     fontFamily = instrumentSerif,
-                                    fontSize = 20.sp
+                                    fontSize = 20.sp,
+                                    color = Color.Black
                                 ),
                                 modifier = Modifier.padding(16.dp)
                             )

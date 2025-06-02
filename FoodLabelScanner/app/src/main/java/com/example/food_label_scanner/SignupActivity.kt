@@ -32,16 +32,36 @@ class SignupActivity : AppCompatActivity() {
         }
     }
 
-    private fun signupDatabase(username:String, password:String){
-        val insertedRowId = databaseHelper.insertUser(username,password)
-        if(insertedRowId != -1L){
-            Toast.makeText(this,"SignUp Successful", Toast.LENGTH_SHORT).show()
+    private fun signupDatabase(username: String, password: String) {
+        if (username.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Username and password cannot be empty", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Check if username already exists
+        val existingUser = databaseHelper.readUserByUsername(username)
+        if (existingUser != false) {
+            Toast.makeText(this, "Username already exists", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Optionally check if password is already in use (if you want unique passwords)
+        val existingPassword = databaseHelper.readUserByPassword(password)
+        if (existingPassword) {
+            Toast.makeText(this, "Password already in use", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Attempt to insert the new user
+        val insertedRowId = databaseHelper.insertUser(username, password)
+        if (insertedRowId != -1L) {
+            Toast.makeText(this, "SignUp Successful", Toast.LENGTH_SHORT).show()
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()
-        }
-        else{
-            Toast.makeText(this, "SignUp failed", Toast.LENGTH_SHORT).show()
+        } else {
+            // This block will handle database constraint violations (e.g., duplicate username)
+            Toast.makeText(this, "SignUp failed: Username must be unique", Toast.LENGTH_SHORT).show()
         }
     }
 

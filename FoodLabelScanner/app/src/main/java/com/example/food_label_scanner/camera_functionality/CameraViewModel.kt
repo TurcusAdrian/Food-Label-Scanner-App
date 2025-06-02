@@ -8,8 +8,10 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
+import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.LifecycleCameraController
+import androidx.camera.view.PreviewView
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
@@ -27,14 +29,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CameraViewModel @Inject constructor(
-    private val savePhotoToGallery: SavePhotoToGallery, @ApplicationContext private val context: Context
-) : ViewModel(){
+    private val savePhotoToGallery: SavePhotoToGallery,
+    @ApplicationContext private val context: Context
+) : ViewModel() {
 
-
-    var cameraController: LifecycleCameraController = LifecycleCameraController(context)
+    fun getCameraController(): LifecycleCameraController = LifecycleCameraController(context).apply {
+        setEnabledUseCases(0) // Disable all use cases initially
+    }
 
     fun photoCapture(
-        lifecycleOwner: LifecycleOwner, // Add LifecycleOwner
+        lifecycleOwner: LifecycleOwner,
         onPhotoCaptured: (Bitmap) -> Unit
     ) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
@@ -42,24 +46,16 @@ class CameraViewModel @Inject constructor(
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()
 
-            // Create ImageCapture use case
             val imageCapture = ImageCapture.Builder()
-                .setTargetRotation(android.view.Surface.ROTATION_0) // Set rotation if needed
+                .setTargetRotation(android.view.Surface.ROTATION_0)
                 .build()
 
-            // Select back camera as a default
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
             try {
-                // Unbind use cases before rebinding
                 cameraProvider.unbindAll()
+                cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, imageCapture)
 
-                // Bind use cases to camera
-                cameraProvider.bindToLifecycle(
-                    lifecycleOwner, cameraSelector, imageCapture
-                )
-
-                // Capture image
                 imageCapture.takePicture(
                     ContextCompat.getMainExecutor(context),
                     object : ImageCapture.OnImageCapturedCallback() {
@@ -68,29 +64,42 @@ class CameraViewModel @Inject constructor(
                                 .toBitmap()
                                 .rotateBitmap(image.imageInfo.rotationDegrees)
 
-                            onPhotoCaptured(correctedBitmap)
+                            // Magnify the bitmap (e.g., scale by 2x)
+                            val scaleFactor = 4f
+                            val magnifiedBitmap = Bitmap.createScaledBitmap(
+                                correctedBitmap,
+                                (correctedBitmap.width * scaleFactor).toInt(),
+                                (correctedBitmap.height * scaleFactor).toInt(),
+                                true // Filter for better quality
+                            )
+
+                            // Recycle the original bitmap to free memory
+                            correctedBitmap.recycle()
+
+                            onPhotoCaptured(magnifiedBitmap)
                             image.close()
+
+                            cameraProvider.unbind(imageCapture)
+                            Log.d("CameraViewModel", "Image captured, magnified, and unbound successfully")
                         }
 
                         override fun onError(exception: ImageCaptureException) {
-                            Log.e("CameraContent", "Error capturing image", exception)
+                            Log.e("CameraViewModel", "Error capturing image: ${exception.message}", exception)
                         }
                     }
                 )
             } catch (exc: Exception) {
-                Log.e("CameraContent", "Use case binding failed", exc)
+                Log.e("CameraViewModel", "Use case binding failed: ${exc.message}", exc)
             }
         }, ContextCompat.getMainExecutor(context))
     }
 
     fun Bitmap.rotateBitmap(rotationDegrees: Int): Bitmap {
         val matrix = Matrix().apply {
-            postRotate(-rotationDegrees.toFloat())
-            postScale(-1f, -1f)
+            postRotate(rotationDegrees.toFloat())
         }
         return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
     }
-
 
     private val _capturedImage = MutableStateFlow<Bitmap?>(null)
     val capturedImage = _capturedImage.asStateFlow()
@@ -107,5 +116,4 @@ class CameraViewModel @Inject constructor(
         _capturedImage.value?.recycle()
         super.onCleared()
     }
-
 }

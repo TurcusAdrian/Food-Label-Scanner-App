@@ -12,6 +12,7 @@ import kotlinx.coroutines.SupervisorJob
 import android.media.Image
 import androidx.annotation.OptIn
 import androidx.camera.core.ImageAnalysis
+import com.example.food_label_scanner.barcode_functionality.extractIngredientsSection
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
 import kotlinx.coroutines.launch
@@ -31,7 +32,6 @@ class TextRecognitionAnalyzer(
     private val textRecognizer: TextRecognizer =
         TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
-    // Method for analyzing text from an image proxy (live camera)
     @OptIn(ExperimentalGetImage::class)
     override fun analyze(imageProxy: ImageProxy) {
         scope.launch {
@@ -44,7 +44,6 @@ class TextRecognitionAnalyzer(
         }
     }
 
-    // Method for analyzing text from a Bitmap (gallery image)
     fun analyzeFromBitmap(bitmap: Bitmap) {
         scope.launch {
             val inputImage = InputImage.fromBitmap(bitmap, 0)
@@ -52,14 +51,27 @@ class TextRecognitionAnalyzer(
         }
     }
 
-    // Shared method to process text from an InputImage
     private suspend fun processTextFromImage(inputImage: InputImage) {
         suspendCoroutine { continuation ->
             textRecognizer.process(inputImage)
                 .addOnSuccessListener { visionText: Text ->
-                    val detectedText: String = visionText.text
-                    if (detectedText.isNotBlank()) {
-                        onDetectedTextUpdated(detectedText)
+                    // Sort textBlocks by their average Y-coordinate (approximating section order)
+                    val sortedBlocks = visionText.textBlocks.sortedBy { block ->
+                        block.lines.mapNotNull { it.boundingBox?.top }.average().toInt()
+                    }
+
+                    // Process each block, sorting lines within it
+                    val orderedText = sortedBlocks.joinToString("\n\n") { block ->
+                        val sortedLines = block.lines.sortedWith(compareBy(
+                            { it.boundingBox?.top ?: 0 }, // Primary sort by top Y-coordinate
+                            { it.boundingBox?.left ?: 0 }  // Secondary sort by left X-coordinate
+                        ))
+                        sortedLines.joinToString("\n") { it.text }
+                    }
+
+                    if (orderedText.isNotBlank()) {
+                        //onDetectedTextUpdated(extractIngredientsSection(orderedText))
+                         onDetectedTextUpdated(orderedText)
                     }
                 }
                 .addOnCompleteListener {

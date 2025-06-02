@@ -8,9 +8,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -24,52 +27,64 @@ import androidx.compose.ui.unit.sp
 import com.example.food_label_scanner.R
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavHostController
+import com.example.food_label_scanner.ui.theme.Cream
+import com.example.food_label_scanner.ui.theme.Teal2
 
 @Composable
 fun PrivacyPolicy(navController: NavHostController) {
     val instrument_serif = FontFamily(Font(R.font.instrument_serif_regular))
     val scrollState = rememberScrollState()
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF1A1A1A))
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Privacy Policy",
-            style = TextStyle(
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                fontFamily = instrument_serif
-            ),
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
 
-        Card(
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = Cream // Apply cream color to entire surface
+    ) {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
+                .fillMaxSize()
+                .background(Cream)
+                .padding(16.dp)
         ) {
             Text(
-                text = longPrivacyPolicyText,
+                text = "Privacy Policy",
                 style = TextStyle(
-                    fontSize = 14.sp,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
                     color = Color.Black,
-                    fontFamily = instrument_serif,
-                    textAlign = TextAlign.Justify
+                    fontFamily = instrument_serif
                 ),
-                modifier = Modifier
-                    .padding(16.dp)
-                    .verticalScroll(scrollState)
+                modifier = Modifier.padding(bottom = 16.dp)
             )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = { navController.popBackStack() },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(text = "Back")
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f), // Card takes up available space
+                shape = RoundedCornerShape(8.dp), // Optional: give card rounded corners
+                colors = CardDefaults.cardColors(
+                    containerColor = Teal2 // Set the background color of the Card here
+            )) {
+                Text(
+                    text = longPrivacyPolicyText,
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = Color.White,
+                        fontFamily = instrument_serif,
+                        textAlign = TextAlign.Justify
+                    ),
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .verticalScroll(scrollState)
+                        .background(Teal2)
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Back")
+            }
         }
     }
 }

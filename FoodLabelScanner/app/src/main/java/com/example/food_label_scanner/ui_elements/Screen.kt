@@ -39,6 +39,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -72,17 +73,17 @@ import com.example.food_label_scanner.screens.drawer_screens.settings_screens.No
 import com.example.food_label_scanner.screens.drawer_screens.settings_screens.PrivacyPolicy
 import com.example.food_label_scanner.screens.drawer_screens.settings_screens.Support
 import com.example.food_label_scanner.screens.drawer_screens.settings_screens.TermsOfService
-import com.example.food_label_scanner.NotificationHelper.*
 import com.example.food_label_scanner.barcode_functionality.BarcodeDisplayScreen
+import com.example.food_label_scanner.barcode_functionality.extractIngredientsSection
 import com.example.food_label_scanner.database.IngredientDetailsViewModel
+import com.example.food_label_scanner.screens.bottom_bar_screens.Home
 import com.example.food_label_scanner.screens.bottom_bar_screens.Search
 import com.example.food_label_scanner.screens.drawer_screens.*
 import com.example.food_label_scanner.screens.drawer_screens.HowToUse
-import com.example.food_label_scanner.text_recognition.TesseractOcrAnalyzer
 import com.example.food_label_scanner.text_recognition.TextRecognitionAnalyzer
-import com.googlecode.tesseract.android.TessBaseAPI
 import java.io.File
 import java.io.FileOutputStream
+import java.net.URLEncoder
 
 
 fun checkNotificationPermission(context: Context): Boolean {
@@ -117,6 +118,7 @@ fun Screen(modifier: Modifier = Modifier) {
 
 
     fun onTextUpdated(updatedText: String) {
+        //detectedText = extractIngredientsSection(updatedText)
         detectedText = updatedText
     }
 
@@ -136,31 +138,6 @@ fun Screen(modifier: Modifier = Modifier) {
         }
     )
 
-
-/*
-    val analyzer = TesseractOcrAnalyzer(context) { updatedText -> detectedText = updatedText }
-
-    val photoLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = { uri ->
-            uri?.let { imageUri ->
-                try {
-                    val source = ImageDecoder.createSource(context.contentResolver, imageUri)
-                    val bitmap = ImageDecoder.decodeBitmap(source)
-                    analyzer.analyze(bitmap) // Use TesseractOcrAnalyzer to process the bitmap
-                } catch (e: Exception) {
-                    Log.e("Screen", "Error processing picked image: ${e.message}", e)
-                }
-            }
-        }
-    )
-
-    DisposableEffect(Unit) {
-        onDispose {
-            analyzer.onDestroy()
-        }
-    }
-*/
 
     /*
     val photolauncher = rememberLauncherForActivityResult(
@@ -193,6 +170,8 @@ fun Screen(modifier: Modifier = Modifier) {
 
     CameraPermission()
 
+    val sharedTextViewModel: SharedTextViewModel = hiltViewModel() // Or viewModel()
+
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -214,6 +193,7 @@ fun Screen(modifier: Modifier = Modifier) {
                                     "Home" -> {
                                         selectedimage = null
                                         detectedText = "No text detected yet..."
+                                        sharedTextViewModel.clearDetectedText()
                                         navigationController.navigate(Screens.Home.screen) {
                                             popUpTo(0)
                                         }
@@ -303,26 +283,39 @@ fun Screen(modifier: Modifier = Modifier) {
                     startDestination = Screens.Home.screen
                 ) {
                     composable(Screens.Home.screen) {
+                        Home(
+                            selectedImage = selectedimage,
+                            detectedText = detectedText,
+                            onTextUpdated = { detectedText = it },
+                            sharedTextViewModel = sharedTextViewModel,
+                            navigationController = navigationController,
+                            onClearSelectedImage = { selectedimage = null }
+                        )
+                        /*
                         if (selectedimage != null) {
                             DisplayImagePreview(
                                 selectedImage = selectedimage,
                                 detectedText = detectedText,
                                 onImageClick = { selectedimage = null })
                         } else {
-                        /*
-                            TesseractCameraContent(
+                            CameraCaptureContent(
                                 detectedText = detectedText,
-                                onDetectedTextUpdated = { detectedText = it },
-                                onPhotoCaptured = { bitmap -> viewModel.storePhotoInGallery(bitmap) }
-                            ) */
-                            CameraContent(
-                                detectedText,
-                                { detectedText = it },
-                                { bitmap -> viewModel.storePhotoInGallery(bitmap) })
+                                onDetectedTextUpdated = { updatedText ->
+                                    onTextUpdated(updatedText)
+                                },
+                                onPhotoCaptured = { /* No gallery save, ignore this callback */ },
+                                sharedTextViewModel = sharedTextViewModel,
+                                navigationController = navigationController
+                            )
                         }
+
+                         */
                     }
+
+
                     composable(Screens.Search.screen) { Search(navigationController) }
                     composable(Screens.Favourites.screen) { Favourites() }
+
                     //Drawer screens:
                     composable(Screens.About.screen) { About() }
                     composable(Screens.HowToUse.screen) { HowToUse() }
@@ -359,13 +352,14 @@ fun Screen(modifier: Modifier = Modifier) {
 
                     composable(Screens.BarcodeDisplay.screen) { backStackEntry ->
                         val barcode = backStackEntry.arguments?.getString("barcode")
-                        barcode?.let {
-                            BarcodeDisplayScreen(barcode = it)
+                        if(barcode==null){
+                            Text("Barcode doesn;t exist")
+                        }else {
+                            barcode?.let {
+                                BarcodeDisplayScreen(barcode = it)
+                            }
                         }
                     }
-
-
-
 
 
                     composable(Screens.AllergicIngredients.screen) { // Add this composable
@@ -376,6 +370,23 @@ fun Screen(modifier: Modifier = Modifier) {
                         val ingredientDetailsViewModel: IngredientDetailsViewModel =
                             hiltViewModel()
                         AllergicIngredientsList()
+                    }
+
+
+                    composable(
+                        route = Screens.TextDisplay.routeWithoutArgs
+                    ) {
+                        val currentDetectedTextFromVM by sharedTextViewModel.detectedTextState.collectAsState()
+
+                        Log.d("NavGraph", "TextDisplayScreen recomposing. Text from VM: $currentDetectedTextFromVM")
+
+                        TextDisplayScreen(
+                            detectedText = currentDetectedTextFromVM ?: "No text detected or available",
+                            onBackClick = {
+                                sharedTextViewModel.clearDetectedText()
+                                navigationController.popBackStack(Screens.Home.screen, inclusive = false)
+                            }
+                        )
                     }
 
                 }

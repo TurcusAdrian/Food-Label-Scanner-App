@@ -76,7 +76,7 @@ fun GalleryItem(imageUri: Uri, onDelete: () -> Unit, onRemove : () -> Unit) {
                 )
 
                 DropdownMenuItem(
-                    text = { Text("Delete") },
+                    text = { Text("Delete from device") },
                     onClick = {
                         menuExpanded = false
                         onDelete()

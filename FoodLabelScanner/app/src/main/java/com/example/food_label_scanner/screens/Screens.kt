@@ -35,6 +35,7 @@ sealed class Screens(val screen: String) {
 
     object AllergicIngredients : Screens("allergic_ingredients")
 
-
-
+    object TextDisplay : Screens("TextDisplayScreen") { // Route without arguments
+        val routeWithoutArgs = "TextDisplayScreen"
+    }
 }

@@ -23,66 +23,80 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.food_label_scanner.R
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavHostController
+import com.example.food_label_scanner.ui.theme.Cream
+import com.example.food_label_scanner.ui.theme.Teal2
 
 @Composable
 fun TermsOfService(navController: NavHostController) {
     val instrument_serif = FontFamily(Font(R.font.instrument_serif_regular))
     val scrollState = rememberScrollState()
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF1A1A1A))
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Terms of Service",
-            style = TextStyle(
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                fontFamily = instrument_serif
-            ),
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
 
-        Card(
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = Cream // Apply cream color to entire surface
+    ) {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
+                .fillMaxSize()
+                .background(Cream)
+                .padding(16.dp)
         ) {
             Text(
-                text = longTermsOfServiceText,
+                text = "Terms of Service",
                 style = TextStyle(
-                    fontSize = 14.sp,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
                     color = Color.Black,
-                    fontFamily = instrument_serif,
-                    textAlign = TextAlign.Justify
+                    fontFamily = instrument_serif
                 ),
-                modifier = Modifier
-                    .padding(16.dp)
-                    .verticalScroll(scrollState)
+                modifier = Modifier.padding(bottom = 16.dp)
             )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Button(
-                onClick = { navController.popBackStack() },
-                modifier = Modifier.weight(1f)
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                colors = CardDefaults.cardColors(
+                    containerColor = Teal2 // Set the background color of the Card here
+                )
             ) {
-                Text(text = "Decline")
+                Text(
+                    text = longTermsOfServiceText,
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = Color.White,
+                        fontFamily = instrument_serif,
+                        textAlign = TextAlign.Justify
+                    ),
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .verticalScroll(scrollState)
+                )
             }
-            Spacer(modifier = Modifier.weight(0.1f))
-            Button(
-                onClick = { navController.popBackStack() },
-                modifier = Modifier.weight(1f)
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Accept")
+                Button(
+                    onClick = { navController.popBackStack() },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(text = "Decline")
+                }
+                Spacer(modifier = Modifier.weight(0.1f))
+                Button(
+                    onClick = { navController.popBackStack() },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(text = "Accept")
+                }
             }
         }
     }

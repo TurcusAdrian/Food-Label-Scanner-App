@@ -45,9 +45,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -64,8 +66,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import com.example.food_label_scanner.NotificationHelper
+import com.example.food_label_scanner.R
 import com.example.food_label_scanner.screens.AllergicIngredientsViewModel
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
@@ -80,6 +84,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.ceil
 
 
@@ -107,9 +112,6 @@ fun BarcodeDisplayScreen(barcode: String) {
     var arrayIngredients2: List<String> by remember { mutableStateOf(emptyList()) }
 
 
-
-
-
     val allergicViewModel: AllergicIngredientsViewModel = hiltViewModel()
     var currentUserAllergicIngredients by remember { mutableStateOf<List<String>>(emptyList()) }
 
@@ -129,6 +131,8 @@ fun BarcodeDisplayScreen(barcode: String) {
         }
     }
 
+    val coroutineScope = rememberCoroutineScope()
+
 
     LaunchedEffect(barcode) {
         fetchProduct(barcode) { name, ing, brnd ->
@@ -143,6 +147,7 @@ fun BarcodeDisplayScreen(barcode: String) {
             Log.d("BarcodeScreen", "IngredientDetails: $ingredientDetails")
         }
     }
+
 
     LazyColumn(
         modifier = Modifier.padding(16.dp)
@@ -170,9 +175,23 @@ fun BarcodeDisplayScreen(barcode: String) {
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         }
+
+        // If no valid ingredients found, show fallback message
+        if (arrayIngredients2.isEmpty()) {
+            item {
+                Text(
+                    text = "No ingredients found. Try using Label Scanning instead.",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.Red,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+            }
+        }
+
         items(
             items = ingredientDetails,
-            key = { detail -> detail } // Use detail as a key to force recomposition
+            key = { detail -> detail }
         ) { detail ->
             IngredientCard(
                 detail = detail,
@@ -182,7 +201,39 @@ fun BarcodeDisplayScreen(barcode: String) {
     }
 }
 
-private fun fetchProduct(
+
+fun levenshteinDistance(s1: String, s2: String): Int {
+    val len1 = s1.length
+    val len2 = s2.length
+
+    // Create a matrix to store distances
+    val dp = Array(len1 + 1) { IntArray(len2 + 1) }
+
+    // Initialize the first row and column
+    for (i in 0..len1) {
+        dp[i][0] = i
+    }
+    for (j in 0..len2) {
+        dp[0][j] = j
+    }
+
+    // Fill the matrix
+    for (i in 1..len1) {
+        for (j in 1..len2) {
+            val cost = if (s1[i - 1].lowercaseChar() == s2[j - 1].lowercaseChar()) 0 else 1
+            dp[i][j] = minOf(
+                dp[i - 1][j] + 1,      // Deletion
+                dp[i][j - 1] + 1,      // Insertion
+                dp[i - 1][j - 1] + cost // Substitution
+            )
+        }
+    }
+
+    return dp[len1][len2]
+}
+
+
+suspend fun fetchProduct(
     barcode: String,
     onResult: (String?, String?, String?) -> Unit
 ) {
@@ -245,162 +296,7 @@ private fun fetchProduct(
     })
 }
 
-val ignoredKeywords = setOf(
-    "EMULSIFIANTI", "CONSERVANTI", "AGENTI DE CRESTERE", "COLORANTI",
-    "REGULATOR DE ACIDITATE", "STABILIZATORI", "EMULGATOR:", "AROME", "INGREDIENT:", "EMULSIFIANT:","VOPSEA:"
-)
 
-fun uppercase_text(ingredients: String): String {
-    return ingredients.uppercase()
-}
-
-fun remove_diacritics(ingredients: String): String {
-    val correctedIngredients = StringBuilder()
-
-    for (char in ingredients) {
-        when (char) {
-            'Ă' -> correctedIngredients.append('A')
-            'ă' -> correctedIngredients.append('a')
-            'Â' -> correctedIngredients.append('A')
-            'â' -> correctedIngredients.append('a')
-            'Î' -> correctedIngredients.append('I')
-            'î' -> correctedIngredients.append('i')
-            'Ș' -> correctedIngredients.append('S')
-            'ș' -> correctedIngredients.append('s')
-            'Ț' -> correctedIngredients.append('T')
-            'ț' -> correctedIngredients.append('t')
-            '_' -> correctedIngredients.append("")
-            '-' -> correctedIngredients.append(" ")
-            else -> correctedIngredients.append(char)
-        }
-    }
-
-    return correctedIngredients.toString()
-}
-
-fun extractParenthesisContent(text: String): String {
-    val start = text.indexOf("(")
-    val end = text.indexOf(")")
-    return if (start != -1 && end != -1 && end > start) {
-        text.substring(start + 1, end)
-    } else {
-        ""
-    }
-}
-
-fun splitIngredients(processedIngredients: String): List<String> {
-    // 1. Split the string by the comma delimiter
-    val ingredientsList = processedIngredients.split(",")
-
-    // 2. Trim whitespace from each ingredient (optional but recommended)
-    val trimmedIngredientsList = ingredientsList.map { it.trim() }
-
-    return trimmedIngredientsList
-}
-
-fun process_ingredients(ingredients: String): String {
-    val withoutDiacritics = remove_diacritics(ingredients)
-    return uppercase_text(withoutDiacritics)
-}
-
-fun splitIngredientsAdvanced(text: String): List<String> {
-    val result = mutableListOf<String>()
-    var current = StringBuilder()
-    var parenthesesLevel = 0
-
-    for (char in text) {
-        when (char) {
-            '(' -> {
-                parenthesesLevel++
-                current.append(char)
-            }
-            ')' -> {
-                parenthesesLevel--
-                current.append(char)
-            }
-            ',' -> {
-                if (parenthesesLevel == 0) {
-                    result.add(current.toString().trim())
-                    current = StringBuilder()
-                } else {
-                    current.append(char)
-                }
-            }
-            else -> current.append(char)
-        }
-    }
-    if (current.isNotBlank()) {
-        result.add(current.toString().trim())
-    }
-    return result
-}
-
-fun extractValidIngredients(rawIngredients: List<String>, dbHelper: DBHelper): List<String> {
-    val validIngredients = mutableListOf<String>()
-
-    for (ingredient in rawIngredients) {
-        // Uppercase and clean
-        val cleaned = ingredient.uppercase()
-            .replace(Regex("^(CONSERVANT(I)?|EMULGATOR(I)?|EMULSIFIANT(I)?|COLORANT(I)?|REGULATOR DE ACIDITATE|AGENTI DE CRESTERE|VOPSEA):?\\s*"), "")
-
-        val keyword = cleaned.split("(", ",", ";",":")[0].trim()
-
-        if (keyword in ignoredKeywords) {
-            // Check content in parentheses
-            val inside = extractParenthesisContent(cleaned)
-            if (inside.isNotEmpty()) {
-                val nested = splitIngredientsAdvanced(inside)
-                for (nestedIng in nested) {
-                    val name = nestedIng.trim()
-                    if (dbHelper.getIngredientByName(name) != null) {
-                        validIngredients.add(name)
-                    }
-                }
-            }
-            continue
-        }
-
-        // Ingredient without parentheses
-        val plain = cleaned.substringBefore("(").trim()
-        if (dbHelper.getIngredientByName(plain) != null) {
-            validIngredients.add(plain)
-        }
-
-        // Also consider the parenthesis content (e.g., UNT (LAIT))
-        val inner = extractParenthesisContent(cleaned)
-        if (inner.isNotEmpty()) {
-            val innerTrimmed = inner.trim()
-            if (dbHelper.getIngredientByName(innerTrimmed) != null) {
-                validIngredients.add(innerTrimmed)
-            }
-        }
-    }
-
-    return validIngredients.distinct()
-}
-
-
-fun getIngredientDetails(ingredients: List<String>, dbHelper: DBHelper): List<String> {
-    val details = mutableListOf<String>()
-    for (ingredientName in ingredients) {
-        val ingredientData = dbHelper.getIngredientByName(ingredientName)
-        if (ingredientData != null) {
-            val name = ingredientData["name"]
-            val nutritionalValue = ingredientData["nutritional_value"]
-            val categoryId = ingredientData["category_id"] as Int // Get category ID
-            val healthRating = ingredientData["health_rating"]
-            val description = ingredientData["description"]
-
-            val categoryName = dbHelper.getCategoryNameById(categoryId) ?: "Category not found" // Get category name
-
-            val detail = "Name: $name, Nutritional Value: $nutritionalValue, Category: $categoryName, Health Rating: $healthRating, Description: $description"
-            details.add(detail)
-        } else {
-            details.add("Ingredient '$ingredientName' not found in database")
-        }
-    }
-    return details
-}
 
 @Composable
 fun IngredientCard(detail: String, allergicIngredients: List<String>) {
@@ -449,8 +345,8 @@ fun IngredientCard(detail: String, allergicIngredients: List<String>) {
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text("Health Rating:")
-                RatingBar(score = healthRating)
+                Text("Health Rating:   ")
+                RatingIndicator(healthRating) //score = healthRating
             }
 
             // Allergic Warning (if applicable)
@@ -489,22 +385,42 @@ fun parseIngredientDetail(detail: String): ParsedIngredient {
     val healthRating = healthRatingMatch?.groupValues?.get(1)?.toIntOrNull() ?: 0
     val description = descriptionMatch?.groupValues?.get(1) ?: "Unknown"
 
+    Log.d("ParseIngredientDetail", "Detail: '$detail', Parsed Health Rating: $healthRating")
+
     return ParsedIngredient(name, nutritionalValue, category, healthRating, description)
 }
 
+
+
 @Composable
-fun RatingBar(score: Int, maxScore: Int = 5) {
-    Row {
-        for (i in 1..maxScore) {
+fun RatingIndicator(healthRating: Int) {
+    when (healthRating) {
+        in 4..5 -> {
             Icon(
-                imageVector = when {
-                    i <= score -> Icons.Filled.Star
-                    i == ceil(score.toDouble()).toInt() && score % 1 != 0 -> Icons.Outlined.Star
-                    else -> Icons.Outlined.Star
-                },
-                contentDescription = null,
-                tint = Color.Yellow
+                imageVector = Icons.Default.ThumbUp,
+                contentDescription = "Good",
+                tint = Color.Green,
+                modifier = Modifier.size(32.dp)
             )
+        }
+        3 -> {
+            Icon(
+                imageVector = Icons.Default.ThumbUp,
+                contentDescription = "Average",
+                tint = Color(0xFFFFC107),
+                modifier = Modifier.size(32.dp)
+            )
+        }
+        in 1..2 -> {
+            Icon(
+                painter = painterResource(id = R.drawable.thumbs_down_red),
+                contentDescription = "Bad",
+                tint = Color(0xFFFF0000),
+                modifier = Modifier.size(32.dp)
+            )
+        }
+        else -> {
+            Text("Incorrect rating - please ask developer for details")
         }
     }
 }

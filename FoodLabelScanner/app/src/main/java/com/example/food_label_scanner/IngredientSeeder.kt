@@ -11,21 +11,21 @@ class IngredientSeeder(private val context: Context) {
 
         try {
             // Insert categories if they don’t exist
-            insertCategoryIfNotExists(dbHelper, 1, "Sweeteners", "Ingredients used to add sweetness, natural or artificial")
-            insertCategoryIfNotExists(dbHelper, 2, "Fats and Oils", "Sources of dietary fats, used for cooking or texture")
-            insertCategoryIfNotExists(dbHelper, 3, "Preservatives", "Used to extend shelf life and prevent spoilage")
-            insertCategoryIfNotExists(dbHelper, 4, "Thickeners / Stabilizers", "Improve texture or consistency, often from gums or starches")
-            insertCategoryIfNotExists(dbHelper, 5, "Emulsifiers", "Allow mixing of oil and water, stabilize mixtures")
-            insertCategoryIfNotExists(dbHelper, 6, "Acidifiers / Acidity Regulators", "Control acidity to affect taste or preservation")
-            insertCategoryIfNotExists(dbHelper, 7, "Flavorings", "Enhance or simulate flavors, can be natural or artificial")
-            insertCategoryIfNotExists(dbHelper, 8, "Colorants", "Used to alter or enhance the color of food products")
-            insertCategoryIfNotExists(dbHelper, 9, "Dairy", "Milk-based ingredients used for taste, texture, or nutrition")
-            insertCategoryIfNotExists(dbHelper, 10, "Grains / Flours", "Base carbohydrate sources for structure and bulk")
-            insertCategoryIfNotExists(dbHelper, 11, "Proteins", "Protein-rich ingredients from animal or plant sources")
-            insertCategoryIfNotExists(dbHelper, 12, "Vitamins / Minerals", "Nutrients added for health or regulatory reasons")
-            insertCategoryIfNotExists(dbHelper, 13, "Additives (other)", "Functional agents like anti-caking, humectants, etc.")
-            insertCategoryIfNotExists(dbHelper, 14, "Nuts & Seeds", "Plant-based sources of fat, protein, and fiber")
-            insertCategoryIfNotExists(dbHelper, 15, "Fruits & Vegetables", "Plant-based ingredients used for flavor or nutrition")
+            insertCategoryIfNotExists(dbHelper, 1, "Îndulcitori", "Ingrediente naturale sau artificiale folosite pentru a conferi gust dulce")
+            insertCategoryIfNotExists(dbHelper, 2, "Grăsimi și Uleiuri", "Surse de grăsimi alimentare, utilizate pentru gătit sau textură")
+            insertCategoryIfNotExists(dbHelper, 3, "Conservanți", "Utilizați pentru a prelungi durata de viață a produselor alimentare")
+            insertCategoryIfNotExists(dbHelper, 4, "Îngroșători / Stabilizatori", "Îmbunătățesc textura sau consistența produselor")
+            insertCategoryIfNotExists(dbHelper, 5, "Emulgatori", "Permite amestecarea apei cu uleiul și stabilizează compozițiile")
+            insertCategoryIfNotExists(dbHelper, 6, "Acidifianți / Regulatori de aciditate", "Controlează aciditatea alimentelor pentru gust sau conservare")
+            insertCategoryIfNotExists(dbHelper, 7, "Arome", "Amplifică sau imită gusturile, pot fi naturale sau artificiale")
+            insertCategoryIfNotExists(dbHelper, 8, "Coloranți", "Modifică sau îmbunătățesc culoarea produselor alimentare")
+            insertCategoryIfNotExists(dbHelper, 9, "Lactate", "Ingrediente pe bază de lapte pentru gust, textură sau valoare nutritivă")
+            insertCategoryIfNotExists(dbHelper, 10, "Cereale / Făinuri", "Surse de carbohidrați de bază pentru volum și structură")
+            insertCategoryIfNotExists(dbHelper, 11, "Proteine", "Ingrediente bogate în proteine de origine animală sau vegetală")
+            insertCategoryIfNotExists(dbHelper, 12, "Vitamine / Minerale", "Nutrienți adăugați pentru sănătate sau cerințe legale")
+            insertCategoryIfNotExists(dbHelper, 13, "Aditivi (diversi)", "Agenți funcționali precum antiaglomeranți, umectanți, etc.")
+            insertCategoryIfNotExists(dbHelper, 14, "Nuci și Semințe", "Surse vegetale de grăsimi, proteine și fibre")
+            insertCategoryIfNotExists(dbHelper, 15, "Fructe și Legume", "Ingrediente din plante pentru gust sau valoare nutritivă")
 
 
             // Insert ingredients only if they don't already exist
@@ -105,6 +105,8 @@ class IngredientSeeder(private val context: Context) {
                         " utilizat frecvent ca conservant și pentru reglarea acidității alimentelor." +
                     " Are efect antioxidant și contribuie la menținerea pH-ului produselor. Găsit în tablete efervescente sau folosit ca înlocuitor la sucul de lămâie.")
 
+            insertIngredientIfNotExists(dbHelper, "ACID CITRIC", "Natural preservative and acidity regulator",
+                1, 6, "Acidul citric este un aditiv alimentar natural, găsit în fructe precum lămâia și portocala. Este utilizat pentru a conserva alimentele și pentru a regla aciditatea acestora. Are și proprietăți antioxidante moderate.")
 
 
 
@@ -114,14 +116,14 @@ class IngredientSeeder(private val context: Context) {
                         "Cantitate recomandată: 2–2.5 litri pe zi pentru un adult")
 
             insertIngredientIfNotExists(dbHelper, "UNT", " ~7 kcal/g, bogat în grăsimi saturate",
-                1,8, "Untul este obținut prin baterea smântânii și conține grăsimi saturate," +
+                9,8, "Untul este obținut prin baterea smântânii și conține grăsimi saturate," +
                         " vitamine liposolubile (A, D, E) și colesterol." +
                         " Se folosește în gătit, patiserie și ca ingredient de aromă.”\n" +
                         "Cantitate recomandată: Maxim 10% din aportul caloric zilnic să provină din grăsimi saturate")
 
 
             insertIngredientIfNotExists(dbHelper,"AMIDON MODIFICAT", "3.5–4 kcal/g",
-                1, 5, "Derivat din amidon natural (de porumb, cartofi etc.)" +
+                4, 5, "Derivat din amidon natural (de porumb, cartofi etc.)" +
                         " modificat chimic sau enzimatic pentru a rezista proceselor industriale." +
                         " Folosit pentru îngroșare și stabilizare.”\n" +
                         "Cantitate recomandată: Nu există un prag specific, dar este considerat sigur" +
@@ -144,6 +146,21 @@ class IngredientSeeder(private val context: Context) {
                 2, // valoare exemplu: 1 = rău, 5 = sănătos
                   "Carbonatul de potasiu este un aditiv alimentar utilizat ca regulator de aciditate și agent de creștere. În general este considerat sigur în doze mici."
             )
+
+
+            insertIngredientIfNotExists(dbHelper, "CARTOFI", "Sursă de carbohidrați naturali, oferă sațietate și textură",
+                15, 15, "Cartofii sunt legume rădăcinoase bogate în amidon, folosiți frecvent în chipsuri, piureuri sau produse procesate. Aduc volum și textură alimentelor și sunt o sursă moderată de fibre și vitamine.")
+
+            insertIngredientIfNotExists(dbHelper, "EXTRACT DE DROJDIE", "Potentator natural de aromă umami",
+                15, 7, "Extractul de drojdie este utilizat pentru a intensifica aroma alimentelor, având un gust natural de tip umami. Este frecvent întâlnit în supe instant, snacksuri sau sosuri și poate conține compuși benefici precum vitaminele din complexul B.")
+
+            insertIngredientIfNotExists(dbHelper, "EXTRACT DE ARDEI ROȘU", "Aromă naturală și sursă de culoare ușoară",
+                15, 7, "Extractul de ardei roșu este utilizat pentru a oferi aromă specifică de legumă și o ușoară culoare naturală. Conține compuși precum capsaicina și este folosit în produse procesate pentru gustul intens și autentic.")
+
+            insertIngredientIfNotExists(dbHelper, "CEAPĂ PUDRĂ", "Aromă intensă de ceapă pentru condimente și gust",
+                15, 7, "Ceapa pudră este un condiment deshidratat obținut prin uscarea și măcinarea cepei. Este folosită pentru a adăuga un gust concentrat în supe, sosuri, snacksuri și preparate instant.")
+
+
 
 
             Log.d("IngredientSeeder", "Seeding complete")

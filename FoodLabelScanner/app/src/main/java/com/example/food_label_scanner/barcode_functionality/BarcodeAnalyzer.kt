@@ -18,7 +18,18 @@ class BarcodeAnalyzer(private val onBarcodeDetected: (String) -> Unit) : ImageAn
         if (mediaImage != null) {
             val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
             val options = BarcodeScannerOptions.Builder()
-                .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS).build()
+                .setBarcodeFormats(
+                    Barcode.FORMAT_CODE_128,
+                    Barcode.FORMAT_CODE_39,
+                    Barcode.FORMAT_CODE_93,
+                    Barcode.FORMAT_CODABAR,
+                    Barcode.FORMAT_EAN_13,
+                    Barcode.FORMAT_EAN_8,
+                    Barcode.FORMAT_ITF,
+                    Barcode.FORMAT_UPC_A,
+                    Barcode.FORMAT_UPC_E
+                )
+                .build()
             val scanner = BarcodeScanning.getClient(options)
             scanner.process(image)
                 .addOnSuccessListener { barcodes ->

@@ -51,7 +51,7 @@ fun SettingsItem(title: String, icon: Int, onClick: () -> Unit) {
                     text = title,
                     style = TextStyle(
                         fontSize = 18.sp,
-                        color = Color.Black,
+                        color = Color.White,
                         fontFamily = instrument_serif
                     )
                 )

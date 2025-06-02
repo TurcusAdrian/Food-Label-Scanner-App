@@ -58,19 +58,17 @@ android {
         viewBinding = true
     }
 
+
 }
 
 dependencies {
+
+   
 
 
     //Librearies for text translation and text detection
     implementation("com.google.mlkit:language-id:17.0.5") // to identify text language
     implementation("com.google.mlkit:translate:17.0.3") //to translate text from a language to other
-
-
-    //Tessaract OCR:
-    implementation(libs.tess.two)
-
 
     // OkHttp for network requests
     implementation("com.squareup.okhttp3:okhttp:4.11.0")

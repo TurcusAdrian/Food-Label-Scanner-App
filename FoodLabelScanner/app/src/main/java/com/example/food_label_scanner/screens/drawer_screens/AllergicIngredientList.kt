@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.isEmpty
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -30,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.food_label_scanner.database.IngredientDetailsViewModel
+import com.example.food_label_scanner.ui.theme.Cream
 
 @Composable
 fun AllergicIngredientsList() {
@@ -55,60 +58,71 @@ fun AllergicIngredientsList() {
 
     val allergicIngredients by viewModel.allergicIngredients.collectAsState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize() // This will make the Column try to take all available space.
-            // If this Composable is part of a larger screen with other elements,
-            // you might want to use Modifier.fillMaxWidth() and potentially a
-            // Modifier.height() or Modifier.weight(1f) if it's inside another Column/Row.
-            .padding(16.dp)
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = Cream // Apply cream color to entire surface
     ) {
-        Text(
-            text = "Your Allergic Ingredients",
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp,
-            style = MaterialTheme.typography.titleLarge // Using MaterialTheme for consistency
-        )
-        Spacer(modifier = Modifier.height(16.dp)) // Increased spacer a bit
+        Column(
+            modifier = Modifier
+                .fillMaxSize() // This will make the Column try to take all available space.
+                // If this Composable is part of a larger screen with other elements,
+                // you might want to use Modifier.fillMaxWidth() and potentially a
+                // Modifier.height() or Modifier.weight(1f) if it's inside another Column/Row.
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Your Allergic Ingredients",
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                style = MaterialTheme.typography.titleLarge, // Using MaterialTheme for consistency
+                color = Color.Black
 
-        if (allergicIngredients.isEmpty()) {
-            Box( // Use a Box to center the text if the list is empty
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 32.dp), // Add some vertical padding
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "You haven't marked any ingredients as allergenic yet.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center
-                )
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize() // Allow LazyColumn to take available space within this Column
-            ) {
-                items(
-                    items = allergicIngredients,
-                    key = { ingredientName -> ingredientName } // Provide a stable key if names are unique
-                ) { ingredientName ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "• $ingredientName",
-                            fontSize = 16.sp,
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.weight(1f) // Allow text to take available width
-                        )
-                        // Optionally, you could add a small remove icon/button here
-                        // if you want to allow removal directly from this list.
-                        // For now, removal is handled in IngredientDetails.
+            )
+            Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
+            Spacer(modifier = Modifier.height(16.dp)) // Increased spacer a bit
+
+            if (allergicIngredients.isEmpty()) {
+                Box( // Use a Box to center the text if the list is empty
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 32.dp), // Add some vertical padding
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "You haven't marked any ingredients as allergenic yet.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center,
+                        color = Color.Black
+                    )
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize() // Allow LazyColumn to take available space within this Column
+                ) {
+                    items(
+                        items = allergicIngredients,
+                        key = { ingredientName -> ingredientName } // Provide a stable key if names are unique
+                    ) { ingredientName ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "• $ingredientName",
+                                fontSize = 16.sp,
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.weight(1f), // Allow text to take available width
+                                color = Color.Black
+
+                            )
+                            // Optionally, you could add a small remove icon/button here
+                            // if you want to allow removal directly from this list.
+                            // For now, removal is handled in IngredientDetails.
+                        }
+                        //Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)) // Use theme color for divider
                     }
-                    Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)) // Use theme color for divider
                 }
             }
         }
