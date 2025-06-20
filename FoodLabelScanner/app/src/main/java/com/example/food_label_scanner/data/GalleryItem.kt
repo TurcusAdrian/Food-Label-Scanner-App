@@ -1,6 +1,5 @@
 package com.example.food_label_scanner.data
 
-import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image

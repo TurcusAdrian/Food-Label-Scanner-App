@@ -3,7 +3,9 @@ package com.example.food_label_scanner.camera_functionality
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Matrix
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -104,6 +106,7 @@ class CameraViewModel @Inject constructor(
     private val _capturedImage = MutableStateFlow<Bitmap?>(null)
     val capturedImage = _capturedImage.asStateFlow()
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun storePhotoInGallery(bitmap: Bitmap) {
         viewModelScope.launch {
             savePhotoToGallery.call(bitmap)

@@ -118,7 +118,7 @@ fun BarcodeDisplayScreen(barcode: String) {
     // Collect allergic ingredients in LaunchedEffect
     LaunchedEffect(Unit) {
         val sharedPref = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-        val userIdFromPrefs = sharedPref.getInt("userId", -1) // Ensure key matches
+        val userIdFromPrefs = sharedPref.getInt("userId", -1)
         if (userIdFromPrefs != -1) {
             allergicViewModel.setUserId(userIdFromPrefs)
             Log.d("BarcodeScreen", "User ID $userIdFromPrefs set on AllergicViewModel")
@@ -131,7 +131,6 @@ fun BarcodeDisplayScreen(barcode: String) {
         }
     }
 
-    val coroutineScope = rememberCoroutineScope()
 
 
     LaunchedEffect(barcode) {
@@ -141,8 +140,8 @@ fun BarcodeDisplayScreen(barcode: String) {
             brand = brnd ?: "Brand not found"
             val processed = process_ingredients(ingredients)
             val split = splitIngredientsAdvanced(processed)
-            arrayIngredients = splitIngredients(processed)
-            arrayIngredients2 = extractValidIngredients(split, dbHelper)
+            arrayIngredients = splitIngredients(processed) //used normal split to show them as similar to the label as possible
+            arrayIngredients2 = extractValidIngredients(split, dbHelper) //used advanced split to find ingredients from (), good when printing results
             ingredientDetails = getIngredientDetails(arrayIngredients2, dbHelper)
             Log.d("BarcodeScreen", "IngredientDetails: $ingredientDetails")
         }
@@ -162,7 +161,7 @@ fun BarcodeDisplayScreen(barcode: String) {
         }
         item {
             Text(
-                text = "Array ingredients: $arrayIngredients",
+                text = "Ingredients: $arrayIngredients",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier.padding(bottom = 8.dp)
@@ -191,7 +190,11 @@ fun BarcodeDisplayScreen(barcode: String) {
 
         items(
             items = ingredientDetails,
-            key = { detail -> detail }
+            key = { detail -> detail
+                // Ensure unique key, fallback to index if parsing fails
+                //val name = detail.substringAfter("Name: ").substringBefore(",").trim()
+                //name.ifEmpty { "ingredient_${ingredientDetails.indexOf(detail)}" }
+            }
         ) { detail ->
             IngredientCard(
                 detail = detail,
@@ -202,38 +205,7 @@ fun BarcodeDisplayScreen(barcode: String) {
 }
 
 
-fun levenshteinDistance(s1: String, s2: String): Int {
-    val len1 = s1.length
-    val len2 = s2.length
-
-    // Create a matrix to store distances
-    val dp = Array(len1 + 1) { IntArray(len2 + 1) }
-
-    // Initialize the first row and column
-    for (i in 0..len1) {
-        dp[i][0] = i
-    }
-    for (j in 0..len2) {
-        dp[0][j] = j
-    }
-
-    // Fill the matrix
-    for (i in 1..len1) {
-        for (j in 1..len2) {
-            val cost = if (s1[i - 1].lowercaseChar() == s2[j - 1].lowercaseChar()) 0 else 1
-            dp[i][j] = minOf(
-                dp[i - 1][j] + 1,      // Deletion
-                dp[i][j - 1] + 1,      // Insertion
-                dp[i - 1][j - 1] + cost // Substitution
-            )
-        }
-    }
-
-    return dp[len1][len2]
-}
-
-
-suspend fun fetchProduct(
+fun fetchProduct(
     barcode: String,
     onResult: (String?, String?, String?) -> Unit
 ) {
@@ -445,14 +417,12 @@ fun identifyLanguage(text: String, onResult: (String?) -> Unit) {
 
 
 fun translateToRomanian(text: String, languageCode: String, onResult: (String?) -> Unit) {
-    // Convert the language code to a TranslateLanguage constant
 
     val sourceLanguage = when (languageCode) {
         "en" -> TranslateLanguage.ENGLISH
         "fr" -> TranslateLanguage.FRENCH
         "de" -> TranslateLanguage.GERMAN
         "pl" -> TranslateLanguage.POLISH
-        // Add more cases as needed
         else -> {
             Log.e("Translation", "Unsupported source language: $languageCode")
             onResult(null)

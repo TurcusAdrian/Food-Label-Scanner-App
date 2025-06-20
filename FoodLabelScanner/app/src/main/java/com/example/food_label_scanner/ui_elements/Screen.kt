@@ -4,7 +4,6 @@ package com.example.food_label_scanner.ui_elements
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.ImageDecoder
 
 import com.example.food_label_scanner.data.*
 import com.example.food_label_scanner.screens.*
@@ -37,10 +36,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -55,6 +52,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -74,37 +72,26 @@ import com.example.food_label_scanner.screens.drawer_screens.settings_screens.Pr
 import com.example.food_label_scanner.screens.drawer_screens.settings_screens.Support
 import com.example.food_label_scanner.screens.drawer_screens.settings_screens.TermsOfService
 import com.example.food_label_scanner.barcode_functionality.BarcodeDisplayScreen
-import com.example.food_label_scanner.barcode_functionality.extractIngredientsSection
+import com.example.food_label_scanner.checkNotificationPermission
 import com.example.food_label_scanner.database.IngredientDetailsViewModel
 import com.example.food_label_scanner.screens.bottom_bar_screens.Home
 import com.example.food_label_scanner.screens.bottom_bar_screens.Search
 import com.example.food_label_scanner.screens.drawer_screens.*
 import com.example.food_label_scanner.screens.drawer_screens.HowToUse
 import com.example.food_label_scanner.text_recognition.TextRecognitionAnalyzer
-import java.io.File
-import java.io.FileOutputStream
-import java.net.URLEncoder
 
 
-fun checkNotificationPermission(context: Context): Boolean {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        ActivityCompat.checkSelfPermission(
-            context,
-            Manifest.permission.POST_NOTIFICATIONS
-        ) == PackageManager.PERMISSION_GRANTED
-    } else {
-        true
-    }
-}
+
+
 
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
-fun Screen(modifier: Modifier = Modifier) {
+fun Screen() {
 
     val context = LocalContext.current
     val viewModel: CameraViewModel = hiltViewModel()
     val navigationController = rememberNavController()
-    val selected = remember { mutableStateOf(Icons.Default.Home) }
+
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var selectedbutton by remember { mutableIntStateOf(0) }
@@ -117,8 +104,8 @@ fun Screen(modifier: Modifier = Modifier) {
     var hasNotificationPermission by remember { mutableStateOf(checkNotificationPermission(context)) }
 
 
+
     fun onTextUpdated(updatedText: String) {
-        //detectedText = extractIngredientsSection(updatedText)
         detectedText = updatedText
     }
 
@@ -127,11 +114,11 @@ fun Screen(modifier: Modifier = Modifier) {
         onResult = { uri ->
             selectedimage = uri
             uri?.let { imageUri ->
-                // Convert URI to Bitmap
+
                 val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri)
-                // Pass the bitmap to the TextRecognitionAnalyzer
+
                 val textRecognitionAnalyzer = TextRecognitionAnalyzer { updatedText ->
-                    onTextUpdated(updatedText) // Correctly pass the lambda function
+                    onTextUpdated(updatedText)
                 }
                 textRecognitionAnalyzer.analyzeFromBitmap(bitmap)
             }
@@ -139,26 +126,12 @@ fun Screen(modifier: Modifier = Modifier) {
     )
 
 
-    /*
-    val photolauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = { uri -> selectedimage = uri }
-    )
-    */
-    AsyncImage(
-        model = selectedimage,
-        contentDescription = null,
-        modifier = Modifier.fillMaxWidth(),
-        contentScale = ContentScale.Crop
-    )
-
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 
 
     LaunchedEffect(Unit) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (!hasNotificationPermission) {
-                // Request permission if not granted
                 ActivityCompat.requestPermissions(
                     context as androidx.activity.ComponentActivity,
                     arrayOf(Manifest.permission.POST_NOTIFICATIONS),
@@ -170,8 +143,7 @@ fun Screen(modifier: Modifier = Modifier) {
 
     CameraPermission()
 
-    val sharedTextViewModel: SharedTextViewModel = hiltViewModel() // Or viewModel()
-
+    val sharedTextViewModel: SharedTextViewModel = hiltViewModel()
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -224,7 +196,7 @@ fun Screen(modifier: Modifier = Modifier) {
                                         }
                                     }
 
-                                    "Favourites Items" -> {
+                                    "Favourite Items" -> {
                                         navigationController.navigate(Screens.Favourites.screen) {
                                             popUpTo(0)
                                         }
@@ -283,6 +255,7 @@ fun Screen(modifier: Modifier = Modifier) {
                     startDestination = Screens.Home.screen
                 ) {
                     composable(Screens.Home.screen) {
+
                         Home(
                             selectedImage = selectedimage,
                             detectedText = detectedText,
@@ -291,25 +264,7 @@ fun Screen(modifier: Modifier = Modifier) {
                             navigationController = navigationController,
                             onClearSelectedImage = { selectedimage = null }
                         )
-                        /*
-                        if (selectedimage != null) {
-                            DisplayImagePreview(
-                                selectedImage = selectedimage,
-                                detectedText = detectedText,
-                                onImageClick = { selectedimage = null })
-                        } else {
-                            CameraCaptureContent(
-                                detectedText = detectedText,
-                                onDetectedTextUpdated = { updatedText ->
-                                    onTextUpdated(updatedText)
-                                },
-                                onPhotoCaptured = { /* No gallery save, ignore this callback */ },
-                                sharedTextViewModel = sharedTextViewModel,
-                                navigationController = navigationController
-                            )
-                        }
 
-                         */
                     }
 
 
@@ -320,23 +275,15 @@ fun Screen(modifier: Modifier = Modifier) {
                     composable(Screens.About.screen) { About() }
                     composable(Screens.HowToUse.screen) { HowToUse() }
                     composable(Screens.Settings.screen) { Settings(navigationController) }
-                    composable(Screens.BarcodeScanning.screen) { BarcodeScanning(navigationController) } //
+                    composable(Screens.BarcodeScanning.screen) { BarcodeScanning(navigationController) }
                     composable(Screens.NutritionalDictionary.screen) { NutritionalDictionary() }
                     composable(Screens.Account.screen) { Account() }
 
 
                     //Settings screens:
                     composable(Screens.Support.screen) { Support() }
-                    composable(Screens.TermsOfService.screen) {
-                        TermsOfService(
-                            navigationController
-                        )
-                    }
-                    composable(Screens.PrivacyPolicy.screen) {
-                        PrivacyPolicy(
-                            navigationController
-                        )
-                    }
+                    composable(Screens.TermsOfService.screen) { TermsOfService(navigationController) }
+                    composable(Screens.PrivacyPolicy.screen) { PrivacyPolicy(navigationController) }
                     composable(Screens.Notifications.screen) { Notifications() }
 
                     composable(
@@ -353,7 +300,7 @@ fun Screen(modifier: Modifier = Modifier) {
                     composable(Screens.BarcodeDisplay.screen) { backStackEntry ->
                         val barcode = backStackEntry.arguments?.getString("barcode")
                         if(barcode==null){
-                            Text("Barcode doesn;t exist")
+                            Text("Barcode doesn't exist")
                         }else {
                             barcode?.let {
                                 BarcodeDisplayScreen(barcode = it)
@@ -361,17 +308,7 @@ fun Screen(modifier: Modifier = Modifier) {
                         }
                     }
 
-
-                    composable(Screens.AllergicIngredients.screen) { // Add this composable
-                        // You'll need to provide the ViewModel here.
-                        // Since AllergicIngredientsList uses IngredientDetailsViewModel,
-                        // you might need to adjust your ViewModel strategy or create a new one.
-                        // For simplicity, let's assume you can get the ViewModel here.
-                        val ingredientDetailsViewModel: IngredientDetailsViewModel =
-                            hiltViewModel()
-                        AllergicIngredientsList()
-                    }
-
+                    composable(Screens.AllergicIngredients.screen) { AllergicIngredientsList() }
 
                     composable(
                         route = Screens.TextDisplay.routeWithoutArgs

@@ -20,7 +20,6 @@ import kotlinx.coroutines.withContext
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import com.example.food_label_scanner.MainActivity
 import com.example.food_label_scanner.ui.theme.Cream
 import com.example.food_label_scanner.ui.theme.Teal2
 
@@ -34,11 +33,9 @@ fun Account() {
     var showChangePasswordDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
-    // Retrieve username from SharedPreferences
     val sharedPref = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-    val savedUsername = sharedPref.getString("user_email", null)
+    val savedUsername = sharedPref.getString("username", null)
 
-    // Set the username if it exists
     LaunchedEffect(Unit) {
         if (savedUsername != null) {
             currentUsername = savedUsername
@@ -47,7 +44,7 @@ fun Account() {
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Cream // Apply cream color to entire surface
+        color = Cream
     ) {
         Column(
             modifier = Modifier
@@ -113,7 +110,9 @@ fun Account() {
 
 @Composable
 fun ChangeUsernameDialog(onDismiss: () -> Unit, onUsernameChanged: (String) -> Unit) {
+
     var newUsername by remember { mutableStateOf(TextFieldValue()) }
+    var showError by remember { mutableStateOf(false) }
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(shape = MaterialTheme.shapes.medium) {
@@ -122,9 +121,18 @@ fun ChangeUsernameDialog(onDismiss: () -> Unit, onUsernameChanged: (String) -> U
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = newUsername,
-                    onValueChange = { newUsername = it },
-                    label = { Text("New Username") }
+                    onValueChange = { newUsername = it
+                        showError = false},
+                    label = { Text("New Username") },
+                    isError = showError
                 )
+                if (showError) {
+                    Text(
+                        text = "New Username cannot be empty",
+                        color = Color.Red,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
                     TextButton(onClick = onDismiss) {
@@ -132,7 +140,9 @@ fun ChangeUsernameDialog(onDismiss: () -> Unit, onUsernameChanged: (String) -> U
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(onClick = {
-                        onUsernameChanged(newUsername.text)
+                        if (newUsername.text.isNotBlank()) {
+                            onUsernameChanged(newUsername.text)
+                        }else{ showError = true}
                     }) {
                         Text("Change")
                     }
@@ -145,6 +155,7 @@ fun ChangeUsernameDialog(onDismiss: () -> Unit, onUsernameChanged: (String) -> U
 @Composable
 fun ChangePasswordDialog(onDismiss: () -> Unit, onPasswordChanged: (String) -> Unit) {
     var newPassword by remember { mutableStateOf(TextFieldValue()) }
+    var showError by remember { mutableStateOf(false) }
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(shape = MaterialTheme.shapes.medium) {
@@ -153,18 +164,28 @@ fun ChangePasswordDialog(onDismiss: () -> Unit, onPasswordChanged: (String) -> U
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = newPassword,
-                    onValueChange = { newPassword = it },
+                    onValueChange = { newPassword = it
+                        showError = false},
                     label = { Text("New Password") },
-                    visualTransformation = PasswordVisualTransformation()
+                    visualTransformation = PasswordVisualTransformation(),
+                    isError = showError
                 )
+                if (showError) {
+                    Text(
+                        text = "New Password cannot be empty",
+                        color = Color.Red,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
                     TextButton(onClick = onDismiss) {
                         Text("Cancel")
                     }
                     Spacer(modifier = Modifier.width(8.dp))
-                    Button(onClick = {
+                    Button(onClick = {if (newPassword.text.isNotBlank()) {
                         onPasswordChanged(newPassword.text)
+                    }else{ showError = true}
                     }) {
                         Text("Change")
                     }

@@ -2,7 +2,6 @@ package com.example.food_label_scanner.database
 
 import android.database.Cursor
 import com.example.food_label_scanner.DBHelper
-import com.example.food_label_scanner.database.Ingredient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject

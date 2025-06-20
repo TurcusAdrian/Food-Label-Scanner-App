@@ -23,14 +23,13 @@ import androidx.lifecycle.LifecycleOwner
 
 @Composable
 fun CameraPreview(
-    onBarcodeDetected: (String) -> Unit,
-    onPhotoCaptured: (Bitmap) -> Unit
+    onBarcodeDetected: (String) -> Unit
 ) {
     val context: Context = LocalContext.current
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
     val cameraController: LifecycleCameraController = remember {
         LifecycleCameraController(context).apply {
-            setEnabledUseCases(LifecycleCameraController.IMAGE_ANALYSIS)//or LifecycleCameraController.PREVIEW)
+            setEnabledUseCases(LifecycleCameraController.IMAGE_ANALYSIS)
             cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
         }
     }

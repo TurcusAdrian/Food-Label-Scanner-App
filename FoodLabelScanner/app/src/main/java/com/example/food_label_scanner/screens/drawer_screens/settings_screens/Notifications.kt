@@ -87,7 +87,6 @@ private fun getNotificationSettings(context: Context): Map<String, Boolean> {
     val sharedPreferences = context.getSharedPreferences("notification_prefs", Context.MODE_PRIVATE)
     return mapOf(
         "Take Picture Notifications" to sharedPreferences.getBoolean("take_picture_notifications", true),
-        "Food Label Notifications" to sharedPreferences.getBoolean("food_label_notifications", true),
     )
 }
 
@@ -97,7 +96,6 @@ private fun saveNotificationSettings(context: Context, settings: Map<String, Boo
     settings.forEach { (notificationType, isEnabled) ->
         when (notificationType) {
             "Take Picture Notifications" -> editor.putBoolean("take_picture_notifications", isEnabled)
-            "Food Label Notifications" -> editor.putBoolean("food_label_notifications", isEnabled)
         }
     }
     editor.apply()

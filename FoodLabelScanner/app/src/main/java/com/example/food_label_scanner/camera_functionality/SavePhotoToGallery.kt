@@ -8,17 +8,13 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
-import com.google.android.datatransport.runtime.dagger.Component.Factory
+import androidx.annotation.RequiresApi
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
 import java.io.OutputStream
 import java.time.LocalDateTime
 import javax.inject.Inject
-import kotlin.io.path.exists
 
 //@Factory
 class SavePhotoToGallery @Inject constructor( @ApplicationContext private val context: Context, ){
@@ -39,6 +35,7 @@ class SavePhotoToGallery @Inject constructor( @ApplicationContext private val co
         return timeForPhoto
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     suspend fun call(capturePhotoBitmap: Bitmap): Result<Uri> = withContext(Dispatchers.IO){
 
         val resolver : ContentResolver = context.applicationContext.contentResolver

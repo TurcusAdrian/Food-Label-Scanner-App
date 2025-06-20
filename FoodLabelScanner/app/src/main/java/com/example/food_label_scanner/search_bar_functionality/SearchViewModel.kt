@@ -1,14 +1,10 @@
 package com.example.food_label_scanner.search_bar_functionality
 
-import android.content.Context
-import android.content.SharedPreferences
-import androidx.activity.result.launch
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.food_label_scanner.DBHelper
 import com.example.food_label_scanner.database.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,7 +12,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.collections.remove
+
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(

@@ -12,7 +12,6 @@ import kotlinx.coroutines.SupervisorJob
 import android.media.Image
 import androidx.annotation.OptIn
 import androidx.camera.core.ImageAnalysis
-import com.example.food_label_scanner.barcode_functionality.extractIngredientsSection
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
 import kotlinx.coroutines.launch

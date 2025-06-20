@@ -3,10 +3,7 @@ package com.example.food_label_scanner
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.example.food_label_scanner.databinding.ActivitySignupBinding
 
 class SignupActivity : AppCompatActivity() {
@@ -38,21 +35,19 @@ class SignupActivity : AppCompatActivity() {
             return
         }
 
-        // Check if username already exists
+
         val existingUser = databaseHelper.readUserByUsername(username)
         if (existingUser != false) {
             Toast.makeText(this, "Username already exists", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Optionally check if password is already in use (if you want unique passwords)
         val existingPassword = databaseHelper.readUserByPassword(password)
         if (existingPassword) {
             Toast.makeText(this, "Password already in use", Toast.LENGTH_SHORT).show()
             return
         }
-
-        // Attempt to insert the new user
+        
         val insertedRowId = databaseHelper.insertUser(username, password)
         if (insertedRowId != -1L) {
             Toast.makeText(this, "SignUp Successful", Toast.LENGTH_SHORT).show()
@@ -60,7 +55,6 @@ class SignupActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         } else {
-            // This block will handle database constraint violations (e.g., duplicate username)
             Toast.makeText(this, "SignUp failed: Username must be unique", Toast.LENGTH_SHORT).show()
         }
     }

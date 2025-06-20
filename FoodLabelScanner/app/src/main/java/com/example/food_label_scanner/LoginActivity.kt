@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.food_label_scanner.databinding.ActivityLoginBinding
@@ -16,22 +15,13 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var databaseHelper: DBHelper
     private var id: Int ?=null
-    // private val viewModel: UserViewModel by viewModels()
 
-    //    fun setUserId(userId: Int) {
-//        viewModel.userId = userId
-//    }
-//
-//    fun getUserId(): Int? {
-//        return viewModel.userId
-//    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         databaseHelper = DBHelper(this)
-        //id = intent.getIntExtra("id", -1)
 
         if (isUserLoggedIn()) {
             navigateToMainActivity()
@@ -55,8 +45,7 @@ class LoginActivity : AppCompatActivity() {
     private fun loginDatabase(username:String, password:String, keepLoggedIn: Boolean){
         val userExists = databaseHelper.readUser(username, password)
         if(userExists){
-            id= databaseHelper.getUserId(username)
-            //viewModel.userId=id
+            id = databaseHelper.getUserId(username)
             Toast.makeText(this,"Login Successful", Toast.LENGTH_SHORT).show()
             val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
 
@@ -64,10 +53,10 @@ class LoginActivity : AppCompatActivity() {
 
             with(sharedPref.edit()) {
                 putInt("userId", id!!)
-                putString("user_email", username)
+                putString("username", username)
                 apply()
             }
-            val userId = databaseHelper.getUserId(username) // Get the selected room
+            val userId = databaseHelper.getUserId(username)
             val intent = Intent(this, MainActivity::class.java).apply {
                 putExtra("userId", userId)
                 Log.d("UserId", "Retrieved userId: $userId")
@@ -85,7 +74,7 @@ class LoginActivity : AppCompatActivity() {
         val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         with(sharedPref.edit()) {
             putBoolean("keepLoggedIn", keepLoggedIn)
-            putString("user_email", username)
+            putString("username", username)
             putString("user_password", password)
             apply()
         }

@@ -66,7 +66,7 @@ dependencies {
    
 
 
-    //Librearies for text translation and text detection
+    //Libraries for text translation and text detection
     implementation("com.google.mlkit:language-id:17.0.5") // to identify text language
     implementation("com.google.mlkit:translate:17.0.3") //to translate text from a language to other
 

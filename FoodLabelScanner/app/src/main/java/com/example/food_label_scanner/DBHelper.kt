@@ -3,27 +3,21 @@ package com.example.food_label_scanner
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
-import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
-import androidx.lifecycle.distinctUntilChanged
 import com.example.food_label_scanner.barcode_functionality.levenshteinDistance
 import com.example.food_label_scanner.barcode_functionality.process_ingredients
 import com.example.food_label_scanner.barcode_functionality.remove_diacritics
-import com.example.food_label_scanner.database.Ingredient
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -136,7 +130,7 @@ class DBHelper @Inject constructor(
         }
     }
 
-    // User Table Methods
+
     fun insertUser(username: String, password: String): Long {
         val db = writableDatabase
         val normalizedUsername = username.trim()
@@ -149,7 +143,8 @@ class DBHelper @Inject constructor(
             Log.d("DBHelper", "Inserted user: $normalizedUsername, rowId: $rowId")
             rowId
         } catch (e: android.database.sqlite.SQLiteConstraintException) {
-            Log.e("DBHelper", "Insert failed due to unique constraint for username: $normalizedUsername, error: ${e.message}")
+            Log.e("DBHelper", "Insert failed due" +
+                    " to unique constraint for username: $normalizedUsername, error: ${e.message}")
             -1L
         } finally {
             db.close()
@@ -171,7 +166,7 @@ class DBHelper @Inject constructor(
 
     fun readUserByUsername(username: String): Boolean {
         val db = readableDatabase
-        val normalizedUsername = username.trim() // Remove leading/trailing whitespace
+        val normalizedUsername = username.trim()
         Log.d("DBHelper", "Checking username with raw query: $normalizedUsername")
         val query = "SELECT * FROM $TABLE_USERS WHERE $COLUMN_USERNAME = ?"
         val whereArgs = arrayOf(normalizedUsername)
@@ -200,29 +195,13 @@ class DBHelper @Inject constructor(
         return exists
     }
 
-    fun getUserData(username: String): Cursor {
-        val db = readableDatabase
-        val selection = "$COLUMN_USERNAME = ?"
-        val selectionArgs = arrayOf(username)
-        return db.query(TABLE_USERS, null, selection, selectionArgs, null, null, null).also {
-            // Return cursor without closing db here; caller must close cursor
-        }
-    }
-
-    fun getUserData(userId: Int): Cursor {
-        val db = readableDatabase
-        val selection = "$COLUMN_ID = ?"
-        val selectionArgs = arrayOf(userId.toString())
-        return db.query(TABLE_USERS, null, selection, selectionArgs, null, null, null).also {
-            // Return cursor without closing db here; caller must close cursor
-        }
-    }
 
     fun getUserId(username: String): Int {
         val db = readableDatabase
         val selection = "$COLUMN_USERNAME = ?"
         val selectionArgs = arrayOf(username)
-        val cursor = db.query(TABLE_USERS, arrayOf(COLUMN_ID), selection, selectionArgs, null, null, null)
+        val cursor = db.query(TABLE_USERS, arrayOf(COLUMN_ID), selection, selectionArgs,
+            null, null, null)
         return try {
             if (cursor.moveToFirst()) {
                 val userId = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID))

@@ -2,17 +2,14 @@ package com.example.food_label_scanner.data
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import com.example.food_label_scanner.R
 
 val BottomNavItems = listOf(
@@ -22,14 +19,12 @@ val BottomNavItems = listOf(
         selectedIcon = Icons.Filled.Home,
         unselectedIcon = Icons.Outlined.Home
     ),
-
     BottomNavItem(
-        title = "Add from Gallery" ,
+        title = "Add from Gallery",
         route = "Add from Gallery",
         selectedIcon = Icons.Filled.Add,
         unselectedIcon = Icons.Outlined.Add
     ),
-
     BottomNavItem(
         title = "Take Picture",
         route = "Take Picture",
@@ -37,17 +32,15 @@ val BottomNavItems = listOf(
         unselectedIcon = null,
         customIcon = R.drawable.camera_icon
     ),
-
     BottomNavItem(
         title = "Search",
         route = "Search",
         selectedIcon = Icons.Filled.Search,
         unselectedIcon = Icons.Outlined.Search
     ),
-
     BottomNavItem(
         title = "Favourite Items",
-        route = "Favourites Items",
+        route = "Favourite Items",
         selectedIcon = Icons.Filled.Star,
         unselectedIcon = Icons.Outlined.Star
     )

@@ -1,17 +1,16 @@
 package com.example.food_label_scanner.screens
 
-import androidx.hilt.navigation.compose.hiltViewModel
 
 sealed class Screens(val screen: String) {
 
     //bottom bar screens:
     data object Home: Screens("Home")
     data object Search: Screens("Search")
-    data object Favourites: Screens("FavouritesItems")
+    data object Favourites: Screens("FavouriteItems")
 
     //Drawer screens:
     data object Account: Screens("Account")
-    data object NutritionalDictionary: Screens("NutritionalDictionary") //to be implemented
+    data object NutritionalDictionary: Screens("NutritionalDictionary")
     data object BarcodeScanning: Screens("BarcodeScanning")
     data object Settings: Screens("Settings")
     data object HowToUse: Screens("HowToUse")
@@ -31,11 +30,9 @@ sealed class Screens(val screen: String) {
         fun createRoute(barcode: String) = "barcodeDisplay/$barcode"
     }
 
-
-
     object AllergicIngredients : Screens("allergic_ingredients")
 
-    object TextDisplay : Screens("TextDisplayScreen") { // Route without arguments
+    object TextDisplay : Screens("TextDisplayScreen") {
         val routeWithoutArgs = "TextDisplayScreen"
     }
 }

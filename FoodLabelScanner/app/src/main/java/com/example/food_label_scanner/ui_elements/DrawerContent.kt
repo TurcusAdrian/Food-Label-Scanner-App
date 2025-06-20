@@ -35,7 +35,7 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifier, drawerState: DrawerState) {
+fun DrawerContent(navController : NavHostController, drawerState: DrawerState) {
 
     val instrument_serif = FontFamily(Font(R.font.instrument_serif_regular))
 
@@ -52,11 +52,12 @@ fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifi
     HorizontalDivider()
 
 
+    // Allergic Ingredients button:
 
     NavigationDrawerItem(
         icon = {
             Icon(
-                imageVector = Icons.Rounded.Warning, // Or a suitable icon
+                imageVector = Icons.Rounded.Warning,
                 contentDescription = "Allergic Ingredients",
                 modifier = Modifier.size(25.dp)
             )
@@ -70,7 +71,7 @@ fun DrawerContent(navController : NavHostController, modifier: Modifier = Modifi
                 )
             )
         },
-        selected = false, // You might want to handle selection state based on the current route
+        selected = false,
         onClick = {
             scope.launch {
                 navController.navigate(Screens.AllergicIngredients.screen)

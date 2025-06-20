@@ -4,7 +4,35 @@ import android.util.Log
 import com.example.food_label_scanner.DBHelper
 
 
+fun levenshteinDistance(s1: String, s2: String): Int {
+    val len1 = s1.length
+    val len2 = s2.length
 
+    // Create a matrix to store distances
+    val dp = Array(len1 + 1) { IntArray(len2 + 1) }
+
+    // Initialize the first row and column
+    for (i in 0..len1) {
+        dp[i][0] = i
+    }
+    for (j in 0..len2) {
+        dp[0][j] = j
+    }
+
+    // Fill the matrix
+    for (i in 1..len1) {
+        for (j in 1..len2) {
+            val cost = if (s1[i - 1].lowercaseChar() == s2[j - 1].lowercaseChar()) 0 else 1
+            dp[i][j] = minOf(
+                dp[i - 1][j] + 1,      // Deletion
+                dp[i][j - 1] + 1,      // Insertion
+                dp[i - 1][j - 1] + cost // Substitution
+            )
+        }
+    }
+
+    return dp[len1][len2]
+}
 
 // Function to return UPPERCASE string:
 fun uppercase_text(ingredients: String): String {
@@ -13,8 +41,7 @@ fun uppercase_text(ingredients: String): String {
 
 //Removes percentage and percentage numbers if they are not preceded by "E":
 fun removePercentageNumbers(ingredients: String): String {
-    // Negative lookbehind ensures we're not matching percentages after E-numbers like E100
-    val regex = """(?<!E\d)\s*\(\s*\d+(?:[.,]\d+)?\s*%\s*\)|(?<!E\d)\d+(?:[.,]\d+)?\s*%"""
+    val regex = """(?<!E\d)\s*\d+(?:[.,]\d+)?\s*(?:%?\s*)"""
     return ingredients.replace(Regex(regex, RegexOption.IGNORE_CASE), "")
 }
 
@@ -31,30 +58,39 @@ fun extractIngredientsSection(text: String): String {
     val endOfKeywordIndex = startIndex + keyword.length
     var remainingText = text.substring(endOfKeywordIndex).trim()
 
-    // Stop extraction at known non-ingredient starters (like allergy warnings)
+    // Remove percentage numbers first
+    remainingText = removePercentageNumbers(remainingText)
+
+    // Stop extraction at the first stop keyword or period
     val stopKeywords = listOf(
+        ",poate contine",
         "poate contine",
         "poate conține",
         "poate include",
         "poate avea",
         "alergeni",
-        "traces of", // for multilingual cases
+        "traces of",
         "may contain"
     )
 
+    var cutIndex = remainingText.length
     for (stopWord in stopKeywords) {
         val index = remainingText.indexOf(stopWord, ignoreCase = true)
-        if (index != -1) {
-            remainingText = remainingText.substring(0, index).trim()
+        if (index != -1 && index < cutIndex) {
+            cutIndex = index
             break
         }
     }
 
-    // Optional: cut off at the first period if you still want that safety
     val periodIndex = remainingText.indexOf('.')
-    if (periodIndex != -1) {
-        remainingText = remainingText.substring(0, periodIndex).trim()
+    if (periodIndex != -1 && periodIndex < cutIndex) {
+        cutIndex = periodIndex
     }
+
+    if (cutIndex < remainingText.length) {
+        remainingText = remainingText.substring(0, cutIndex).trim()
+    }
+    remainingText = remainingText.replace(Regex("\\s*\\(\\s*\\)\\s*"), "")
 
     Log.d("extractIngredientsSection", "Clean ingredients: '$remainingText'")
     return remainingText
@@ -153,11 +189,14 @@ fun remove_diacritics(ingredients: String): String {
             'Ź', 'Ż', 'Ž' -> correctedIngredients.append('Z')
 
             // Your special cases
-
+            '!' -> correctedIngredients.append("")
+            '?' -> correctedIngredients.append("")
             '*' -> correctedIngredients.append("")
             '_' -> correctedIngredients.append("")
             '-' -> correctedIngredients.append(" ")
 
+            '"' -> correctedIngredients.append("")
+            '\'' -> correctedIngredients.append("")
             else -> correctedIngredients.append(char)
         }
     }
@@ -165,7 +204,7 @@ fun remove_diacritics(ingredients: String): String {
     return correctedIngredients.toString()
 }
 
-//Extracts the content between (Paranthesis):
+//Extracts the content between ():
 fun extractParenthesisContent(text: String): String {
     val start = text.indexOf("(")
     val end = text.indexOf(")")
@@ -181,7 +220,7 @@ fun splitIngredients(processedIngredients: String): List<String> {
     // 1. Split the string by the comma delimiter
     val ingredientsList = processedIngredients.split(",")
 
-    // 2. Trim whitespace from each ingredient (optional but recommended)
+    // 2. Trim whitespace from each ingredient
     val trimmedIngredientsList = ingredientsList.map { it.trim() }
 
     return trimmedIngredientsList
@@ -236,38 +275,31 @@ val ignoredKeywords = setOf(
 
 fun extractValidIngredients(rawIngredients: List<String>, dbHelper: DBHelper): List<String> {
     val validIngredients = mutableListOf<String>()
-    val ingredientPattern = Regex("[A-Z][A-Z\\s\\-()]+")
-
+    val ingredientPattern = Regex("[A-Z][A-Z\\s()]+")
     for (ingredient in rawIngredients) {
-        val cleaned = ingredient.uppercase()
-            .replace(Regex("^(CONSERVANT(I)?|EMULGATOR(I)?|EMULSIFIANT(I)?|COLORANT(I)?|REGULATOR DE ACIDITATE|AGENTI DE CRESTERE|VOPSEA|AGENT DE GLAZURARE|AGENTI DE GLAZURARE|AGENT DE UMEZIRE|AGENTI DE UMEZIRE|AGENT DE INGROSARE|AGENTI DE INGROSARE):?\\s*"), "")
-        val keyword = cleaned.split("(", ",", ";", ":")[0].trim()
-        Log.d("extractValidIngredients", "Processing ingredient: '$cleaned', keyword: '$keyword'")
-
-        if (keyword in ignoredKeywords) {
-            val inside = extractParenthesisContent(cleaned)
-            if (inside.isNotEmpty()) {
-                val nested = splitIngredientsAdvanced(inside)
-                for (nestedIng in nested) {
-                    val name = nestedIng.trim()
-                    if (ingredientPattern.matches(name) && dbHelper.getIngredientByNameFuzzy(name) != null) {
-                        validIngredients.add(name)
-                    }
-                }
-            }
-            continue
-        }
-
+        val cleaned = ingredient.uppercase().replace(
+            Regex(
+                "^(CONSERVANT(I)?|CORECTOR DE ACIDITATE:|" +
+                        "EMULGATOR(I)?|EMULSIFIANT(I)?|COLORANT(I)?|" +
+                        "REGULATOR DE ACIDITATE|AGENT(I)? DE CRESTERE|VOPSEA|" +
+                        "AGENT(I)? DE GLAZURARE|AGENT(I)? DE UMEZIRE|" +
+                        "AGENT(I)? DE INGROSARE):?\\s*"
+            ), ""
+        )
         val plain = cleaned.substringBefore("(").trim()
+        val inner = extractParenthesisContent(cleaned)
+        // Check the plain keyword before the parenthesis
         if (ingredientPattern.matches(plain) && dbHelper.getIngredientByNameFuzzy(plain) != null) {
             validIngredients.add(plain)
         }
-
-        val inner = extractParenthesisContent(cleaned)
+        // Check ingredients inside parentheses (if any)
         if (inner.isNotEmpty()) {
-            val innerTrimmed = inner.trim()
-            if (ingredientPattern.matches(innerTrimmed) && dbHelper.getIngredientByNameFuzzy(innerTrimmed) != null) {
-                validIngredients.add(innerTrimmed)
+            val nestedIngredients = splitIngredientsAdvanced(inner)
+            for (nested in nestedIngredients) {
+                val name = nested.trim()
+                if (ingredientPattern.matches(name) && dbHelper.getIngredientByNameFuzzy(name) != null) {
+                    validIngredients.add(name)
+                }
             }
         }
     }
@@ -292,5 +324,5 @@ fun getIngredientDetails(ingredients: List<String>, dbHelper: DBHelper): List<St
             details.add("Ingredient '$ingredientName' not found in database")
         }
     }
-    return details
+    return details.distinct()
 }

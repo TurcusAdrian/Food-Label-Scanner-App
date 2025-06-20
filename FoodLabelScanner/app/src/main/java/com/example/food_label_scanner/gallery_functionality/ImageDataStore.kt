@@ -1,9 +1,7 @@
 package com.example.food_label_scanner.gallery_functionality
 
 import android.content.Context
-import android.net.Uri
 import android.util.Log
-import androidx.compose.ui.platform.LocalContext
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit

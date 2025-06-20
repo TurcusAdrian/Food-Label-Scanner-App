@@ -1,7 +1,6 @@
 package com.example.food_label_scanner.screens.drawer_screens
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -32,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import com.example.food_label_scanner.R
 import com.example.food_label_scanner.data.Section
 import com.example.food_label_scanner.ui.theme.Cream
+
 
 @Composable
 fun NutritionalDictionary(){

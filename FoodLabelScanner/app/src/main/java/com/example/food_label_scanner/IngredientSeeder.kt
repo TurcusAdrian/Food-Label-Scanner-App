@@ -11,40 +11,73 @@ class IngredientSeeder(private val context: Context) {
 
         try {
             // Insert categories if they don’t exist
-            insertCategoryIfNotExists(dbHelper, 1, "Îndulcitori", "Ingrediente naturale sau artificiale folosite pentru a conferi gust dulce")
-            insertCategoryIfNotExists(dbHelper, 2, "Grăsimi și Uleiuri", "Surse de grăsimi alimentare, utilizate pentru gătit sau textură")
-            insertCategoryIfNotExists(dbHelper, 3, "Conservanți", "Utilizați pentru a prelungi durata de viață a produselor alimentare")
-            insertCategoryIfNotExists(dbHelper, 4, "Îngroșători / Stabilizatori", "Îmbunătățesc textura sau consistența produselor")
-            insertCategoryIfNotExists(dbHelper, 5, "Emulgatori", "Permite amestecarea apei cu uleiul și stabilizează compozițiile")
-            insertCategoryIfNotExists(dbHelper, 6, "Acidifianți / Regulatori de aciditate", "Controlează aciditatea alimentelor pentru gust sau conservare")
-            insertCategoryIfNotExists(dbHelper, 7, "Arome", "Amplifică sau imită gusturile, pot fi naturale sau artificiale")
-            insertCategoryIfNotExists(dbHelper, 8, "Coloranți", "Modifică sau îmbunătățesc culoarea produselor alimentare")
-            insertCategoryIfNotExists(dbHelper, 9, "Lactate", "Ingrediente pe bază de lapte pentru gust, textură sau valoare nutritivă")
-            insertCategoryIfNotExists(dbHelper, 10, "Cereale / Făinuri", "Surse de carbohidrați de bază pentru volum și structură")
-            insertCategoryIfNotExists(dbHelper, 11, "Proteine", "Ingrediente bogate în proteine de origine animală sau vegetală")
-            insertCategoryIfNotExists(dbHelper, 12, "Vitamine / Minerale", "Nutrienți adăugați pentru sănătate sau cerințe legale")
+            insertCategoryIfNotExists(dbHelper, 1, "Îndulcitori", "Ingrediente" +
+                    " naturale sau artificiale folosite pentru a conferi gust dulce")
+            insertCategoryIfNotExists(dbHelper, 2, "Grăsimi și Uleiuri", "Surse de grăsimi" +
+                    " alimentare, utilizate pentru gătit sau textură")
+            insertCategoryIfNotExists(dbHelper, 3, "Conservanți", "Utilizați pentru" +
+                    " a prelungi durata de viață a produselor alimentare")
+            insertCategoryIfNotExists(dbHelper, 4, "Îngroșători / Stabilizatori",
+                "Îmbunătățesc textura sau consistența produselor")
+            insertCategoryIfNotExists(dbHelper, 5, "Emulgatori", "Permite amestecarea" +
+                    " apei cu uleiul și stabilizează compozițiile")
+            insertCategoryIfNotExists(dbHelper, 6, "Acidifianți / Regulatori de aciditate",
+                "Controlează aciditatea alimentelor pentru gust sau conservare")
+            insertCategoryIfNotExists(dbHelper, 7, "Arome",
+                "Amplifică sau imită gusturile, pot fi naturale sau artificiale")
+            insertCategoryIfNotExists(dbHelper, 8, "Coloranți",
+                "Modifică sau îmbunătățesc culoarea produselor alimentare")
+            insertCategoryIfNotExists(dbHelper, 9, "Lactate",
+                "Ingrediente pe bază de lapte pentru gust, textură sau valoare nutritivă")
+            insertCategoryIfNotExists(dbHelper, 10, "Cereale / Făinuri",
+                "Surse de carbohidrați de bază pentru volum și structură")
+            insertCategoryIfNotExists(dbHelper, 11, "Proteine",
+                "Ingrediente bogate în proteine de origine animală sau vegetală")
+            insertCategoryIfNotExists(dbHelper, 12, "Vitamine / Minerale",
+                "Nutrienți adăugați pentru sănătate sau cerințe legale")
             insertCategoryIfNotExists(dbHelper, 13, "Aditivi (diversi)", "Agenți funcționali precum antiaglomeranți, umectanți, etc.")
             insertCategoryIfNotExists(dbHelper, 14, "Nuci și Semințe", "Surse vegetale de grăsimi, proteine și fibre")
             insertCategoryIfNotExists(dbHelper, 15, "Fructe și Legume", "Ingrediente din plante pentru gust sau valoare nutritivă")
 
 
+            insertIngredientIfNotExists(
+                dbHelper,
+                "MASA DE CACAO",
+                 "6 kcal/g, conține grăsimi, proteine și antioxidanți naturali",
+                 11, // Existing "Proteine" category
+                 2, // Medium impact
+                 "Masa de cacao este obținută prin măcinarea boabelor de cacao uscate și prăjite. Conține grăsimi (unt de cacao), proteine și antioxidanți naturali. Este folosită ca ingredient principal în ciocolată. Poate oferi beneficii prin conținutul de flavonoide, dar este și calorică. Nu este recomandată în exces pentru persoanele sensibile la cofeină sau cu regim hipocaloric."
+            )
+
             // Insert ingredients only if they don't already exist
-            insertIngredientIfNotExists(dbHelper, "ZAHAR", "4 kcal/g, bogat in calorii, fara macronutrienti",
-                1, 1, "Zahărul este un carbohidrat simplu utilizat pentru a oferi gust dulce." +
-                        " Oferă energie rapidă, dar nu conține nutrienți esențiali. Consumul frecvent sau în cantități mari este asociat cu obezitate, diabet de tip 2 și boli de inimă." +
-                        " Se găsește frecvent în dulciuri, băuturi răcoritoare și alimente procesate." +
+            insertIngredientIfNotExists(dbHelper, "ZAHAR", "4 kcal/g, bogat in calorii," +
+                    " fara macronutrienti",
+                1, 1,
+                "Zahărul este un carbohidrat simplu utilizat pentru a oferi gust dulce." +
+                        " Oferă energie rapidă, dar nu conține nutrienți esențiali." +
+                        " Consumul frecvent sau în cantități mari este asociat cu obezitate," +
+                        " diabet de tip 2 și boli de inimă." +
+                        " Se găsește frecvent în dulciuri," +
+                        " băuturi răcoritoare și alimente procesate." +
                         " Se recomandă consumul moderat - ideal sub 25 de grame/zi pentru un adult.")
 
 
 
-            insertIngredientIfNotExists(dbHelper, "ULEI DE PALMIER", "9 kcal/g, bogat in grasimi saturate",
-                2, 2, "Uleiul de palmier este un ulei vegetal folosit frecvent în alimente procesate" +
+            insertIngredientIfNotExists(dbHelper, "ULEI DE PALMIER", "9 kcal/g," +
+                    " bogat in grasimi saturate",
+                2, 2, "Uleiul de palmier este un ulei vegetal" +
+                        " folosit frecvent în alimente procesate" +
                         " datorită costului scăzut și stabilității la temperaturi ridicate. " +
-                        "Deși oferă energie, este bogat în grăsimi saturate, care pot crește riscul bolilor cardiovasculare.\n" +
-                    "\n" + "În timpul rafinării la temperaturi înalte, pot apărea compuși precum esteri ai acizilor grași de glicidol (GE), 3-MCPD și 2-MCPD." +
-                        " Glicidolul este considerat posibil cancerigen, iar 3-MCPD este legat de afectarea rinichilor și fertilității." +
-                        " Autoritățile europene recomandă limitarea expunerii, în special în cazul copiilor." +
-                        " Începând cu 2022, unele țări au impus limite stricte pentru acești compuși în uleiul procesat.")
+                        "Deși oferă energie, este bogat în grăsimi saturate, care pot crește" +
+                        " riscul bolilor cardiovasculare.\n" +
+                    "\n" + "În timpul rafinării la temperaturi înalte, pot apărea compuși precum" +
+                        " esteri ai acizilor grași de glicidol (GE), 3-MCPD și 2-MCPD." +
+                        " Glicidolul este considerat posibil cancerigen, iar 3-MCPD este" +
+                        " legat de afectarea rinichilor și fertilității." +
+                        " Autoritățile europene recomandă limitarea expunerii," +
+                        " în special în cazul copiilor." +
+                        " Începând cu 2022, unele țări au impus limite" +
+                        " stricte pentru acești compuși în uleiul procesat.")
 
 
 
