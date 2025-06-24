@@ -39,7 +39,7 @@ fun TermsOfService(navController: NavHostController) {
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Cream // Apply cream color to entire surface
+        color = Cream
     ) {
         Column(
             modifier = Modifier
@@ -63,11 +63,11 @@ fun TermsOfService(navController: NavHostController) {
                     .fillMaxWidth()
                     .weight(1f),
                 colors = CardDefaults.cardColors(
-                    containerColor = Teal2 // Set the background color of the Card here
+                    containerColor = Teal2
                 )
             ) {
                 Text(
-                    text = longTermsOfServiceText,
+                    text = termsOfServiceText,
                     style = TextStyle(
                         fontSize = 14.sp,
                         color = Color.White,
@@ -102,34 +102,47 @@ fun TermsOfService(navController: NavHostController) {
     }
 }
 
-val longTermsOfServiceText = """
-    This is a long text for the Terms of Service.
-    It should be long enough to demonstrate the scrolling functionality.
-    
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    
-    Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
-    
-    At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.
-    
-    
-    It should be long enough to demonstrate the scrolling functionality.
-    
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    
-    Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
-    
-    At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.
-    
-    
-    It should be long enough to demonstrate the scrolling functionality.
-    
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    
-    Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
-    
-    At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.
-    
-    
-    This is the end of the Terms of Service text.
+
+val termsOfServiceText = """
+    Terms of Service
+
+    Welcome to the Food Label Scanner App. By using this application, you agree to comply with and be bound by the following Terms of Service. Please read these terms carefully.
+
+    1. Acceptance of Terms
+    By accessing or using the app, you agree to be bound by these Terms of Service and our Privacy Policy. If you do not agree, please do not use the app.
+
+    2. App Purpose
+    The Food Label Scanner App is intended to help users understand food ingredients by scanning product labels. It provides general nutritional information and ingredient analysis based on publicly available or user-provided data.
+
+    3. No Medical Advice
+    The information provided by this app is for educational and informational purposes only. It is not intended as medical advice. Always consult with a qualified health provider regarding dietary or health concerns.
+
+    4. User Responsibilities
+    - You are responsible for the accuracy of any information you input.
+    - You agree not to misuse the app, including reverse engineering or attempting unauthorized access.
+
+    5. Data and Privacy
+    The app may store basic data such as your preferences, ingredient history, or favorite items locally on your device. Your data is not shared unless you explicitly allow it. For more details, refer to the Privacy Policy.
+
+    6. Intellectual Property
+    All content, logos, databases, and designs of this app are the property of the developers and protected by copyright and intellectual property laws. You may not reproduce, modify, or distribute any part of the app without prior written permission.
+
+    7. Modifications and Updates
+    We reserve the right to modify or update these Terms at any time. Continued use of the app after changes constitutes your acceptance of the new terms.
+
+    8. Limitation of Liability
+    The developers shall not be liable for any damages arising from the use or inability to use the app, including data loss or health consequences related to inaccurate ingredient interpretation.
+
+    9. Termination
+    We reserve the right to terminate or restrict your access to the app if you violate these terms or engage in misuse of the app.
+
+    10. Governing Law
+    These Terms of Service are governed by and construed in accordance with the laws of your local jurisdiction.
+
+    Contact
+    For any questions regarding these terms, please contact our support team at support@foodlabelscanner.com.
+
+    Last Updated: June 2025
+
+    Thank you for using the Food Label Scanner App.
 """.trimIndent()

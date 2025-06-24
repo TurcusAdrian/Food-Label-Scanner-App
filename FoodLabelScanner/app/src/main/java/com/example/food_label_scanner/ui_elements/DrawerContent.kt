@@ -213,7 +213,7 @@ fun DrawerContent(navController : NavHostController, drawerState: DrawerState) {
         onClick = {
             val sendIntent = Intent().apply {
                 action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_TEXT, "http://google.com")
+                putExtra(Intent.EXTRA_TEXT, "https://github.com/TurcusAdrian/Food-Label-Scanner-App")
                 type = "text/plain"
             }
             val shareIntent = Intent.createChooser(sendIntent, null)
@@ -284,9 +284,9 @@ fun DrawerContent(navController : NavHostController, drawerState: DrawerState) {
     fun logout(context: Context) {
         val sharedPref = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         with(sharedPref.edit()) {
-            putBoolean("keepLoggedIn", false) // Clear the "Keep me logged in" flag
-            remove("user_email") // Remove stored username
-            remove("user_password") // Remove stored password (ensure it's encrypted if stored)
+            putBoolean("keepLoggedIn", false)
+            remove("username")
+            remove("user_password")
             apply()
         }
 
@@ -315,8 +315,6 @@ fun DrawerContent(navController : NavHostController, drawerState: DrawerState) {
         selected = false,
         onClick = {
             scope.launch {
-                //val intent = Intent(context, LoginActivity::class.java)
-                //context.startActivity(intent)
                 logout(context)
                 drawerState.close()
             }

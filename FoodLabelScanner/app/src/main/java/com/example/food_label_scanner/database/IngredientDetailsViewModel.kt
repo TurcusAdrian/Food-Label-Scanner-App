@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class IngredientDetailsViewModel @Inject constructor(
     private val ingredientRepository: IngredientRepository,
-    private val dbHelper: DBHelper // Inject DBHelper here
+    private val dbHelper: DBHelper
 ) : ViewModel() {
 
     private val _ingredient = MutableStateFlow<Ingredient?>(null)
@@ -24,31 +24,10 @@ class IngredientDetailsViewModel @Inject constructor(
     private val _categoryName = MutableStateFlow<String?>(null)
     val categoryName: StateFlow<String?> = _categoryName.asStateFlow()
 
-    fun loadIngredient(ingredientId: Int) {
-        viewModelScope.launch {
-            val allIngredients = ingredientRepository.getAllIngredients()
-            val foundIngredient = allIngredients.firstOrNull { it.ingredient_id == ingredientId }
-
-            _ingredient.value = foundIngredient // Update the ingredient StateFlow
-
-            if (foundIngredient != null) {
-                // Fetch the category name using the category_id from the found ingredient
-                val fetchedCategoryName = dbHelper.getCategoryNameById(foundIngredient.category_id)
-                _categoryName.value = fetchedCategoryName // Update the categoryName StateFlow
-            } else {
-                _categoryName.value = null // Clear category name if ingredient not found
-            }
-        }
-    }
-
-
-
-
     private val _isAllergic = MutableStateFlow(false)
     val isAllergic: StateFlow<Boolean> = _isAllergic.asStateFlow()
 
     private val _allergicIngredients = MutableStateFlow<List<String>>(emptyList())
-    val allergicIngredients: StateFlow<List<String>> = _allergicIngredients.asStateFlow()
 
     fun loadInitialData(ingredientId: Int, userId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -59,7 +38,6 @@ class IngredientDetailsViewModel @Inject constructor(
             foundIngredient?.let {
                 _categoryName.value = dbHelper.getCategoryNameById(it.category_id)
             }
-
             if (userId != -1) {
                 _isAllergic.value = dbHelper.isIngredientAllergic(userId, ingredientId)
                 _allergicIngredients.value = dbHelper.getAllergicIngredients(userId)

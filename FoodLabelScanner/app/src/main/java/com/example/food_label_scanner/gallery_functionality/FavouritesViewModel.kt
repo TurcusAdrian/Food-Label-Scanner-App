@@ -27,7 +27,8 @@ class FavouritesViewModel @Inject constructor(
         try {
             val contentResolver = context.contentResolver
             val inputStream = contentResolver.openInputStream(sourceUri)
-            val targetFile = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES + "/FoodLabelScanner"), fileName)
+            val targetFile = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES +
+                    "/FoodLabelScanner"), fileName)
             inputStream?.use { input ->
                 targetFile.outputStream().use { output ->
                     input.copyTo(output)
@@ -76,9 +77,7 @@ class FavouritesViewModel @Inject constructor(
                     if (file.exists()) {
                         if (file.delete()) {
                             Log.d("FavouritesViewModel", "File deleted successfully: $filePath")
-                            // Update the list of images after successful deletion
                             _images.value = _images.value.filter { it != image }
-                            // Delete the URI from the data store
                             val imageDataStore = ImageDataStoreManager.imageDataStore
                             imageDataStore.deleteImageUri(image.toString())
                         } else {
@@ -105,7 +104,6 @@ class FavouritesViewModel @Inject constructor(
         }
     }
 
-
     fun getRealPathFromUri(uri: Uri): String?{
         return if (uri.scheme == ContentResolver.SCHEME_FILE){
             uri.path
@@ -113,6 +111,7 @@ class FavouritesViewModel @Inject constructor(
             null
         }
     }
+
     fun downloadImage(image: Uri) {
         Log.d("Download Image function", "Downloading image ... success!")
     }

@@ -104,7 +104,7 @@ fun TextDisplayScreen(
 
         item {
             Text(
-                text = "Array ingredients: $arrayIngredients",
+                text = "Ingredients from label scanning: $arrayIngredients",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier.padding(bottom = 16.dp)

@@ -20,7 +20,7 @@ import javax.inject.Inject
 class SavePhotoToGallery @Inject constructor( @ApplicationContext private val context: Context, ){
 
     private fun timeFormat(timeofCreation: LocalDateTime) : String{
-        var timeForPhoto = timeofCreation.toString()
+        var timeForPhoto = timeofCreation.toString()            //  2025-06-22T18:22:45.123
 
         if(timeForPhoto.length>15){
             timeForPhoto= timeForPhoto.substring(0,19)
@@ -32,7 +32,7 @@ class SavePhotoToGallery @Inject constructor( @ApplicationContext private val co
         timeForPhoto = timeForPhoto.replace("_", "")
         timeForPhoto = timeForPhoto.substring(0, 8) + "_" + timeForPhoto.substring(8)
 
-        return timeForPhoto
+        return timeForPhoto         //  20250622_182245
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -41,7 +41,8 @@ class SavePhotoToGallery @Inject constructor( @ApplicationContext private val co
         val resolver : ContentResolver = context.applicationContext.contentResolver
 
         val imageCollection: Uri = when{
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ->
+                MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
             else -> MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         }
 
@@ -67,9 +68,7 @@ class SavePhotoToGallery @Inject constructor( @ApplicationContext private val co
                 put(MediaStore.Images.Media.DESCRIPTION, "descriere")
             }
         }
-
         val imageMediaStoreUri: Uri? = resolver.insert(imageCollection, imageContentValues)
-
         val result: Result<Uri> = imageMediaStoreUri?.let { uri ->
             kotlin.runCatching {
                 resolver.openOutputStream(uri).use { outputStream: OutputStream? ->

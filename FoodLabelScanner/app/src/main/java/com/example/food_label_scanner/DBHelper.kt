@@ -260,7 +260,6 @@ class DBHelper @Inject constructor(
     fun getAllIngredients(): Cursor {
         val db = readableDatabase
         return db.query(TABLE_INGREDIENTS, null, null, null, null, null, null).also {
-            // Return cursor without closing db here; caller must close cursor
         }
     }
 
@@ -505,7 +504,8 @@ class DBHelper @Inject constructor(
         cursor.close()
 
         // Fuzzy matching
-        cursor = db.query("ingredients", arrayOf("name"), null, null, null, null, null)
+        cursor = db.query("ingredients", arrayOf("name"),
+            null, null, null, null, null)
         var bestMatch: String? = null
         var bestDistance = Int.MAX_VALUE
         val threshold = minOf(4, normalizedName.length / 3) // Dynamic threshold: up to 4 or 1/3 of string length

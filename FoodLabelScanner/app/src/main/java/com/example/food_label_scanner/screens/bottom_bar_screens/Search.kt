@@ -35,10 +35,6 @@ fun Search(navController: NavHostController){
 
     val searchHistory by viewModel.searchHistory.collectAsState()
 
-
-    val context = LocalContext.current
-
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -59,7 +55,6 @@ fun Search(navController: NavHostController){
             }
         } else {
             if (searchText.isBlank()) {
-                // Show search history when search text is blank
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -79,7 +74,6 @@ fun Search(navController: NavHostController){
                     }
                 }
             } else {
-                // Show matching ingredients when search text is not blank
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()

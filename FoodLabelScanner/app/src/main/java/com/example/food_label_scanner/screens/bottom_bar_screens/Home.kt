@@ -11,7 +11,7 @@ import com.example.food_label_scanner.ui_elements.DisplayImagePreview
 
 @Composable
 fun Home(
-    selectedImage: Uri?, // Now a nullable Uri, not MutableState
+    selectedImage: Uri?,
     detectedText: String,
     onTextUpdated: (String) -> Unit,
     sharedTextViewModel: SharedTextViewModel,
@@ -31,7 +31,7 @@ fun Home(
             onDetectedTextUpdated = { updatedText ->
                 onTextUpdated(updatedText)
             },
-            onPhotoCaptured = { /* No-op or logging, since not used */ },
+            onPhotoCaptured = { },
             sharedTextViewModel = sharedTextViewModel,
             navigationController = navigationController
         )

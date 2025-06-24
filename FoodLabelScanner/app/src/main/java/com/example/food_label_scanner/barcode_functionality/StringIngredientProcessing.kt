@@ -7,7 +7,6 @@ import com.example.food_label_scanner.DBHelper
 fun levenshteinDistance(s1: String, s2: String): Int {
     val len1 = s1.length
     val len2 = s2.length
-
     // Create a matrix to store distances
     val dp = Array(len1 + 1) { IntArray(len2 + 1) }
 
@@ -33,6 +32,7 @@ fun levenshteinDistance(s1: String, s2: String): Int {
 
     return dp[len1][len2]
 }
+
 
 // Function to return UPPERCASE string:
 fun uppercase_text(ingredients: String): String {
@@ -265,13 +265,6 @@ fun splitIngredientsAdvanced(text: String): List<String> {
     return result
 }
 
-val ignoredKeywords = setOf(
-    "EMULSIFIANTI", "CONSERVANTI", "AGENTI DE CRESTERE", "COLORANTI",
-    "REGULATOR DE ACIDITATE", "STABILIZATORI", "EMULGATOR:", "AROME", "INGREDIENT:", "EMULSIFIANT:","VOPSEA:"
-)
-
-
-
 
 fun extractValidIngredients(rawIngredients: List<String>, dbHelper: DBHelper): List<String> {
     val validIngredients = mutableListOf<String>()
@@ -279,7 +272,7 @@ fun extractValidIngredients(rawIngredients: List<String>, dbHelper: DBHelper): L
     for (ingredient in rawIngredients) {
         val cleaned = ingredient.uppercase().replace(
             Regex(
-                "^(CONSERVANT(I)?|CORECTOR DE ACIDITATE:|" +
+                "^(CONSERVANT(I)?|AGENT(I)? DE AFANARE| CONSERVANT(I)?|CORECTOR DE ACIDITATE:|" +
                         "EMULGATOR(I)?|EMULSIFIANT(I)?|COLORANT(I)?|" +
                         "REGULATOR DE ACIDITATE|AGENT(I)? DE CRESTERE|VOPSEA|" +
                         "AGENT(I)? DE GLAZURARE|AGENT(I)? DE UMEZIRE|" +
@@ -318,7 +311,8 @@ fun getIngredientDetails(ingredients: List<String>, dbHelper: DBHelper): List<St
             val healthRating = ingredientData["health_rating"]
             val description = ingredientData["description"]
             val categoryName = dbHelper.getCategoryNameById(categoryId) ?: "Category not found"
-            val detail = "Name: $name, Nutritional Value: $nutritionalValue, Category: $categoryName, Health Rating: $healthRating, Description: $description"
+            val detail = "Name: $name, Nutritional Value: $nutritionalValue, Category: $categoryName," +
+                    " Health Rating: $healthRating, Description: $description"
             details.add(detail)
         } else {
             details.add("Ingredient '$ingredientName' not found in database")

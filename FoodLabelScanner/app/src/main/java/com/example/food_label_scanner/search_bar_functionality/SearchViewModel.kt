@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val ingredientRepository: IngredientRepository // Injected instance
+    private val ingredientRepository: IngredientRepository
 ) : ViewModel() {
 
     private val _searchText = MutableStateFlow("")
@@ -41,8 +41,7 @@ class SearchViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            // Fetch ingredients from the database when the ViewModel is created
-            _ingredients.value = ingredientRepository.getAllIngredients() // Correctly using the instance
+            _ingredients.value = ingredientRepository.getAllIngredients()
         }
 
         viewModelScope.launch {

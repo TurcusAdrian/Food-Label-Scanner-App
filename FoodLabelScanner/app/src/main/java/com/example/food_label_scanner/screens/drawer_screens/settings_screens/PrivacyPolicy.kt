@@ -37,7 +37,7 @@ fun PrivacyPolicy(navController: NavHostController) {
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Cream // Apply cream color to entire surface
+        color = Cream
     ) {
         Column(
             modifier = Modifier
@@ -59,10 +59,10 @@ fun PrivacyPolicy(navController: NavHostController) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f), // Card takes up available space
-                shape = RoundedCornerShape(8.dp), // Optional: give card rounded corners
+                    .weight(1f),
+                shape = RoundedCornerShape(8.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = Teal2 // Set the background color of the Card here
+                    containerColor = Teal2
             )) {
                 Text(
                     text = longPrivacyPolicyText,
@@ -90,14 +90,50 @@ fun PrivacyPolicy(navController: NavHostController) {
 }
 
 val longPrivacyPolicyText = """
-    This is a long text for the Privacy Policy.
-    It should be long enough to demonstrate the scrolling functionality.
-    
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    
-    Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
-    
-    At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.
-    
-    This is the end of the Privacy Policy text.
+    Privacy Policy – Food Label Scanner App
+
+    Effective Date: June 7, 2025
+
+    Your privacy is important to us. This Privacy Policy explains how we collect, use, and protect your information when you use the Food Label Scanner app.
+
+    1. Information We Collect
+    - **Scanned Data**: When you scan food product barcodes or take photos of ingredient lists, we may extract and analyze textual information such as product names, ingredients, and nutrition facts. This data is processed locally on your device and/or using trusted APIs (e.g., Open Food Facts or MLKit).
+    - **User Preferences**: We may store information like your saved favorite ingredients, allergens, or dietary preferences for personalized recommendations.
+    - **Device Information**: We collect non-personal data such as device type, app version, and crash logs for performance and analytics purposes.
+
+    2. How We Use Your Information
+    - To identify food products and ingredients based on barcode or text input.
+    - To provide ingredient descriptions, health ratings, and dietary insights.
+    - To store and recall user preferences like allergies or favorite items.
+    - To improve the accuracy, speed, and usability of the app through anonymous analytics.
+
+    3. Data Storage and Security
+    - Your data is stored locally on your device using secure methods (e.g., SQLite).
+    - We do not sell, rent, or share your personal data with third parties.
+    - If cloud features are added in the future (e.g., user accounts), this policy will be updated to reflect how that data is handled.
+
+    4. Permissions
+    - The app may request camera access to enable barcode scanning.
+    - Photo storage access may be required to analyze saved images (optional).
+    - All permissions are optional and explained at runtime.
+
+    5. Third-Party Services
+    - We may use APIs like Open Food Facts for publicly available food data.
+    - Text recognition and language processing features may use services from Google MLKit or other providers.
+    - These third-party services may have their own privacy policies.
+
+    6. Children's Privacy
+    - This app is not intended for children under the age of 13. We do not knowingly collect personal data from children.
+
+    7. Your Rights
+    - You may request deletion of your saved data at any time by clearing the app's local storage via your device settings.
+    - You can revoke permissions through your device's permission manager.
+
+    8. Updates to This Policy
+    - This policy may be updated to reflect changes in the app’s functionality or applicable laws. Users will be notified of major changes within the app interface or via app store updates.
+
+    9. Contact
+    - For any questions about this policy or your data, contact us at: support@foodlabelscannerapp.com
+
+    By using the Food Label Scanner app, you agree to this Privacy Policy.
 """.trimIndent()

@@ -161,7 +161,7 @@ fun BarcodeDisplayScreen(barcode: String) {
         }
         item {
             Text(
-                text = "Ingredients: $arrayIngredients",
+                text = "Ingredients from barcode scanning: $arrayIngredients",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier.padding(bottom = 8.dp)
@@ -175,7 +175,7 @@ fun BarcodeDisplayScreen(barcode: String) {
             )
         }
 
-        // If no valid ingredients found, show fallback message
+
         if (arrayIngredients2.isEmpty()) {
             item {
                 Text(
@@ -190,11 +190,7 @@ fun BarcodeDisplayScreen(barcode: String) {
 
         items(
             items = ingredientDetails,
-            key = { detail -> detail
-                // Ensure unique key, fallback to index if parsing fails
-                //val name = detail.substringAfter("Name: ").substringBefore(",").trim()
-                //name.ifEmpty { "ingredient_${ingredientDetails.indexOf(detail)}" }
-            }
+            key = { detail -> detail }
         ) { detail ->
             IngredientCard(
                 detail = detail,
@@ -303,6 +299,16 @@ fun IngredientCard(detail: String, allergicIngredients: List<String>) {
             }
             Spacer(modifier = Modifier.height(4.dp))
 
+            //Nutritional value
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(nutritionalValue, style = MaterialTheme.typography.labelLarge, color = Color.Gray)
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
             // Description
             Text(
                 description,
@@ -318,7 +324,7 @@ fun IngredientCard(detail: String, allergicIngredients: List<String>) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text("Health Rating:   ")
-                RatingIndicator(healthRating) //score = healthRating
+                RatingIndicator(healthRating)
             }
 
             // Allergic Warning (if applicable)

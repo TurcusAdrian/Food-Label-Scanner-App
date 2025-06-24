@@ -131,26 +131,10 @@ fun DisplayImagePreview(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            /*
-            // Detected text
-            item {
-                Text(
-                    text = "Detected Text:",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                Text(
-                    text = process_ingredients(detectedText ?: ""),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-            }
-            */
             // Array of ingredients (joined for display as a single string)
             item {
                 Text(
-                    text = "Array of Ingredients: ${arrayIngredients.joinToString(", ")}",
+                    text = "Ingredients from scanning the photo: ${arrayIngredients.joinToString(", ")}",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Normal,
                     modifier = Modifier.padding(bottom = 16.dp)

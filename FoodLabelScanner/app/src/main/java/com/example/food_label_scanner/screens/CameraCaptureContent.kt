@@ -93,7 +93,7 @@ fun CameraCaptureContent(
                         val textRecognitionAnalyzer = TextRecognitionAnalyzer { updatedText ->
                             Log.d("CameraContent", "Text detected: $updatedText")
                             onDetectedTextUpdated(updatedText)
-                            if (updatedText.isNotBlank()){//updatedText.lowercase().contains("ingredients")) {
+                            if (updatedText.isNotBlank()){
                                 Log.d("CameraContent", "Ingrediente detected, navigating to TextDisplayScreen")
                                 sharedTextViewModel.setDetectedText(updatedText)
                                 navigationController.navigate(Screens.TextDisplay.routeWithoutArgs)

@@ -69,7 +69,6 @@ class TextRecognitionAnalyzer(
                     }
 
                     if (orderedText.isNotBlank()) {
-                        //onDetectedTextUpdated(extractIngredientsSection(orderedText))
                          onDetectedTextUpdated(orderedText)
                     }
                 }

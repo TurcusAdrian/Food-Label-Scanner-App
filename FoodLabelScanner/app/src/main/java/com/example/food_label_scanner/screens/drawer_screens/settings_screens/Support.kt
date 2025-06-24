@@ -54,13 +54,13 @@ fun Support() {
 
     // Email regex pattern
     val emailRegex = remember {
-        Regex("^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})")
+        Regex("^[A-Za-z0-9]+[._]*[A-Za-z0-9]+([@]{1})[A-Za-z0-9]+\\.[A-Za-z]{2,}(?:\\.[a-zA-Z]{2,})")
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Cream) // Light background color
+            .background(Cream)
             .padding(16.dp)
             .verticalScroll(scrollState),
         verticalArrangement = Arrangement.SpaceBetween
@@ -80,7 +80,9 @@ fun Support() {
 
             // Description
             Text(
-                text = "If you are experiencing any issues, please let us know. We will try to solve them as soon as possible.",
+                text = "If you are experiencing any issues," +
+                        " please let us know." +
+                        " We will try to solve them as soon as possible.",
                 style = TextStyle(
                     fontSize = 16.sp,
                     color = Color.Gray
@@ -93,7 +95,7 @@ fun Support() {
                 value = userEmail.value,
                 onValueChange = {
                     userEmail.value = it
-                    isEmailValid.value = it.isBlank() || emailRegex.matches(it)
+                    isEmailValid.value =  emailRegex.matches(it)
                 },
                 label = { Text(text = "Your Email") },
                 placeholder = { Text(text = "Enter your email address") },
@@ -171,7 +173,7 @@ fun Support() {
                     isTitleValid.value = title.value.isNotBlank()
                     isProblemValid.value = problem.value.isNotBlank()
 
-                    if (isTitleValid.value && isProblemValid.value) {
+                    if (isTitleValid.value && isProblemValid.value && isEmailValid.value) {
                         sendEmail(
                             context = context,
                             userEmail = userEmail.value,
@@ -185,7 +187,7 @@ fun Support() {
                     .padding(vertical = 16.dp)
                     .height(50.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF004D40), // Dark teal color
+                    containerColor = Color(0xFF004D40),
                     contentColor = Color.White
                 ),
                 enabled = title.value.isNotBlank() && problem.value.isNotBlank()
@@ -211,7 +213,7 @@ private fun sendEmail(context: Context, userEmail: String, subject: String, mess
         Log.i("Send email", "")
 
         // Define recipients
-        val TO = arrayOf("adrian.turcus@student.upt.ro") // Change to your support email
+        val TO = arrayOf("adrian.turcus@student.upt.ro") // who to send the mail to
         val CC = if (userEmail.isNotBlank()) arrayOf(userEmail) else emptyArray()
 
         val emailIntent = Intent(Intent.ACTION_SEND).apply {

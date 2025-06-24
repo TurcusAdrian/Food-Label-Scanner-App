@@ -40,17 +40,13 @@ fun IngredientDetails(ingredientId: Int) {
     val ingredient by viewModel.ingredient.collectAsState()
     val categoryName by viewModel.categoryName.collectAsState()
     val isAllergic by viewModel.isAllergic.collectAsState()
-    val allergicIngredients by viewModel.allergicIngredients.collectAsState()
 
     val context = LocalContext.current
     val sharedPref = remember { context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE) }
     val userId = remember { sharedPref.getInt("userId", -1) }
 
-    var showFeedback by remember { mutableStateOf(false) }
-
 
     LaunchedEffect(ingredientId, userId) {
-        //viewModel.loadIngredient(ingredientId)
         Log.d("IngredientDetails", "Loading data with userId=$userId, ingredientId=$ingredientId")
         if (userId != -1) {
             viewModel.loadInitialData(ingredientId, userId)
@@ -59,7 +55,6 @@ fun IngredientDetails(ingredientId: Int) {
         }
     }
 
-    val scrollState = rememberScrollState()
 
     ingredient?.let { ingredientData -> // Renamed to avoid conflict if used in LazyColumn items
         LazyColumn( // Make the entire screen a LazyColumn
@@ -121,17 +116,14 @@ fun IngredientDetails(ingredientId: Int) {
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End // Or Center, or however you want to align the button
+                    horizontalArrangement = Arrangement.End
                 ) {
-                    // Removed the inner Column as it's not strictly needed for a single button
-                    // If you had multiple buttons or complex layout here, you might keep a Row/Column
                     Button(
                         onClick = {
                             Log.d("Button click", "Button worked")
                             if (userId != -1) {
                                 viewModel.toggleAllergicStatus(userId, ingredientId)
                             }
-                            showFeedback = true // Keep this to control visibility of the list below
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (isAllergic) Color.Red else Color.Green

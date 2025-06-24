@@ -35,10 +35,6 @@ class CameraViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
-    fun getCameraController(): LifecycleCameraController = LifecycleCameraController(context).apply {
-        setEnabledUseCases(0) // Disable all use cases initially
-    }
-
     fun photoCapture(
         lifecycleOwner: LifecycleOwner,
         onPhotoCaptured: (Bitmap) -> Unit
@@ -103,20 +99,10 @@ class CameraViewModel @Inject constructor(
         return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
     }
 
-    private val _capturedImage = MutableStateFlow<Bitmap?>(null)
-    val capturedImage = _capturedImage.asStateFlow()
-
     @RequiresApi(Build.VERSION_CODES.O)
     fun storePhotoInGallery(bitmap: Bitmap) {
         viewModelScope.launch {
             savePhotoToGallery.call(bitmap)
-            _capturedImage.value?.recycle()
-            _capturedImage.value = bitmap
         }
-    }
-
-    override fun onCleared() {
-        _capturedImage.value?.recycle()
-        super.onCleared()
     }
 }

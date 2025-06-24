@@ -4,6 +4,6 @@ data class Section(
     val title: String,
     val content: String,
     var isExpanded: Boolean = false,
-    val imageResId: Int? = null // Optional image resource ID
+    val imageResId: Int? = null
 
 )

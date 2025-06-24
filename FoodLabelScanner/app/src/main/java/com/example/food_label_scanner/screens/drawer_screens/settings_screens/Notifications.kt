@@ -27,7 +27,7 @@ fun Notifications() {
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Cream // Apply cream color to entire surface
+        color = Cream
     ) {
         Column(
             modifier = Modifier

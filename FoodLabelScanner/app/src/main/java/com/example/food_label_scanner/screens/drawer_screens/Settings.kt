@@ -16,8 +16,8 @@ import com.example.food_label_scanner.R
 import com.example.food_label_scanner.data.SettingsItem
 import com.example.food_label_scanner.ui.theme.Cream
 
-data class MenuItem(val title: String, val icon: Int)
 
+data class MenuItem(val title: String, val icon: Int)
 
 @Composable
 fun Settings(navController: NavHostController) {
@@ -28,7 +28,7 @@ fun Settings(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Cream) // Dark background
+            .background(Cream)
             .padding(16.dp)
     ) {
 
