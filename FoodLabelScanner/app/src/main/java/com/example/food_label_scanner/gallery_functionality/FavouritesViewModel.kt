@@ -68,32 +68,6 @@ class FavouritesViewModel @Inject constructor(
         }
     }
 
-    fun deleteImage(image: Uri) {
-        viewModelScope.launch {
-            try {
-                val filePath = getRealPathFromUri(image)
-                if (filePath != null) {
-                    val file = File(filePath)
-                    if (file.exists()) {
-                        if (file.delete()) {
-                            Log.d("FavouritesViewModel", "File deleted successfully: $filePath")
-                            _images.value = _images.value.filter { it != image }
-                            val imageDataStore = ImageDataStoreManager.imageDataStore
-                            imageDataStore.deleteImageUri(image.toString())
-                        } else {
-                            Log.e("FavouritesViewModel", "Failed to delete file: $filePath")
-                        }
-                    } else {
-                        Log.w("FavouritesViewModel", "File does not exist: $filePath")
-                    }
-                } else {
-                    Log.e("FavouritesViewModel", "Failed to get real path from URI: $image")
-                }
-            } catch (e: Exception) {
-                Log.e("FavouritesViewModel", "Error deleting file", e)
-            }
-        }
-    }
 
     fun removeImage(image: Uri) {
         _images.value = _images.value.filter { it != image }
@@ -104,15 +78,4 @@ class FavouritesViewModel @Inject constructor(
         }
     }
 
-    fun getRealPathFromUri(uri: Uri): String?{
-        return if (uri.scheme == ContentResolver.SCHEME_FILE){
-            uri.path
-        } else{
-            null
-        }
-    }
-
-    fun downloadImage(image: Uri) {
-        Log.d("Download Image function", "Downloading image ... success!")
-    }
 }

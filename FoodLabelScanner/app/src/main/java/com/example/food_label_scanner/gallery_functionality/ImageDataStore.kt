@@ -40,17 +40,4 @@ class ImageDataStore (private val context: Context) {
         return urisString.split(",").filter { it.isNotEmpty() }
     }
 
-    suspend fun deleteImageUri(uriToDelete: String) {
-        dataStore.edit { preferences ->
-            val currentUrisString = preferences[stringPreferencesKey(getKey())] ?: ""
-            val currentUris = currentUrisString.split(",").filter { it.isNotEmpty() }.toMutableList()
-
-            if (currentUris.remove(uriToDelete)) {
-                preferences[stringPreferencesKey(getKey())] = currentUris.joinToString(",")
-                Log.d("Delete Image URI", "Deleted image URI: $uriToDelete for user ${getUserId()}")
-            } else {
-                Log.w("Delete Image URI", "Image URI not found for user ${getUserId()}: $uriToDelete")
-            }
-        }
-    }
 }

@@ -69,8 +69,7 @@ fun Favourites() {
         items(images.size) { index ->
             GalleryItem(
                 imageUri = images[index],
-                onRemove = { viewModel.removeImage(images[index])},
-                onDelete = { viewModel.deleteImage(images[index])}
+                onRemove = { viewModel.removeImage(images[index])}
             )
         }
     }
