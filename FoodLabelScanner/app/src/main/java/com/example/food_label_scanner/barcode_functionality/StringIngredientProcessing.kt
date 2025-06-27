@@ -39,10 +39,12 @@ fun uppercase_text(ingredients: String): String {
     return ingredients.uppercase()
 }
 
-//Removes percentage and percentage numbers if they are not preceded by "E":
+
 fun removePercentageNumbers(ingredients: String): String {
     val regex = """(?<!E\d)\s*\d+(?:[.,]\d+)?\s*(?:%?\s*)"""
-    return ingredients.replace(Regex(regex, RegexOption.IGNORE_CASE), "")
+    var cleaned = ingredients.replace(Regex(regex, RegexOption.IGNORE_CASE), "")
+    cleaned = cleaned.replace(Regex("""\(\s*\)"""), "")
+    return cleaned
 }
 
 //Extracts the text after "INGREDIENTE:" and before ".":
