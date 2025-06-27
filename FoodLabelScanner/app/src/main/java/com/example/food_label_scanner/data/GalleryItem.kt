@@ -3,10 +3,13 @@ package com.example.food_label_scanner.data
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -25,27 +28,60 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import coil.compose.rememberAsyncImagePainter
 
 @Composable
-fun GalleryItem(imageUri: Uri, onRemove : () -> Unit) {
+fun GalleryItem(imageUri: Uri, onRemove: () -> Unit) {
     var menuExpanded by remember { mutableStateOf(false) }
+    var isPreviewVisible by remember { mutableStateOf(false) }
 
-    val context = LocalContext.current
+    val painter = rememberAsyncImagePainter(
+        model = imageUri,
+        onError = { result -> Log.e("Image Loading", "Error loading image URI: $imageUri") }
+    )
 
-    val painter1 = rememberAsyncImagePainter(model = imageUri,
-        onError = {result -> Log.e("Image Loading", "Error loading image URI: $imageUri")})
-
+    // Preview Picture Functionality
+    if (isPreviewVisible) {
+        Dialog(
+            onDismissRequest = { isPreviewVisible = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.7f))
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) { isPreviewVisible = false }
+            ) {
+                Image(
+                    painter = painter,
+                    contentDescription = "Preview of $imageUri",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .sizeIn(minWidth = 600.dp, minHeight = 800.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) { isPreviewVisible = false }
+                )
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
             .size(150.dp)
-            .clickable { /*Implement on click image*/ }
+            .clickable { isPreviewVisible = true }
     ) {
         Image(
-            painter = painter1,
+            painter = painter,
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier

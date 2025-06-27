@@ -1,6 +1,5 @@
 package com.example.food_label_scanner.gallery_functionality
 
-import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
